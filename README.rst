@@ -1,5 +1,4 @@
-=========
-lib_metadata_db
+**`lib_metadata_db`**
 =========
 A pip package containing database access functionality which can be imported in any project requiring this access.
 
@@ -9,7 +8,7 @@ Clone the '.env.sample' and name it '.env'. You will then need to insert your ow
 
 Dependencies
 ============
-This project uses poetry, you can read more about it at `poetry-docs <https://python-poetry.org/docs/>`_.
+This project uses poetry, you can read more about it at [`poetry-docs`](<https://python-poetry.org/docs/>).
 
 To create models for an app:
 -----------------------------
