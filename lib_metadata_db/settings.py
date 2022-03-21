@@ -8,10 +8,6 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 SECRET_KEY = os.getenv("SECRET_KEY")
-DATABASE_ROUTERS = ["lib_metadata_db.db_router.DbRouter"]
-DATABASE_APPS_MAPPING = {
-    "newspapers": "newspapers_db"
-}
 
 DATABASES = {
     "default": {
