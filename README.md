@@ -96,7 +96,7 @@ To create models for an app:
 Make sure to specify the `APP_NAME` when making a migration to ensure that other changes inherited in your schema are not pushed to the database. The best way to do this is to `makemigrations` for each `APP_NAME` individually.
 
 ```shell
-python lib_metadata_db/manage.py makemigrations APP_NAME
+python lib_metadata_db/manage.py makemigrations newspapers
 ```
 If `APP_NAME` not specified, migrations for all `INSTALLED_APPS` would be created
 
