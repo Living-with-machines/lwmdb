@@ -122,10 +122,10 @@ python lib_metadata_db/manage.py makemigrations
 Creating/Updating tables in the database:
 -----------------------------------------
 
-Make sure to specify the `APP_NAME` when migrating the changes to ensure that the migrations from other apps in the project are not pushed to the database.
+Make sure to specify the `APP_NAME` (in our initial table `APP_NAME=newspapers`) and the database (in our initial instance `DATABASE_NAME=newspapers_db`) when migrating the changes to ensure that the migrations from other apps in the project are not pushed to the database.
 
 ```shell
-python lib_metadata_db/manage.py migrate APP_NAME --database=DATABASE_NAME
+python lib_metadata_db/manage.py migrate newspapers --database=newspapers_db
 ```
 
 1. To see the tables login with your newly created `user`:
