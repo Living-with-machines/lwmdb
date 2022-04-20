@@ -128,5 +128,4 @@ venv.bak/
 !lib_metadata_db/newspapers/management/commands/.keep
 
 # scripts folder
-*scripts/
 !/scripts/.keep
