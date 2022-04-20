@@ -129,4 +129,4 @@ venv.bak/
 
 # scripts folder
 *scripts/
-!lib_metadata_db/scripts/.keep
+!/scripts/.keep
