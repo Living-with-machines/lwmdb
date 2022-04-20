@@ -124,7 +124,6 @@ venv.bak/
 .idea/
 
 # commands folder
-*commands/
 !lib_metadata_db/newspapers/management/commands/.keep
 
 # scripts folder
