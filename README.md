@@ -36,6 +36,17 @@ $ brew install postgresql
 
 followed by:
 
+``postgis`` dependency installation
+----------------
+
+Instructions are taken from [this webpage](https://morphocode.com/how-to-install-postgis-on-mac-os-x/)
+
+In the terminal run:
+```shell
+$ brew install postgis
+```
+
+then
 ```shell
 $ brew services start postgresql
 ```
@@ -58,6 +69,7 @@ $ psql postgres
 CREATE ROLE newspapers WITH LOGIN PASSWORD 'newspapers';
 CREATE DATABASE newspapers_db;
 GRANT ALL PRIVILEGES ON DATABASE newspapers_db TO newspapers;
+ALTER ROLE newspapers SUPERUSER;
 ```
 3. Quit the current session:
 
@@ -140,10 +152,37 @@ $ psql -d newspapers_db -U newspapers
 \dt
 ```
 
+Migrating models across all DATABASES
+-----------------------------------------
+
+1. run the following from the command line:
+
+```shell
+$ psql newspapers_db -c "GRANT ALL ON ALL TABLES IN SCHEMA public to newspapers;"
+$ psql newspapers_db -c "GRANT ALL ON ALL SEQUENCES IN SCHEMA public to newspapers;"
+$ psql newspapers_db -c "GRANT ALL ON ALL FUNCTIONS IN SCHEMA public to newspapers;"
+```
+2. Then go ahead and migrate your new models in whichever database, such as
+
+```shell
+$ python lib_metadata_db/manage.py makemigrations press_directories
+```
+
+View schema and tables
+==============
+Download your favourite Database manager tool! The following example uses [`DBeaver`](https://dbeaver.io/download/)
+
+```shell
+$ brew install --cask dbeaver-community
+```
+
+Open `DBeaver` and add the credentials to connect your local instance of the database using the credentials in your ``.env`` file. You should then be able to navigate within ``newspapers_db`` to "Schemas" -> "public" -> "tables" to see the migrated models as tables.
+
+
 Importing Data
 ==============
 In order to import new data into a table in the database:
 
 ```shell
-python lib_metadata_db/manage.py import_TABLE_NAME PATH_TO_FILE
+$ python lib_metadata_db/manage.py import_TABLE_NAME PATH_TO_FILE
 ```
