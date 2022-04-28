@@ -34,9 +34,12 @@ class Command(BaseCommand):
         data.fillna('',inplace=True)
         #Code to load the data into database
         for i,row in data.iterrows():
-            record=Mitchells(title=row['title'], political_leaning_raw=row['political_leaning_raw'], price_raw=row['price_raw'],
+            record=Mitchells(title=row['title'], political_leaning_raw=row['political_leaning_raw'], 
+                            political_leaning_1=row['political_leaning_1'],political_leaning_2=row['political_leaning_2'],
+                            price_raw=row['price_raw'],price_1=row['price_1'],price_2=row['price_2'],
             				day_of_publication_raw=row['day_of_publication_raw'], date_established_raw=row['date_established_raw'], 
             				place_of_circulation_raw=row['place_circulation_raw'], publication_district_raw=row['publication_district_raw'],
-            				publication_county_raw=row['publication_county_raw'], persons=row['persons'], organisations=row['organisations']
+            				publication_county_raw=row['publication_county_raw'], persons=row['persons'], organisations=row['organisations'],
+                            place_of_publication_id=row['place_of_publication_id']
             				)  
             record.save()
