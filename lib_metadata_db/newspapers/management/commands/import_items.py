@@ -18,7 +18,10 @@ first delete the db.sqlite3 file to destroy the database.
 Then, run `python manage.py migrate` for a new empty
 database with tables"""
 
-alltitles = glob('../../../../datadrive/metadata-hmd/*')
+# Set path to directory where your metadata blob (alto2txt-ed) is mounted.
+fullpath = input('Enter full path to to the directory where the metadata is stored: ')
+data_provider_name = input('Provide one name for data_provider: (lwm, hmd, bna, jisc): ')
+alltitles = glob('{}/*'.format(fullpath))
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
@@ -57,7 +60,7 @@ class Command(BaseCommand):
                             )
                             issue.save()
                             data_provider = DataProvider(
-                                name = '{}'.format(),
+                                name = data_provider_name,
                                 collection = 'newspapers',
                                 source_note = pubmeta.find('source').text,
                             )
