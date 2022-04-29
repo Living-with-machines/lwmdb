@@ -5,7 +5,7 @@ from .mitchells_publications import MitchellsPublication
 
 
 class Publication(NewspapersModel):
-    publication_code = models.CharField(max_length=30, default="")
+    publication_code = models.CharField(max_length=600, default="")
     title = models.CharField(max_length=255, default="")
     location = models.CharField(max_length=255, default="")
     mitchells_publication = models.ForeignKey(

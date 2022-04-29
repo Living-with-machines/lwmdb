@@ -128,3 +128,4 @@ venv.bak/
 
 # scripts folder
 !/scripts/.keep
+metadata-hmd/*
