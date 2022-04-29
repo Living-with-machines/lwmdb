@@ -5,7 +5,7 @@ from .newspapers_model import NewspapersModel
 
 class Digitisation(NewspapersModel):
     xml_flavour = models.CharField(max_length=255, default="")
-    software = models.CharField(max_length=30, default="")
+    software = models.CharField(max_length=600, default="")
     mets_namespace = models.CharField(max_length=255, default="")
     alto_namespace = models.CharField(max_length=255, default="")
 

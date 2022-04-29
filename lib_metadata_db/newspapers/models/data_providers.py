@@ -4,8 +4,8 @@ from .newspapers_model import NewspapersModel
 
 
 class DataProvider(NewspapersModel):
-    name = models.CharField(max_length=30, default="")
-    collection = models.CharField(max_length=30, default="")
+    name = models.CharField(max_length=600, default="")
+    collection = models.CharField(max_length=600, default="")
     source_note = models.CharField(max_length=255, default="")
 
     class Meta:
