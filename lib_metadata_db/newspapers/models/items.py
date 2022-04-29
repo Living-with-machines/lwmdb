@@ -12,8 +12,8 @@ class Item(NewspapersModel):
     title = models.CharField(max_length=255, default="")
     item_type = models.CharField(max_length=600, default="")
     word_count = models.IntegerField(null=True, db_index=True)
-    ocr_quality_mean = models.FloatField(null=True)
-    ocr_quality_sd = models.FloatField(null=True)
+    ocr_quality_mean = models.FloatField(null=True, blank=True)
+    ocr_quality_sd = models.FloatField(null=True, blank=True)
     input_filename = models.CharField(max_length=255, default="")
     issue = models.ForeignKey(
         Issue, on_delete=models.SET_NULL, verbose_name="issue", null=True
