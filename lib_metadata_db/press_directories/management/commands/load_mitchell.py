@@ -2,6 +2,7 @@ from lib_metadata_db.press_directories.models.mitchells import Mitchells
 from csv import DictReader
 from django.core.management import BaseCommand
 import pandas as pd
+import numpy as np
 
 # Import the model 
 
@@ -35,7 +36,8 @@ class Command(BaseCommand):
 
         #data = pd.read_csv('../data/mitchells_db.csv')
         data = pd.read_csv(kwargs["file_location"])
-        data.fillna('',inplace=True)
+        data.replace({np.nan: None},inplace=True)
+        #data.fillna('',inplace=True)
         #Code to load the data into database
         for i,row in data.iterrows():
             record=Mitchells(title=row['title'], political_leaning_raw=row['political_leaning_raw'], 
