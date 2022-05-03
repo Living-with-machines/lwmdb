@@ -4,9 +4,9 @@ from .newspapers_model import NewspapersModel
 
 
 class DataProvider(NewspapersModel):
-    name = models.CharField(max_length=600, default="")
-    collection = models.CharField(max_length=600, default="")
-    source_note = models.CharField(max_length=255, default="")
+    name = models.CharField(max_length=600, default=None)
+    collection = models.CharField(max_length=600, default=None)
+    source_note = models.CharField(max_length=255, default=None)
 
     class Meta:
         app_label = "newspapers"
