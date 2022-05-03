@@ -13,7 +13,7 @@ from lib_metadata_db.newspapers.models.publications import Publication
 from glob import glob
 
 ALREDY_LOADED_ERROR_MESSAGE = """
-If you need to reload the child data from the CSV file,
+If you need to reload the item from the XML file,
 first delete the db.sqlite3 file to destroy the database.
 Then, run `python manage.py migrate` for a new empty
 database with tables"""
