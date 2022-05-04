@@ -5,9 +5,9 @@ from .publications import Publication
 
 
 class Issue(NewspapersModel):
-    issue_code = models.CharField(max_length=30, default="")
+    issue_code = models.CharField(max_length=600, default=None)
     issue_date = models.DateField()
-    input_sub_path = models.CharField(max_length=255, default="")
+    input_sub_path = models.CharField(max_length=255, default=None)
     publication = models.ForeignKey(
         Publication, on_delete=models.SET_NULL, verbose_name="publication", null=True
     )
