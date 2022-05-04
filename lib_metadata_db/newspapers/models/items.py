@@ -8,13 +8,13 @@ from .ingest import Ingest
 
 
 class Item(NewspapersModel):
-    item_code = models.CharField(max_length=600, default="")
-    title = models.CharField(max_length=255, default="")
-    item_type = models.CharField(max_length=600, default="")
+    item_code = models.CharField(max_length=600, default=None)
+    title = models.TextField(default=None)
+    item_type = models.CharField(max_length=600, default=None)
     word_count = models.IntegerField(null=True, db_index=True)
     ocr_quality_mean = models.FloatField(null=True, blank=True)
     ocr_quality_sd = models.FloatField(null=True, blank=True)
-    input_filename = models.CharField(max_length=255, default="")
+    input_filename = models.CharField(max_length=255, default=None)
     issue = models.ForeignKey(
         Issue, on_delete=models.SET_NULL, verbose_name="issue", null=True
     )
