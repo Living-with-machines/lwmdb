@@ -9,7 +9,7 @@ from .country import Country
 
 class PlaceOfPublication(GazetteerModel):
     place_wikidata_id = models.CharField(max_length=30, default="")
-    place_label = models.CharField(max_length=30, default="")
+    place_label = models.CharField(max_length=255, default="")
     latitude = models.FloatField(null=True)
     longitude = models.FloatField(null=True)
     geopoint = PointField(srid=4326, geography=True, blank=True, null=True)
