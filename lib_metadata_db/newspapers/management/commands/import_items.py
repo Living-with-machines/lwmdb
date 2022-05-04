@@ -13,7 +13,7 @@ from lib_metadata_db.newspapers.models.publications import Publication
 from glob import glob
 
 ALREDY_LOADED_ERROR_MESSAGE = """
-If you need to reload the child data from the CSV file,
+If you need to reload the item from the XML file,
 first delete the db.sqlite3 file to destroy the database.
 Then, run `python manage.py migrate` for a new empty
 database with tables"""
@@ -35,15 +35,15 @@ class Command(BaseCommand):
         # Show this before loading the data into the database
         print("Loading items data")
         # Code to load the data into database
-        for title in alltitles:
-            allyears = glob("{}/*".format(title))
+        for each_title in alltitles:
+            allyears = glob("{}/*".format(each_title))
             for year in allyears:
                 allissues = glob("{}/*".format(year))
                 for issue in allissues:
                     metadataxmls = glob("{}/*.xml".format(issue))
                     for metadataxml in metadataxmls:
                         with open(metadataxml, "r") as meta:
-                            soup = BeautifulSoup(meta, "lxml")
+                            soup = BeautifulSoup(meta, features="xml")
                             pubmeta = soup.find("publication")
                             processmeta = soup.find("process")
                             issuemeta = pubmeta.find("issue")
@@ -86,8 +86,8 @@ class Command(BaseCommand):
                                 title=itemmeta.find("title").text,
                                 item_type=itemmeta.find("item_type").text,
                                 word_count=itemmeta.find("word_count").text,
-                                ocr_quality_mean=itemmeta.find("ocr_quality_mean").text,
-                                ocr_quality_sd=itemmeta.find("ocr_quality_sd").text,
+                                ocr_quality_mean=itemmeta.find("ocr_quality_mean").text or None,
+                                ocr_quality_sd=itemmeta.find("ocr_quality_sd").text or None,
                                 input_filename=itemmeta.find("plain_text_file").text,
                                 issue=issue,
                                 data_provider=data_provider,
