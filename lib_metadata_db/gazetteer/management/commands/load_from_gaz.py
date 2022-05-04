@@ -135,5 +135,8 @@ class Command(BaseCommand):
                 latitude=dict_gaz_entries[wkqid]["latitude"],
                 longitude=dict_gaz_entries[wkqid]["longitude"],
                 geonames_ids=dict_gaz_entries[wkqid]["geonames_ids"],
+                historic_county=historic_county,
+                admin_county=admin_county,
+                country=country,
             )
             place_of_publication.save()
