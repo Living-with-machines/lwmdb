@@ -7,8 +7,18 @@ from lib_metadata_db.gazetteer.models.country import Country
 
 
 class Command(BaseCommand):
-    def handle(self, *args, **options):
-        PlaceOfPublication.objects.all().delete()
-        AdminCounty.objects.all().delete()
-        HistoricCounty.objects.all().delete()
-        Country.objects.all().delete()
+    help = "Delete all model objects associated with the Items models and their foreign keys"
+
+    def handle(self, *args, **kwargs):
+        answer = input(
+            "Do you want to remove all data associated with the gazetteer models? This is a destructive option and should only be done on a production database instance with the approval of the Administrator. Continue? "
+        )
+        if answer.lower() in ["y", "yes"]:
+            PlaceOfPublication.objects.all().delete()
+            AdminCounty.objects.all().delete()
+            HistoricCounty.objects.all().delete()
+            Country.objects.all().delete()
+        else:
+            # Handle "wrong" input
+            print("Exiting deletion.")
+            pass
