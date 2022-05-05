@@ -4,8 +4,8 @@ from .gazetteer_model import GazetteerModel
 
 
 class HistoricCounty(GazetteerModel):
-    hcounty_label = models.CharField(max_length=255, default="")
-    hcounty_wikidata_id = models.CharField(max_length=30, default="")
+    hcounty_label = models.CharField(max_length=255, default=None)
+    hcounty_wikidata_id = models.CharField(max_length=30, default=None)
 
     class Meta:
         app_label = "gazetteer"
