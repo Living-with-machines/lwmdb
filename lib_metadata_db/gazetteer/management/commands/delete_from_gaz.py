@@ -7,7 +7,7 @@ from lib_metadata_db.gazetteer.models.country import Country
 
 
 class Command(BaseCommand):
-    help = "Delete all model objects associated with the Items models and their foreign keys"
+    help = "Delete all model objects associated with the Gazetteer models and their foreign keys"
 
     def handle(self, *args, **kwargs):
         answer = input(
