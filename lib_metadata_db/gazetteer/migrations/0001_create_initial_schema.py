@@ -62,7 +62,6 @@ class Migration(migrations.Migration):
                 ('place_label', models.CharField(default='', max_length=30)),
                 ('latitude', models.FloatField(null=True)),
                 ('longitude', models.FloatField(null=True)),
-                ('geopoint', django.contrib.gis.db.models.fields.PointField(blank=True, geography=True, null=True, srid=4326)),
                 ('geonames_ids', models.CharField(default='', max_length=255)),
                 ('admin_county', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='gazetteer.admincounty', verbose_name='admin_county')),
                 ('country', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='gazetteer.country', verbose_name='county')),
