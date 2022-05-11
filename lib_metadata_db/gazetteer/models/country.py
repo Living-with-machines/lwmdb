@@ -4,8 +4,8 @@ from .gazetteer_model import GazetteerModel
 
 
 class Country(GazetteerModel):
-    country_label = models.CharField(max_length=255, default="")
-    country_wikidata_id = models.CharField(max_length=30, default="")
+    country_label = models.CharField(max_length=255, default=None)
+    country_wikidata_id = models.CharField(max_length=30, default=None)
 
     class Meta:
         app_label = "gazetteer"
