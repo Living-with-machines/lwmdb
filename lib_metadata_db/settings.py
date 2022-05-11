@@ -11,7 +11,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 DATABASES = {
     "default": {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'ENGINE': "django.db.backends.postgresql",
         "NAME": os.getenv("DB_NAME_NEWSPAPERS"),
         "USER": os.getenv("DB_USERNAME_NEWSPAPERS"),
         "PASSWORD": os.getenv("DB_PASSWORD_NEWSPAPERS"),
@@ -64,7 +64,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django.contrib.gis",
     "newspapers.apps.NewspapersConfig",
     "press_directories.apps.PressDirectoriesConfig",
     "gazetteer.apps.GazetteerConfig",
