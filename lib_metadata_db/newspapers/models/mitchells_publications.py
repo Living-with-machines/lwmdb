@@ -5,9 +5,9 @@ from lib_metadata_db.press_directories.models.mitchells import Mitchells
 
 
 class MitchellsPublication(NewspapersModel):
-    year = models.DateField(null=True, blank=True)
+    year = models.DateField(null=True, blank=True, default=None)
     mitchells = models.ForeignKey(
-        Mitchells, on_delete=models.SET_NULL, verbose_name="mitchells", null=True
+        Mitchells, on_delete=models.SET_NULL, verbose_name="mitchells", null=True, default=None
     )
 
     class Meta:
