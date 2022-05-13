@@ -186,3 +186,7 @@ In order to import new data into a table in the database:
 ```shell
 $ python lib_metadata_db/manage.py import_TABLE_NAME PATH_TO_FILE
 ```
+
+Schema Diagram
+==============
+View a diagram of the databases [here](https://dbdiagram.io/d/627bd08a7f945876b6fca7d0).
