@@ -171,7 +171,7 @@ python lib_metadata_db/manage.py migrate newspapers --database=newspapers_db
 
 ## View schema and tables
 
-Download your favourite Database manager tool! The following example uses [`DBeaver`](https://dbeaver.io/download/)
+Download your favourite Database manager tool! The following example uses [`DBeaver`](https://dbeaver.io/download/) on a Mac:
 
 ```shell
 brew install --cask dbeaver-community
