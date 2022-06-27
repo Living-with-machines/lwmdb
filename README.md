@@ -184,7 +184,7 @@ Open `DBeaver` and add the credentials to connect your local instance of the dat
 In order to import new data into a table in the database:
 
 ```shell
-python lib_metadata_db/manage.py import_TABLE_NAME PATH_TO_FILE
+$ python lib_metadata_db/manage.py <name_of_import_script>
 ```
 
 ## Schema Diagram
