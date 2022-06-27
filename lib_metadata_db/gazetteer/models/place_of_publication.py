@@ -6,6 +6,11 @@ from .admin_county import AdminCounty
 from .country import Country
 
 
+class PlaceOfPublicationManager(models.Manager):
+    def get_by_natural_key(self, place_wikidata_id, place_label):
+        return self.get(place_wikidata_id=place_wikidata_id, place_label=place_label)
+
+
 class PlaceOfPublication(GazetteerModel):
     place_wikidata_id = models.CharField(max_length=30, default=None)
     place_label = models.CharField(max_length=255, default=None)
@@ -32,9 +37,12 @@ class PlaceOfPublication(GazetteerModel):
         null=True,
     )
 
+    objects = PlaceOfPublicationManager()
+
     class Meta:
         app_label = "gazetteer"
         db_table = "place_of_publication"
+        unique_together = [["place_wikidata_id", "place_label"]]
 
     def __str__(self):
         return str(self.place_label)
