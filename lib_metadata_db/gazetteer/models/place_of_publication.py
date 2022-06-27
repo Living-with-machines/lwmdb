@@ -11,7 +11,8 @@ class PlaceOfPublication(GazetteerModel):
     place_label = models.CharField(max_length=255, default=None)
     latitude = models.FloatField(null=True)
     longitude = models.FloatField(null=True)
-    geonames_ids = models.CharField(max_length=255, default="")
+    geonames_ids = models.CharField(max_length=255, default=None)
+
     historic_county = models.ForeignKey(
         HistoricCounty,
         on_delete=models.SET_NULL,
