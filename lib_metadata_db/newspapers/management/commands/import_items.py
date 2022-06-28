@@ -86,8 +86,10 @@ class Command(BaseCommand):
                                 title=itemmeta.find("title").text,
                                 item_type=itemmeta.find("item_type").text,
                                 word_count=itemmeta.find("word_count").text,
-                                ocr_quality_mean=itemmeta.find("ocr_quality_mean").text or None,
-                                ocr_quality_sd=itemmeta.find("ocr_quality_sd").text or None,
+                                ocr_quality_mean=itemmeta.find("ocr_quality_mean").text
+                                or None,
+                                ocr_quality_sd=itemmeta.find("ocr_quality_sd").text
+                                or None,
                                 input_filename=itemmeta.find("plain_text_file").text,
                                 issue=issue,
                                 data_provider=data_provider,
