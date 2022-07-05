@@ -6,7 +6,7 @@ authors = ["ChristinaLast <christina.last@outlook.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-Django = "^3.2.13"
+Django = "^3.2.14"
 mod-wsgi = "^4.9.0"
 python-dotenv = "^0.19.2"
 beautifulsoup4 = "^4.11.1"
