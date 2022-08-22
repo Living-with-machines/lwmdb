@@ -12,3 +12,4 @@ alto2txt2fixture
 */mitchells/fixtures/*.json
 */newspapers/fixtures/*.json
 reports
+mitchells_publication_for_linking.csv
