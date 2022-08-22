@@ -189,4 +189,8 @@ $ python lib_metadata_db/manage.py <name_of_import_script>
 
 ## Schema Diagram
 
-View a diagram of the databases [here](https://dbdiagram.io/d/62bb46ba69be0b672c5d2a15).
+View a diagram of the database [here](https://dbdiagram.io/d/62bb46ba69be0b672c5d2a15).
+
+The schema, as of August 11, 2022, looks like this:
+
+![](schema-aug-11.png)
