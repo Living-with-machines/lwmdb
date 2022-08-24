@@ -464,6 +464,6 @@ def clear_cache(dir):
     y = input(
         f"Do you want to erase the cache path now that the files have been generated ({Path(dir).absolute()})? [y/N]"
     )
-    if y.lower() == "n":
+    if y.lower() == "y":
         print("Clearing up the cache directory")
         [x.unlink() for x in Path(dir).glob("*.json")]
