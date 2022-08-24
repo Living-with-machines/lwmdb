@@ -56,29 +56,25 @@ class CensusFixture(Fixture):
 
             ##### first try
             try:
-                historic_county = HistoricCounty.objects.get(hcounty_label__iexact=x).pk
+                historic_county = HistoricCounty.objects.get(label__iexact=x).pk
             except:
                 historic_county = None
 
             try:
-                admin_county = AdminCounty.objects.get(admin_county_label__iexact=x).pk
+                admin_county = AdminCounty.objects.get(label__iexact=x).pk
             except:
                 admin_county = None
 
             try:
-                place_of_publication = Place.objects.get(place_label__iexact=x).pk
+                place = Place.objects.get(label__iexact=x).pk
             except:
-                place_of_publication = None
+                place = None
 
-            if (
-                historic_county != None
-                or admin_county != None
-                or place_of_publication != None
-            ):
-                return (x, historic_county, admin_county, place_of_publication)
+            if historic_county != None or admin_county != None or place != None:
+                return (x, historic_county, admin_county, place)
 
             ##### second try: without EAST/WEST/NORTH/SOUTH/WESTERN/SOUTHEAST/FIRST/CENTRAL
-            if historic_county == None and place_of_publication == None:
+            if historic_county == None and place == None:
                 for word in [
                     "east",
                     "north",
@@ -99,21 +95,21 @@ class CensusFixture(Fixture):
                         )
 
             try:
-                historic_county = HistoricCounty.objects.get(hcounty_label__iexact=x).pk
+                historic_county = HistoricCounty.objects.get(label__iexact=x).pk
             except:
                 historic_county = None
 
             try:
-                admin_county = AdminCounty.objects.get(admin_county_label__iexact=x).pk
+                admin_county = AdminCounty.objects.get(label__iexact=x).pk
             except:
                 admin_county = None
 
             try:
-                place_of_publication = Place.objects.get(place_label__iexact=x).pk
+                place = Place.objects.get(label__iexact=x).pk
             except:
-                place_of_publication = None
+                place = None
 
-            return (x, historic_county, admin_county, place_of_publication)
+            return (x, historic_county, admin_county, place)
 
         cats = ["REGCNTY", "REGDIST", "SUBDIST"]
 
@@ -122,11 +118,9 @@ class CensusFixture(Fixture):
             df[f"{cat}_rel"] = df[cat].apply(lambda x: get_rel(x))
             df[f"{cat}_historic_county_id"] = df[f"{cat}_rel"].apply(lambda x: x[1])
             df[f"{cat}_admin_county_id"] = df[f"{cat}_rel"].apply(lambda x: x[2])
-            df[f"{cat}_place_of_publication_id"] = df[f"{cat}_rel"].apply(
-                lambda x: x[3]
-            )
+            df[f"{cat}_place_id"] = df[f"{cat}_rel"].apply(lambda x: x[3])
 
-        df.drop([f"{cat}_rel" for cat in cats], axis=1)
+        df.drop([f"{cat}_rel" for cat in cats], axis=1, inplace=True)
 
         lst = []
         for record in json.loads(df.to_json(orient="records")):
