@@ -10,7 +10,7 @@ MOUNTPOINT = "../alto2txt"
 JISC_PAPERS = "../metadata/fixture-files/JISC papers.csv"
 REPORT_DIR = "../alto2txt2fixture-reports"
 MAX_ELEMENTS_PER_FILE = int(2e6)
-OUTPUT = "./fixtures"
+OUTPUT = "../fixtures"
 
 
 def parse_args(argv=None):
