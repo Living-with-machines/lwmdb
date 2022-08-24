@@ -6,10 +6,10 @@ metadata/gazetteer/fixtures/*.json
 alto2txt
 .ipynb_checkpoints
 *.ipynb
-alto2txt2fixture
 */census/fixtures/*.json
 */gazetteer/fixtures/*.json
 */mitchells/fixtures/*.json
 */newspapers/fixtures/*.json
 reports
 mitchells_publication_for_linking.csv
+alto2txt2fixture-reports
