@@ -13,3 +13,4 @@ alto2txt
 reports
 mitchells_publication_for_linking.csv
 alto2txt2fixture-reports
+fixtures/*.json
