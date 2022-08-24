@@ -17,6 +17,7 @@ class NewspapersModel(models.Model):
 
 
 class DataProvider(NewspapersModel):
+    # TODO: Change unique_together to solely unique on name?
     name = models.CharField(max_length=600, default=None)
     collection = models.CharField(max_length=600, default=None)
     source_note = models.CharField(max_length=255, default=None)
@@ -29,6 +30,7 @@ class DataProvider(NewspapersModel):
 
 
 class Digitisation(NewspapersModel):
+    # TODO: Change unique_together to solely unique on software?
     xml_flavour = models.CharField(max_length=255, default=None)
     software = models.CharField(max_length=600, default=None, null=True, blank=True)
     mets_namespace = models.CharField(
@@ -58,8 +60,8 @@ class Ingest(NewspapersModel):
 
 
 class Newspaper(NewspapersModel):
+    # TODO: publication_code should be unique, right?
     publication_code = models.CharField(max_length=600, default=None)
-
     title = models.CharField(max_length=255, default=None)
     location = models.CharField(max_length=255, default=None, blank=True, null=True)
     place_of_publication = models.ForeignKey(
@@ -75,6 +77,7 @@ class Newspaper(NewspapersModel):
 
 
 class Issue(NewspapersModel):
+    # TODO: issue_code should be unique, right?
     issue_code = models.CharField(max_length=600, default=None)
     issue_date = models.DateField()
     input_sub_path = models.CharField(max_length=255, default=None)
@@ -93,6 +96,7 @@ class Issue(NewspapersModel):
 
 
 class Item(NewspapersModel):
+    # TODO: item_code should be unique, right?
     # TODO: Should we set a max_length on the title field?
     item_code = models.CharField(max_length=600, default=None)
     title = models.TextField(default=None)
