@@ -245,7 +245,7 @@ class MitchellsFixture(Fixture):
             ["political_leaning_1", "political_leaning_2", "price_1", "price_2"], axis=1
         )
 
-        mitchells_entries.to_csv("(temp)mitchells_entries.csv")
+        # mitchells_entries.to_csv("(temp)mitchells_entries.csv")
 
         # Write the easy models the "normal" way
         models = [
