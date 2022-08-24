@@ -65,7 +65,7 @@ def reset_fixture_dir(output) -> None:
     y = input(
         f"This command will automatically empty the fixture directory ({Path(output).absolute()}). Do you want to proceed? [y/N]"
     )
-    if not y.lower() == "n":
+    if not y.lower() == "y":
         Path(output).mkdir(parents=True, exist_ok=True)
         return
 
