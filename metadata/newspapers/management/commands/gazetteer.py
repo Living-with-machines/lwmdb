@@ -230,7 +230,7 @@ class GazetteerFixture(Fixture):
             {"place_label": "label", "place_wikidata_id": "wikidata_id"}, axis=1
         )
 
-        place_table.to_csv("(temp)-place_table.csv")
+        # place_table.to_csv("(temp)-place_table.csv")
 
         historic_county_table = historic_county_table.set_index(
             "historic_county__pk"
