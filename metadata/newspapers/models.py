@@ -134,6 +134,11 @@ class Item(NewspapersModel):
         related_query_name="item",
     )
 
+    def save(self, *args, **kwargs):
+        # for consistency, we save all item_type in uppercase
+        self.item_type = str(self.item_type).upper()
+        return super(Item, self).save(*args, **kwargs)
+
     def __str__(self):
         return str(self.item_code)
 
