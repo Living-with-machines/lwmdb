@@ -20,3 +20,4 @@ scripts
 .vscode
 .env
 alto2txt2fixture/output/*
+wikidata_gazetteer.csv

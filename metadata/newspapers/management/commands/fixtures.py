@@ -12,7 +12,7 @@ from gazetteer.models import Place
 
 # where to find the most important files to build the fixtures
 AUTO_FILE_LOCATIONS = {
-    "wikidata_gazetteer": "fixture-files/wikidata_gazetteer.csv",
+    "wikidata_gazetteer": "fixture-files/wikidata_gazetteer_selected.csv",
     "dict_admin_counties": "fixture-files/dict_admin_counties.json",
     "dict_historic_counties": "fixture-files/dict_historic_counties.json",
     "dict_countries": "fixture-files/dict_countries.json",
