@@ -1,196 +1,102 @@
-# lib_metadata_db
+# Metadata database code
 
-A pip package containing database access functionality which can be imported in any project requiring this access.
+A package containing database access to the Living with Machines newspaper collection’s metadata.
 
-## Dependencies
+## Installation
 
-This project uses `poetry` as a package manager. You can read more about it at [`poetry-docs`](<https://python-poetry.org/docs/>). We recommend setting up `poetry` using `pyenv` to install specific versions of `python`, see [here](https://blog.jayway.com/2019/12/28/pyenv-poetry-saviours-in-the-python-chaos/) to manage python versions between local projects.
+### Clone repository to local drive
 
-### `Apache`
+Run the following command on your command line:
 
-For macOS, we recommend using `homebrew` to install the following:
-
-```shell
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+$ git clone git@github.com:Living-with-machines/lib_metadata_db.git
 ```
 
-For Apache on macOS, it is included the `xcode` command line tools, so run:
+Follow by:
 
-```shell
-xcode-select --install
+```
+$ cd lib_metadata_db
 ```
 
-followed by:
+Next, you will want to ensure that all the dependencies are installed and correctly up-to-date. 
 
-```shell
-brew install httpd
+### Dependencies
+
+This project uses `poetry` as a package manager. You can read more about it at [`poetry-docs`](https://python-poetry.org/docs/). We recommend setting up `poetry` using `pyenv` to install specific versions of `python`, see [here](https://blog.jayway.com/2019/12/28/pyenv-poetry-saviours-in-the-python-chaos/) to manage python versions between local projects.
+
+How to install the dependencies of the project?
+
+```sh
+$ poetry install
 ```
 
-### ``postgresql``
-
-On macOS, you can install postgres using `homebrew`:
-
-```shell
-brew install postgresql
+```sh
+$ poetry poetry run metadata/manage.py shell_plus --notebook
 ```
 
-followed by:
+### Put the database into place
 
-### ``postgis``
+Now you need to access the **correct** and **most up-to-date** version of the database and place that file into the correct 
 
-Instructions are taken from [this webpage](https://morphocode.com/how-to-install-postgis-on-mac-os-x/)
+**Correct version?** The correct version depends on whether you want to run the database with the entire collection (including BNA titles) or the more limited collection (excluding BNA titles).
 
-In the terminal run:
+**Most up-to-date version?** Make sure you access the latest database file. You will find it in the Azure storage space, under the `metadatadbfixtures` storage account and the `sandbox` blob container. ([Click this direct link to jump right to the correct container in the app.](storageexplorer://v=1&accountid=%2Fsubscriptions%2Fb8871872-a5e3-473f-b9b9-f4baaab6a9a0%2FresourceGroups%2Fmetadata%2Fproviders%2FMicrosoft.Storage%2FstorageAccounts%2Fmetadatadbfixtures&subscriptionid=b8871872-a5e3-473f-b9b9-f4baaab6a9a0&resourcetype=Azure.BlobContainer&resourcename=sandbox))
 
-```shell
-brew install postgis
+**Azure storage space?** Access it with the [Microsoft Azure Storage Explorer app](https://docs.microsoft.com/en-us/azure/vs-azure-tools-storage-manage-with-storage-explorer), or the [web portal](https://portal.azure.com/#home). You will notice that the file sizes for the database files are quite different in size:
+
+[![](docs/azure.png)](docs/azure.png)
+
+## Querying the database: Running the Django framework
+
+In order to run the Django framework inside a notebook, the dependency management above has added functionality to easily start up the system:
+
+In the folder where you find the `manage.py` file, run the following command:
+
+```
+$ python manage.py shell_plus --notebook
 ```
 
-then
+This should launch a normal Jupyter Notebook in your browser window where you can create any notebooks and access the database in different ways.
 
-```shell
-brew services start postgresql
-```
+**Important:** Before importing any models and working with the database data, you will want to run the `import django_initialiser` in a cell, which will set up all the dependencies needed.
 
-## Database setup
+*Note:* The package comes with a `getting-started.ipynb` notebook and a `explore-newspapers.ipynb` notebook, which both will give some overview of how one can access the database’s information and what one can do with it. They only scratch the surface of what is possible, of course, but will be a good entry point for someone who wants to orient themselves toward the database and the Django syntax for querying.
 
-These instructions are adapted from [this source](https://www.sqlshack.com/setting-up-a-postgresql-database-on-mac/):
+## Upgrade development version
 
-1. Log in to postgres service to execute PGSQL commands:
+In order to upgrade the current development version that you have, make sure that you have synchronised the repository to your local drive, and that you have dropped the correct and most up-to-date `db.sqlite3` file into the same folder as the `manage.py` file. (See above, under ”Put the database into place“, for further explanation.)
 
-    ```shell
-    psql postgres
-    ```
+**Step 1**: `git pull`
 
-2. Create a `user` with a `password` and a `database` in `postgresql`
+**Step 2**: `mv /path/to/updated-and-correct/db.sqlite3 /path/to/manage.py` — optionally, before you run this command, replace or rename the old db.sqlite3 file that may exist in the directory.
 
-    ```PGSQL
-    CREATE ROLE newspapers WITH LOGIN PASSWORD 'newspapers';
-    CREATE DATABASE newspapers_db;
-    GRANT ALL PRIVILEGES ON DATABASE newspapers_db TO newspapers;
-    ALTER ROLE newspapers SUPERUSER;
-    ```
+## Troubleshooting: Common issues
 
-3. Quit the current session:
+### `Error: ImproperlyConfigured: Requested setting INSTALLED_APPS, but settings are not configured.`
 
-    ```PGSQL
-    \q
-    ```
+**Problem:** I have received an error that looks like this:
 
-4. Reconnect with the new user’s credentials:
+> ImproperlyConfigured&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Traceback (most recent call last)  
+> ...  
+> ImproperlyConfigured: Requested setting INSTALLED_APPS, but settings are not configured. You must either define the environment variable DJANGO_SETTINGS_MODULE or call settings.configure() before accessing settings.
 
-    ```shell
-    psql -d newspapers_db -U newspapers
-    ```
+**Explanation:** You have likely attempted to import any of the models (`Newspaper`, `Item`, `Entry`, etc.) and forgotten about the `import django_initialiser` statement that is required to set up Django in a Jupyter Notebook.
 
-5. To check your user permissions use:
+**Solution:** You must run `import django_initialiser` before you attempt to import any models from the Django package.
 
-    ```PGSQL
-    \l
-    ```
+**If it does not work:** Are you running the notebook in the same folder as the `manage.py` script? Otherwise, try to move the notebook to that folder.
 
-    You should see something like this:
+### `NameError: name 'Newspaper' is not defined`
 
-    ```text
-    List of databases
-    Name      |  Owner   | Encoding |   Collate   |    Ctype    |    Access privileges
-    ---------------+----------+----------+-------------+-------------+-------------------------
-    postgres      | <your-user>    | UTF8     | en_GB.UTF-8 | en_GB.UTF-8 |
-    newspapers_db | postgres       | UTF8     | en_GB.UTF-8 | en_GB.UTF-8 | =Tc/postgres           +
-    |             |                |          |             | postgres=CTc/postgres  +
-    |             |                |          |             | newspapers=CTc/postgres
-    ```
+**Problem:** I have received an error that looks like this:
 
-    If so, great! use `\q` to quit the session and continue.
+> ---------------------------------------------------------------------------
+> NameError&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Traceback (most recent call last)  
+> ...  
+> NameError: name 'Newspaper' is not defined
 
-## ``poetry`` installation for managing dependencies
+**Explanation:** You have likely forgotten to import the correct model before you tried to run a query on one of the newspapers (or whichever model you’re trying to access).
 
-To install `python` packages via `poetry` run:
+**Solution:** Run `from newspapers.models import Newspaper` or follow the same pattern for whichever model you want to import. (See the database schema if you are unsure which model you want to access.)
 
-```shell
-poetry install
-```
-
-and to enter the virtual environment
-
-```shell
-poetry shell
-```
-
-Clone the '`.env.sample`' and name it '`.env`'. You will then need to insert your own credentials into it.
-
-## To create models for an app
-
-Make sure to specify the `APP_NAME` when making a migration to ensure that other changes inherited in your schema are not pushed to the database. The best way to do this is to `makemigrations` for each `APP_NAME` individually.
-
-```shell
-python lib_metadata_db/manage.py makemigrations newspapers
-```
-
-If `APP_NAME` not specified, migrations for all `INSTALLED_APPS` would be created
-
-```shell
-python lib_metadata_db/manage.py makemigrations
-```
-
-## Creating/Updating tables in the database
-
-Make sure to specify the `APP_NAME` (in our initial table `APP_NAME=newspapers`) and the database (in our initial instance `DATABASE_NAME=newspapers_db`) when migrating the changes to ensure that the migrations from other apps in the project are not pushed to the database.
-
-```shell
-python lib_metadata_db/manage.py migrate newspapers --database=newspapers_db
-```
-
-1. To see the tables login with your newly created `user`:
-
-    ```shell
-    psql -d newspapers_db -U newspapers
-    ```
-
-2. and view the tables you created:
-
-    ```PGSQL
-    \dt
-    ```
-
-## Migrating models across all databases
-
-1. run the following from the command line:
-
-    ```shell
-    psql newspapers_db -c "GRANT ALL ON ALL TABLES IN SCHEMA public to newspapers;"
-    psql newspapers_db -c "GRANT ALL ON ALL SEQUENCES IN SCHEMA public to newspapers;"
-    psql newspapers_db -c "GRANT ALL ON ALL FUNCTIONS IN SCHEMA public to newspapers;"
-    ```
-
-2. Then go ahead and migrate your new models in whichever database, such as
-
-    ```shell
-    python lib_metadata_db/manage.py makemigrations press_directories
-    ```
-
-## View schema and tables
-
-Download your favourite Database manager tool! The following example uses [`DBeaver`](https://dbeaver.io/download/) on a Mac:
-
-```shell
-brew install --cask dbeaver-community
-```
-
-Open `DBeaver` and add the credentials to connect your local instance of the database using the credentials in your ``.env`` file. You should then be able to navigate within ``newspapers_db`` to "Schemas" -> "public" -> "tables" to see the migrated models as tables.
-
-## Importing Data
-
-In order to import new data into a table in the database:
-
-```shell
-$ python lib_metadata_db/manage.py <name_of_import_script>
-```
-
-## Schema Diagram
-
-View a diagram of the database [here](https://dbdiagram.io/d/62bb46ba69be0b672c5d2a15).
-
-The schema, as of August 11, 2022, looks like this:
-
-![](schema-aug-11.png)
+**If it does not work:** Are you running the notebook in the same folder as the `manage.py` script? Otherwise, try to move the notebook to that folder.

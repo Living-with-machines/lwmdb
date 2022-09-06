@@ -1,22 +1,21 @@
 [tool.poetry]
-name = "lwm-metadata-db"
+name = "metadata"
 version = "0.1.0"
-description = ""
-authors = ["ChristinaLast <christina.last@outlook.com>"]
+description = "Metadata database management through Django for Living with Maachines."
+authors = ["Kalle Westerling <kalle.westerling@bl.uk>"]
 
 [tool.poetry.dependencies]
-python = "^3.9"
-Django = "^3.2.13"
-mod-wsgi = "^4.9.0"
-python-dotenv = "^0.19.2"
-beautifulsoup4 = "^4.11.1"
-lxml = "^4.8.0"
+python = ">=3.8, <3.10"
+django = "^4.0.7"
+seaborn = "^0.11.2"
+pandas = "^1.4.1"
+ipython = "^8.4.0"
+jupyter = "^1.0.0"
+django-pandas = "^0.6.6"
+django-extensions = "^3.2.0"
+colorama = "^0.4.5"
 
 [tool.poetry.dev-dependencies]
-pytest = "^5.2"
-black = "^21.7b0"
-flake8 = "^3.9.2"
-psycopg2-binary = "^2.9.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
