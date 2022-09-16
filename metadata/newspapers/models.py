@@ -94,6 +94,17 @@ class Issue(NewspapersModel):
     def __str__(self):
         return str(self.issue_code)
 
+    @property
+    def url(self):
+        """
+        Return a URL similar to:
+        https://www.britishnewspaperarchive.co.uk/viewer/BL/0000347/18890102/001/0001
+
+        TODO: This will not generate a correct URL if there is no date available.
+        """
+
+        return f"https://www.britishnewspaperarchive.co.uk/viewer/BL/{self.newspaper.publication_code}/{str(self.issue_date).replace('-', '')}/001/0001"
+
 
 class Item(NewspapersModel):
     # TODO: item_code should be unique, right?
