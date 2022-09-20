@@ -209,6 +209,8 @@ class Item(NewspapersModel):
 
         ##############################################################
         # for now, let's put some randomly chosen articles out there
+        # THIS IS PLACEHOLDER - AND THE REST CAN BE REMOVED FROM THIS FUNCTION
+        # just make sure it returns a str
         ##############################################################
         texts = [
             """
