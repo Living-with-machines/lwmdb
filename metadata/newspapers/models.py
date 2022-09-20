@@ -168,7 +168,7 @@ class Item(NewspapersModel):
         text = self.extract_fulltext()
         return text
 
-    def extract_fulltext(self, *args, **kwargs):
+    def extract_fulltext(self, *args, **kwargs) -> str:
         """
         TODO: This method is still under development.
         """
