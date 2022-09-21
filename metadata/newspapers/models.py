@@ -17,7 +17,7 @@ class NewspapersModel(models.Model):
 
 
 class DataProvider(NewspapersModel):
-    # TODO: Change unique_together to solely unique on name?
+    # TODO #48: Change unique_together to solely unique on name?
     name = models.CharField(max_length=600, default=None)
     collection = models.CharField(max_length=600, default=None)
     source_note = models.CharField(max_length=255, default=None)
@@ -30,7 +30,7 @@ class DataProvider(NewspapersModel):
 
 
 class Digitisation(NewspapersModel):
-    # TODO: Change unique_together to solely unique on software?
+    # TODO #48: Change unique_together to solely unique on software?
     xml_flavour = models.CharField(max_length=255, default=None)
     software = models.CharField(max_length=600, default=None, null=True, blank=True)
     mets_namespace = models.CharField(
@@ -60,7 +60,7 @@ class Ingest(NewspapersModel):
 
 
 class Newspaper(NewspapersModel):
-    # TODO: publication_code should be unique, right?
+    # TODO #48: publication_code should be unique, right?
     publication_code = models.CharField(max_length=600, default=None)
     title = models.CharField(max_length=255, default=None)
     location = models.CharField(max_length=255, default=None, blank=True, null=True)
@@ -77,7 +77,7 @@ class Newspaper(NewspapersModel):
 
 
 class Issue(NewspapersModel):
-    # TODO: issue_code should be unique, right?
+    # TODO #48: issue_code should be unique, right?
     issue_code = models.CharField(max_length=600, default=None)
     issue_date = models.DateField()
     input_sub_path = models.CharField(max_length=255, default=None)
@@ -100,15 +100,15 @@ class Issue(NewspapersModel):
         Return a URL similar to:
         https://www.britishnewspaperarchive.co.uk/viewer/BL/0000347/18890102/001/0001
 
-        TODO: This will not generate a correct URL if there is no date available.
+        TODO #48: This will not generate a correct URL if there is no date available.
         """
 
         return f"https://www.britishnewspaperarchive.co.uk/viewer/BL/{self.newspaper.publication_code}/{str(self.issue_date).replace('-', '')}/001/0001"
 
 
 class Item(NewspapersModel):
-    # TODO: item_code should be unique, right?
-    # TODO: Should we set a max_length on the title field?
+    # TODO #48: item_code should be unique, right?
+    # TODO #48: Should we set a max_length on the title field?
     item_code = models.CharField(max_length=600, default=None)
     title = models.TextField(default=None)
     item_type = models.CharField(max_length=600, default=None, blank=True, null=True)
@@ -181,7 +181,7 @@ class Item(NewspapersModel):
 
     def extract_fulltext(self, *args, **kwargs) -> str:
         """
-        TODO: This method is still under development.
+        TODO #48: This method is still under development.
         """
         if self.FULLTEXT_METHOD == "download":
             download_dir = (
