@@ -207,7 +207,7 @@ class NewspapersFixture(Fixture):
                                 {json.dumps(issue) for issue in current_issues}
                             )
 
-                            # TODO: this file should be a .jsonl file
+                            # TODO #48: this file should be a .jsonl file
                             with open(
                                 (cache_path / Path(f"issue/{nlp}/issues.json")), "w+"
                             ) as f:
