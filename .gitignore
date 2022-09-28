@@ -14,9 +14,10 @@ reports
 mitchells_publication_for_linking.csv
 alto2txt2fixture-reports
 */fixtures/*.json
-metadata/poetry.lock
+poetry.lock
 lib_metadata_db
 scripts
+.DS_Store
 .vscode
 .env
 alto2txt2fixture/output/*
