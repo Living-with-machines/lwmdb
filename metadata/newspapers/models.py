@@ -1,4 +1,6 @@
 from pathlib import Path
+from zipfile import ZipFile
+import os
 import random
 
 from django.db import models
@@ -157,27 +159,76 @@ class Item(NewspapersModel):
     def __str__(self):
         return str(self.item_code)
 
+    HOME_DIR = Path.home()
+    DEFAULT_DOWNLOAD_DIR = HOME_DIR / "metadata-db/"
+    ARCHIVE_SUBDIR = "archives"
+    EXTRACTED_SUBDIR = "articles"
+    FULLTEXT_METHOD = "download" # TODO: Make this an optional env variable.
+    FULLTEXT_CONTAINER_SUFFIX = "-alto2txt"
+    FULLTEXT_STORAGE_ACCOUNT_URL = "https://alto2txt.blob.core.windows.net"
+    
+    DOWNLOAD_DIR_ENV_VARIABLE = 'FULLTEXT_DOWNLOAD_DIR'
+    SAS_ENV_VARIABLE = 'FULLTEXT_SAS_TOKEN'
+
+    @property
+    def download_dir(self):
+        """Path to the download directory for full text data."""
+        dir = os.getenv(self.DOWNLOAD_DIR_ENV_VARIABLE)
+        if dir is None:
+            dir = self.DEFAULT_DOWNLOAD_DIR
+        return Path(dir)
+
+    @property
+    def text_archive_dir(self):
+        """Path to the storage directory for full text archives."""
+        return self.download_dir / self.ARCHIVE_SUBDIR
+
+    @property
+    def text_extracted_dir(self):
+        """Path to the storage directory for extracted full text files."""
+        return self.download_dir / self.EXTRACTED_SUBDIR
+
     @property
     def zip_file(self):
-        zip_file = f"{self.issue.newspaper.publication_code}_plaintext.zip"
-
-        return zip_file
+        """Filename of the zip archive containing the full text for this item."""
+        return f"{self.issue.newspaper.publication_code}_plaintext.zip"
 
     @property
-    def text_file(self):
-        path = self.issue.input_sub_path.replace(
-            f"{self.issue.newspaper.publication_code}/", ""
-        )
-        return f"{path}/{self.input_filename}"
+    def text_container(self):
+        """Azure blob storage container containing the Item full text."""
+        return f"{self.data_provider.name}{self.FULLTEXT_CONTAINER_SUFFIX}"
 
-    HOME_DIR = Path.home()
-    DOWNLOAD_DIR = HOME_DIR / "metadata-db/"
-    FULLTEXT_METHOD = "download"
+    # @property
+    # def text_file(self):
+    #     path = self.issue.input_sub_path.replace(
+    #         f"{self.issue.newspaper.publication_code}/", ""
+    #     )
+    #     return f"{path}/{self.input_filename}"
+
+    @property
+    def text_path(self):
+        """Relative path (including filename) to the full text file
+        for this Item, both from the root of the zip archive and
+        from the DOWNLOAD_DIR (once downloaded and extracted)."""
+        return Path(self.issue.input_sub_path) / self.input_filename
 
     @property
     def fulltext(self):
-        text = self.extract_fulltext()
-        return text
+        return self.extract_fulltext()
+
+    def is_downloaded(self):
+        """Check whether a text archive has already been downloaded."""
+
+        file = self.text_archive_dir / self.zip_file
+        if not os.path.exists(file):
+            return False
+        return os.path.getsize(file) != 0
+
+    def extract_fulltext_file(self):
+
+        file = self.text_archive_dir / self.zip_file
+        with ZipFile(file, 'r') as zip_ref:
+            zip_ref.extract(self.text_path())
 
     def extract_fulltext(self, *args, **kwargs) -> str:
         """
@@ -185,9 +236,9 @@ class Item(NewspapersModel):
         """
         if self.FULLTEXT_METHOD == "download":
             download_dir = (
-                Path(self.DOWNLOAD_DIR)
-                if not isinstance(self.DOWNLOAD_DIR, Path)
-                else self.DOWNLOAD_DIR
+                Path(self.DEFAULT_DOWNLOAD_DIR)
+                if not isinstance(self.DEFAULT_DOWNLOAD_DIR, Path)
+                else self.DEFAULT_DOWNLOAD_DIR
             )
             download_dir.mkdir(parents=True, exist_ok=True)
 
