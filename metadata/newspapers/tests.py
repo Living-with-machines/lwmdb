@@ -39,7 +39,6 @@ class ItemTestCase(TestCase):
             data_provider=data_provider
         )
 
-    @mock.patch.dict(environ, {"FULLTEXT_DOWNLOAD_DIR": "/data/fulltext" })
     def test_item_parameters(self):
         
         item = Item.objects.get(item_code="0003040-18940905-art0030")
@@ -50,21 +49,26 @@ class ItemTestCase(TestCase):
         self.assertEqual(item.text_path, Path("0003040/1894/0905/0003040_18940905_art0030.txt"))
         self.assertEqual(item.text_container, "lwm-alto2txt")
 
-        self.assertEqual(item.download_dir, Path("/data/fulltext/"))
-        self.assertEqual(item.text_archive_dir, Path("/data/fulltext/archives"))
-        self.assertEqual(item.text_extracted_dir, Path("/data/fulltext/articles"))
+        self.assertEqual(item.download_dir, Path.home() / "metadata-db/")
+        self.assertEqual(item.text_archive_dir, Path.home() / "metadata-db/archives")
+        self.assertEqual(item.text_extracted_dir, Path.home() / "metadata-db/articles")
 
+        Item.DOWNLOAD_DIR = "/data/fulltext"
+        self.assertEqual(item.download_dir, Path("/data/fulltext"))
+        self.assertEqual(item.text_archive_dir, Path("/data/fulltext") / "archives")
+        self.assertEqual(item.text_extracted_dir, Path("/data/fulltext") / "articles")
 
     @patchfs
-    @mock.patch.dict(environ, {"FULLTEXT_DOWNLOAD_DIR": "/data/fulltext" })
     def test_is_downloaded(self, fs):
 
         item = Item.objects.get(item_code="0003040-18940905-art0030")
+
         self.assertFalse(item.is_downloaded())
 
         # Use pyfakefs to fake the filesystem and create the archive file.
-        fs.create_dir('/data/fulltext/archives/')
-        fs.create_file('/data/fulltext/archives/0003040_plaintext.zip', contents="dummy")
+        self.assertEqual(item.text_archive_dir, Path.home() / "metadata-db/archives")
+        fs.create_dir(item.text_archive_dir)
+        fs.create_file(item.text_archive_dir / '0003040_plaintext.zip', contents="dummy")
 
         self.assertTrue(item.is_downloaded())
 

@@ -160,23 +160,19 @@ class Item(NewspapersModel):
         return str(self.item_code)
 
     HOME_DIR = Path.home()
-    DEFAULT_DOWNLOAD_DIR = HOME_DIR / "metadata-db/"
+    DOWNLOAD_DIR = HOME_DIR / "metadata-db/"
     ARCHIVE_SUBDIR = "archives"
     EXTRACTED_SUBDIR = "articles"
-    FULLTEXT_METHOD = "download" # TODO: Make this an optional env variable.
+    FULLTEXT_METHOD = "download"
     FULLTEXT_CONTAINER_SUFFIX = "-alto2txt"
     FULLTEXT_STORAGE_ACCOUNT_URL = "https://alto2txt.blob.core.windows.net"
     
-    DOWNLOAD_DIR_ENV_VARIABLE = 'FULLTEXT_DOWNLOAD_DIR'
     SAS_ENV_VARIABLE = 'FULLTEXT_SAS_TOKEN'
 
     @property
     def download_dir(self):
         """Path to the download directory for full text data."""
-        dir = os.getenv(self.DOWNLOAD_DIR_ENV_VARIABLE)
-        if dir is None:
-            dir = self.DEFAULT_DOWNLOAD_DIR
-        return Path(dir)
+        return Path(self.DOWNLOAD_DIR)
 
     @property
     def text_archive_dir(self):
@@ -236,9 +232,9 @@ class Item(NewspapersModel):
         """
         if self.FULLTEXT_METHOD == "download":
             download_dir = (
-                Path(self.DEFAULT_DOWNLOAD_DIR)
-                if not isinstance(self.DEFAULT_DOWNLOAD_DIR, Path)
-                else self.DEFAULT_DOWNLOAD_DIR
+                Path(self.DOWNLOAD_DIR)
+                if not isinstance(self.DOWNLOAD_DIR, Path)
+                else self.DOWNLOAD_DIR
             )
             download_dir.mkdir(parents=True, exist_ok=True)
 
