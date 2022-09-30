@@ -1,6 +1,3 @@
-from pathlib import Path
-import random
-
 from django.db import models
 from django_pandas.managers import DataFrameManager
 from gazetteer.models import Place
