@@ -14,6 +14,7 @@ jupyter = "^1.0.0"
 django-pandas = "^0.6.6"
 django-extensions = "^3.2.0"
 colorama = "^0.4.5"
+azure-storage-blob = "^12.13.0"
 
 [tool.poetry.dev-dependencies]
 pyfakefs = "^4.5.1"
