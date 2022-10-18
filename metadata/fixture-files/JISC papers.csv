@@ -6,16 +6,16 @@ Baner ac Amserau Cymru,13906329,37,JISC1,Baner,BNER,5,Oct,1859,29,Dec,1900
 The Bath Chronicle and Weekly Gazette,13918643,220,JISC2,Bath Chronicle and Weekly Gazette,BHCH,25,Dec.,1760,19,Nov.,1761
 Pope's Bath Chronicle and Weekly Gazette,13918644,211,JISC2,Bath Chronicle and Weekly Gazette,BHCH,20,Nov,1761,9,Feb,1764
 Pope's Bath Chronicle,7866889,555,JISC2,Bath Chronicle and Weekly Gazette,BHCH,16,Feb,1764,31,Dec,1767
-Archer's Bath Chronicle,13918645,195,JISC2,Bath Chronicle and Weekly Gazette,BHCH,18,Aug,1768,12,Sept,1768
-"Bath and Bristol Chronicle, The",13918646,219,JISC2,Bath Chronicle and Weekly Gazette,BHCH,29,Sept,1768,18,Jan,1770
-R. Cruttwell's Bath and Bristol Chronicle,13918647,219,JISC2,Bath Chronicle and Weekly Gazette,BHCH,25,Jan,1770,6,Sept,1770
-"Bath Chronicle, The",13918648,187,JISC2,Bath Chronicle and Weekly Gazette,BHCH,13,Sept,1770,27,Dec,1900
+Archer's Bath Chronicle,13918645,195,JISC2,Bath Chronicle and Weekly Gazette,BHCH,18,Aug,1768,12,Sep,1768
+"Bath and Bristol Chronicle, The",13918646,219,JISC2,Bath Chronicle and Weekly Gazette,BHCH,29,Sep,1768,18,Jan,1770
+R. Cruttwell's Bath and Bristol Chronicle,13918647,219,JISC2,Bath Chronicle and Weekly Gazette,BHCH,25,Jan,1770,6,Sep,1770
+"Bath Chronicle, The",13918648,187,JISC2,Bath Chronicle and Weekly Gazette,BHCH,13,Sep,1770,27,Dec,1900
 Belfast News-Letter,13943744,38,JISC1,Belfast News-Letter,BNWL,1,Jan,1828,31,Dec,1900
 Birmingham Daily Post,13943727,33,JISC1,Birmingham Daily Post,BDPO,4,Dec,1857,29,Sep,1900
 "Blackburn Standard, The",13896863,151,JISC2,Blackburn Standard,BLSD,21,Jan,1835,30,Dec,1876
-"Blackburn Standard: Darwen Observer, and North-East Lancashire Advertiser, The",13896864,152,JISC2,Blackburn Standard,BLSD,6,Jan,1877,29,Sept,1888
-"Blackburn Standard and Weekly Express, The",13896865,153,JISC2,Blackburn Standard,BLSD,6,Oct,1888,2,Sept,1893
-"Weekly Standard and Express, The",13896866,154,JISC2,Blackburn Standard,BLSD,9,Sept,1893,29,Dec,1900
+"Blackburn Standard: Darwen Observer, and North-East Lancashire Advertiser, The",13896864,152,JISC2,Blackburn Standard,BLSD,6,Jan,1877,29,Sep,1888
+"Blackburn Standard and Weekly Express, The",13896865,153,JISC2,Blackburn Standard,BLSD,6,Oct,1888,2,Sep,1893
+"Weekly Standard and Express, The",13896866,154,JISC2,Blackburn Standard,BLSD,9,Sep,1893,29,Dec,1900
 "Bradford Observer, The",13897113,155,JISC2,Bradford Observer,BROR,6,Feb ,1834,31,Dec,1835
 Brighton Patriot,13897269,39,JISC1,Brighton Patriot,BRPT,24,Feb,1835,28,Jun,1836
 Brighton Patriot and South of England Free Press,13897270,40,JISC1,Brighton Patriot,BRPT,5,Jul,1836,13,Aug,1839
@@ -32,7 +32,7 @@ Champion,13928341,41,JISC1,Champion,CHPN,18,Sep,1836,14,Nov,1836
 Chartist,13928645,44,JISC1,Chartist,CHTT,2,Feb,1839,7,Jul,1839
 Chartist Circular,13909641,48,JISC1,Chartist Circular,CTCR,28,Sep,1839,18,Sep,1841
 Cheshire Observer and General Advertiser: for Cheshire and North Wales,13890479,158,JISC2,Cheshire Observer,CHOR,15,May,1854,27,Jun,1863
-"Cheshire Observer and Chester, Birkenhead and North Wales Times",13890480,485,JISC2,Cheshire Observer,CHOR,4,July,1863,28,Jan,1871
+"Cheshire Observer and Chester, Birkenhead and North Wales Times",13890480,485,JISC2,Cheshire Observer,CHOR,4,Jul,1863,28,Jan,1871
 Cheshire Observer,13943810,157,JISC2,Cheshire Observer,CHOR,4,Feb,1871,29,Dec,1900
 Cobbett's Annual Register,13911140,49,JISC1,Cobbet's Weekly Political Register,CWPR,1,Jan,1802,3,Mar,1804
 Cobbett's Weekly Political Register,13911141,50,JISC1,Cobbet's Weekly Political Register,CWPR,17,Mar,1804,17,Sep,1836
@@ -50,7 +50,7 @@ Dundee Courier and Daily Argus,13909376,161,JISC2,Dundee Courier,DUCR,22,Apr,186
 "Dundee Courier & Argus, The",13909379,269,JISC2,Dundee Courier,DUCR,12,Mar,1873,15,Nov,1899
 "Courier and Argus, The",13909380,164,JISC2,Dundee Courier,DUCR,16,Nov,1899,29,Dec,1900
 "Era, The",13924614,53,JISC1,"Era, The",ERLN,30,Sep,1838,29,Dec,1900
-"Essex Standard, The",13891100,165,JISC2,Essex Standard,ESSD,7,Jan,1831,16,July,1892
+"Essex Standard, The",13891100,165,JISC2,Essex Standard,ESSD,7,Jan,1831,16,Jul,1892
 "Essex County Standard West Suffolk Gazette, and Eastern Counties Advertiser, The",13891101,166,JISC2,Essex Standard,ESSD,23,Jul,1892,29,Dec,1900
 Examiner,13901239,54,JISC1,Examiner,EXLN,3,Jan,1808,26,Feb,1881
 "Public Register, or, Freeman's Journal",13890955,55,JISC1,Freeman's Journal,FRJO,1,Jan,1800,27,Apr,1802
@@ -59,9 +59,9 @@ Freeman's Journal and Daily Commercial Advertiser,13890956,56,JISC1,Freeman's Jo
 Glasgow Herald,13943715,60,JISC1,Glasgow Herald,GWHD,4,Feb,1820,31,Dec,1900
 Goleuad,13905401,58,JISC1,Goleuad,GLAD,30,Oct,1869,31,Dec,1900
 Graphic,13904695,57,JISC1,Graphic,GCLN,1,Jan,1870,29,Dec,1900
-Southampton Herald and Isle of Wight Gazette,13895050,182,JISC2,Hampshire Advertiser,SOHD,28,July,1823,10,Jan,1825
-"Southampton Town & County Herald, etc,",13895051,492,JISC2,Hampshire Advertiser,SOHD,17,Jan,1825,24,Sept,1827
-"Hampshire Advertiser, Royal Yacht Club Gazette, etc.",13895052,493,JISC2,Hampshire Advertiser,SOHD,29,Sept,1827,15,Oct,1831
+Southampton Herald and Isle of Wight Gazette,13895050,182,JISC2,Hampshire Advertiser,SOHD,28,Jul,1823,10,Jan,1825
+"Southampton Town & County Herald, etc,",13895051,492,JISC2,Hampshire Advertiser,SOHD,17,Jan,1825,24,Sep,1827
+"Hampshire Advertiser, Royal Yacht Club Gazette, etc.",13895052,493,JISC2,Hampshire Advertiser,SOHD,29,Sep,1827,15,Oct,1831
 "Hampshire Advertiser & Salisbury Guardian , etc.",13895053,494,JISC2,Hampshire Advertiser,SOHD,22,Oct,1831,28,Jan,1860
 "Hampshire Advertiser, etc., The",13895054,495,JISC2,Hampshire Advertiser,SOHD,4,Feb,1860,29,Dec,1900
 Portsmouth Telegraph or Mottley's Naval and Military Journal,13924136,66,JISC1,Hampshire/Portsmouth Telegraph,HPTE,1,Jan,1800,8,Feb,1802
@@ -87,11 +87,11 @@ Oxford Journal and County News,13924044,91,JISC1,Jackson's Oxford Journal,JOJL,4
 Jackson's Oxford Journal,13924043,73,JISC2,Jackson's Oxford Journal,JOJL,5,May,1753,28,Dec,1799
 "Lancaster Gazetteer, and General Advertiser for Lancashire, Westmoreland, etc. The,",13898238,171,JISC2,Lancaster Gazette,LAGE,20,Jun,1801,24,Dec,1803
 "Lancaster gazette, etc. The,",13898239,488,JISC2,Lancaster Gazette,LAGE,31,Dec,1803,30,Jun,1894
-"Leeds Intelligencer, The",13889898,236,JISC2,Leeds Intelligencer,LSIR,2,July,1754,21,Aug,1809
+"Leeds Intelligencer, The",13889898,236,JISC2,Leeds Intelligencer,LSIR,2,Jul,1754,21,Aug,1809
 Wright's Leeds Intelligencer,13889899,268,JISC2,Leeds Intelligencer,LSIR,28,Aug,1809,28,Dec,1818
-"Leeds Intelligencer and Yorkshire General Advertiser, The",13889900,193,JISC2,Leeds Intelligencer,LSIR,4,Jan,1819,3,June,1866
+"Leeds Intelligencer and Yorkshire General Advertiser, The",13889900,193,JISC2,Leeds Intelligencer,LSIR,4,Jan,1819,3,Jun,1866
 Leeds Mercury,13898320,76,JISC1,Leeds Mercury,LEMR,3,Jan,1807,31,Dec,1900
-"Leicester Chronicle: or, Commercial and Agricultural Advertiser, The",13893741,172,JISC2,Leicester Chronicle,LECH,6,Jan,1827,24,Sept,1864
+"Leicester Chronicle: or, Commercial and Agricultural Advertiser, The",13893741,172,JISC2,Leicester Chronicle,LECH,6,Jan,1827,24,Sep,1864
 Leicester Chronicle and the Leicestershire Mercury,13893742,173,JISC2,Leicester Chronicle,LECH,1,Oct,1864,29,Dec,1900
 Liverpool Mercury,13898683,81,JISC1,Liverpool Mercury,LVMR,5,Jul,1811,31,Dec,1900
 Lloyd's Illustrated Newspaper,13912159,77,JISC1,Lloyd's Illustrated Newspaper,LINP,27,Nov,1842,8,Jan,1843
@@ -122,23 +122,23 @@ Nottinghamshire Guardian and Midland Counties Advertiser,13900122,176,JISC2,Nott
 Preston Chronicle and Lancashire Advertiser,13900633,94,JISC1,Preston Chronicle,PNCH,10,Feb,1844,30,Dec,1893
 Reynolds's Weekly Newspaper,13915757,95,JISC1,Reynold's Newspaper,RDNP,5,May,1850,9,Feb,1851
 Reynolds's Newspaper,13915758,96,JISC1,Reynold's Newspaper,RDNP,16,Feb,1851,30,Dec,1900
-"Royal Cornwall Gazette & Falmouth Packet, etc., The",13908876,179,JISC2,Royal Cornwall Gazette,COGE,2,July,1803,10,Dec,1803
+"Royal Cornwall Gazette & Falmouth Packet, etc., The",13908876,179,JISC2,Royal Cornwall Gazette,COGE,2,Jul,1803,10,Dec,1803
 "Royal Cornwall Gazette, Falmouth Packet & Plymouth Journal",13908877,177,JISC2,Royal Cornwall Gazette,COGE,16,Mar,1811,29,Aug,1835
-"Cornwall Royal Gazette, Falmouth Packet and Plymouth Journal, The",13908878,178,JISC2,Royal Cornwall Gazette,COGE,4,Sept,1835,29,Dec,1848
+"Cornwall Royal Gazette, Falmouth Packet and Plymouth Journal, The",13908878,178,JISC2,Royal Cornwall Gazette,COGE,4,Sep,1835,29,Dec,1848
 "Royal Cornwall Gazette, etc.",13908879,180,JISC2,Royal Cornwall Gazette,COGE,5,Jan,1849,27,Dec,1900
 "Sheffield Independent: and Commercial Register, The",13907843,490,JISC2,Sheffield Indenpdent,SHIN,11,Dec,1819,2,Dec,1820
 "Sheffield Independent, and Yorkshire & Derbyshire Advertiser, The",13907844,491,JISC2,Sheffield Independent,SHIN,9,Dec,1820,16,Mar,1839
 Sheffield & Rotherham Independent,13907845,181,JISC2,Sheffield Independent,SHIN,23,Mar,1839,30,Dec,1900
 Southern Star,13916087,97,JISC1,Southern Star,SNSR,19,Jan,1840,12,Jul,1840
 "Standard, The",13890794,183,JISC2,"Standard, The",SDLN,21,May,1827,31,Dec,1900
-"Star, The   (Guernsey)",13907577,184,JISC2,Star (Guernsey),STGY,15,July,1869,29,Dec,1900
+"Star, The   (Guernsey)",13907577,184,JISC2,Star (Guernsey),STGY,15,Jul,1869,29,Dec,1900
 Trewman's Exeter Flying Post,13906716,103,JISC1,Trewman's Exeter Flying Post,TEFP,1,Jan,1807,29,Dec,1900
 Western Mail,13890612,104,JISC1,Western Mail,WMCF,1,May,1869,31,Dec,1900
 Berrow's Worcester Journal,13943616,150,JISC2,Worcester Journal,WOJL,3,Jan,1822,26,Dec,1896
 "Wrexham and Denbigh Weekly Advertiser, and Cheshire, Shropshire, Denbighshire, Flintshire, and North Wales Chronicle",13901374,185,JISC2,Wrexham Advertiser,WRWA,11,Mar,1854,22,Aug,1857
 Wrexam Advertiser,13901375,496,JISC2,Wrexham Advertiser,WRWA,29,Aug,1857,29,Dec,1900
 "York Herald, The",13901440,186,JISC2,York Herald,YOHD,3,Jan,1801,2,Nov,1811
-"York Herald, County and General Advertiser, The",13901441,497,JISC2,York Herald,YOHD,9,Nov,1811,24,July,1813
-"York Herald and General Advertiser, The",13901442,498,JISC2,York Herald,YOHD,31,July,1813,21,Oct,1854
+"York Herald, County and General Advertiser, The",13901441,497,JISC2,York Herald,YOHD,9,Nov,1811,24,Jul,1813
+"York Herald and General Advertiser, The",13901442,498,JISC2,York Herald,YOHD,31,Jul,1813,21,Oct,1854
 "York Herald, The",13901443,499,JISC2,York Herald,YOHD,28,Oct,1854,31,Dec,1889
-"Yorkshire Herald, and the York Herald, The",13901444,500,JISC2,York Herald,YOHD,1,Jan,1890,29,Sept,1900
+"Yorkshire Herald, and the York Herald, The",13901444,500,JISC2,York Herald,YOHD,1,Jan,1890,29,Sep,1900
