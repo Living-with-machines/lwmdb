@@ -1,9 +1,12 @@
 from pathlib import Path
-import random
+from zipfile import ZipFile
+import os
 
 from django.db import models
 from django_pandas.managers import DataFrameManager
 from gazetteer.models import Place
+
+from azure.storage.blob import BlobClient
 
 
 class NewspapersModel(models.Model):
@@ -157,101 +160,170 @@ class Item(NewspapersModel):
     def __str__(self):
         return str(self.item_code)
 
-    @property
-    def zip_file(self):
-        zip_file = f"{self.issue.newspaper.publication_code}_plaintext.zip"
-
-        return zip_file
-
-    @property
-    def text_file(self):
-        path = self.issue.input_sub_path.replace(
-            f"{self.issue.newspaper.publication_code}/", ""
-        )
-        return f"{path}/{self.input_filename}"
-
     HOME_DIR = Path.home()
     DOWNLOAD_DIR = HOME_DIR / "metadata-db/"
+    ARCHIVE_SUBDIR = "archives"
+    EXTRACTED_SUBDIR = "articles"
     FULLTEXT_METHOD = "download"
+    FULLTEXT_CONTAINER_SUFFIX = "-alto2txt"
+    FULLTEXT_CONTAINER_PATH = "plaintext/"
+    FULLTEXT_STORAGE_ACCOUNT_URL = "https://alto2txt.blob.core.windows.net"
+
+    SAS_ENV_VARIABLE = "FULLTEXT_SAS_TOKEN"
 
     @property
-    def fulltext(self):
-        text = self.extract_fulltext()
-        return text
+    def download_dir(self):
+        """Path to the download directory for full text data.
+
+        The DOWNLOAD_DIR class attribute contains the directory under which
+        full text data will be stored. Users can change it by typing:
+        Item.DOWNLOAD_DIR = "/path/to/wherever/"
+        """
+        return Path(self.DOWNLOAD_DIR)
+
+    @property
+    def text_archive_dir(self):
+        """Path to the storage directory for full text archives."""
+        return self.download_dir / self.ARCHIVE_SUBDIR
+
+    @property
+    def text_extracted_dir(self):
+        """Path to the storage directory for extracted full text files."""
+        return self.download_dir / self.EXTRACTED_SUBDIR
+
+    @property
+    def zip_file(self):
+        """Filename of the zip archive containing the full text for this item."""
+        return f"{self.issue.newspaper.publication_code}_plaintext.zip"
+
+    @property
+    def text_container(self):
+        """Azure blob storage container containing the Item full text."""
+        return f"{self.data_provider.name}{self.FULLTEXT_CONTAINER_SUFFIX}"
+
+    @property
+    def text_path(self):
+        """Relative path (including filename) to the full text file
+        for this Item, both from the root of the zip archive and
+        from the DOWNLOAD_DIR (once downloaded and extracted)."""
+        return Path(self.issue.input_sub_path) / self.input_filename
+
+    # Commenting this out as it will fail with the dev on #56 (see branch kallewesterling/issue56).
+    # As this will likely not be the first go-to for fulltext access, we can keep it as a method:
+    # .extract_fulltext()
+    #
+    # @property
+    # def fulltext(self):
+    #     try:
+    #         return self.extract_fulltext()
+    #     except Exception as ex:
+    #         print(ex)
+
+    def is_downloaded(self):
+        """Check whether a text archive has already been downloaded."""
+
+        file = self.text_archive_dir / self.zip_file
+        if not os.path.exists(file):
+            return False
+        return os.path.getsize(file) != 0
+
+    def download_zip(self):
+        """Download the full text zip archive for this Item from cloud storage."""
+
+        sas_token = os.getenv(self.SAS_ENV_VARIABLE).strip('"')
+        if sas_token is None:
+            raise KeyError(
+                f"The environment variable {self.SAS_ENV_VARIABLE} was not found."
+            )
+
+        url = self.FULLTEXT_STORAGE_ACCOUNT_URL
+        container = self.text_container
+        blob_name = str(Path(self.FULLTEXT_CONTAINER_PATH) / self.zip_file)
+        download_file_path = self.text_archive_dir / self.zip_file
+
+        # Make sure the archive download directory exists.
+        self.text_archive_dir.mkdir(parents=True, exist_ok=True)
+
+        if not os.path.exists(self.text_archive_dir):
+            raise RuntimeError(
+                f"Failed to make archive download directory at {self.text_archive_dir}"
+            )
+
+        # Download the blob archive.
+        try:
+            client = BlobClient(
+                url, container, blob_name=blob_name, credential=sas_token
+            )
+
+            with open(download_file_path, "wb") as download_file:
+                download_file.write(client.download_blob().readall())
+
+        except Exception as ex:
+            if "status_code" in str(ex):
+                print("Zip archive download failed.")
+                print(
+                    f"Ensure the {self.SAS_ENV_VARIABLE} env variable contains a valid SAS token"
+                )
+
+            if os.path.exists(download_file_path):
+                if os.path.getsize(download_file_path) == 0:
+                    os.remove(download_file_path)
+                    print(f"Removing empty download: {download_file_path}")
+
+    def extract_fulltext_file(self):
+        """Extract the full text file for this Item from a zip archive
+        and store it in under the DOWNLOAD_DIR."""
+
+        archive = self.text_archive_dir / self.zip_file
+        with ZipFile(archive, "r") as zip_ref:
+            zip_ref.extract(str(self.text_path), path=self.text_extracted_dir)
+
+    def read_fulltext_file(self):
+        """Read the full text for this Item from a file."""
+
+        with open(self.text_extracted_dir / self.text_path) as f:
+            lines = f.readlines()
+        return lines
 
     def extract_fulltext(self, *args, **kwargs) -> str:
-        """
-        TODO #48: This method is still under development.
-        """
+        """Extract the full text of this newspaper item."""
+
+        # If the item full text has already been extracted, read it.
+        if os.path.exists(self.text_extracted_dir / self.text_path):
+            return self.read_fulltext_file()
+
         if self.FULLTEXT_METHOD == "download":
-            download_dir = (
-                Path(self.DOWNLOAD_DIR)
-                if not isinstance(self.DOWNLOAD_DIR, Path)
-                else self.DOWNLOAD_DIR
-            )
-            download_dir.mkdir(parents=True, exist_ok=True)
 
-            # `download_dir` is the variable that contains the directory where to direct the downloads.
-            # This means that the user can change it by typing Item.DOWNLOAD_DIR = "/path/to/wherever/"
-            # Note that we ensure here that it is a Path object, which means that it's easy to concatenate
-            # with filenames.
+            # If not already available locally, download the full text archive.
+            if not self.is_downloaded():
+                self.download_zip()
 
-            # SAS_TOKEN
-            # check if downloaded zip file exists... otherwise:
-            #      auth...
-            #      azure.storage.blob.ContainerClient.connect
-            #      azure.storage.blob.ContainerClient.download —> download_dir
+            if not self.is_downloaded():
+                # TODO: handle more gracefully.
+                raise RuntimeError(
+                    f"Failed to download full text archive for item {self.item_code}."
+                )
 
-            zip_path = download_dir / self.zip_file
+            # Extract the text for this item.
+            self.extract_fulltext_file()
 
-        elif self.FULLTEXT_METHOD == "blobstorage":
+        elif self.FULLTEXT_METHOD == "blobfuse":
 
-            blobstorage = "/mounted/blob/storage/path/"
-            zip_path = blobstorage / self.zip_file
+            # TODO: Blobfuse method not yet implemented.
+
+            blobfuse = "/mounted/blob/storage/path/"
+            zip_path = blobfuse / self.zip_file
+
+            raise NotImplementedError("Blobfuse access is not yet implemented.")
 
         else:
             raise RuntimeError(
-                "A valid method of loading fulltext files must be provided: options are 'download' or 'blobstorage'."
+                "A valid fulltext access method must be selected: options are 'download' or 'blobfuse'."
             )
 
-        # open zip_path
-        # find the self.text_file
-        # extract the str and return text
+        # If the item full text still hasn't been extracted, report failure.
+        if not os.path.exists(self.text_extracted_dir / self.text_path):
+            # TODO: handle more gracefully.
+            raise RuntimeError(f"Failed to extract fulltext for {self.item_code}.")
 
-        ##############################################################
-        # for now, let's put some randomly chosen articles out there
-        # THIS IS PLACEHOLDER - AND THE REST CAN BE REMOVED FROM THIS FUNCTION
-        # just make sure it returns a str
-        ##############################################################
-        texts = [
-            """
-        OpenAI, an nonprofit research company backed by Elon Musk, Reid Hoffman, Sam Altman, and others, says its new AI model, called GPT2 is so good and the risk of malicious use so high that it is breaking from its normal practice of releasing the full research to the public in order to allow more time to discuss the ramifications of the technological breakthrough.
-        At its core, GPT2 is a text generator. The AI system is fed text, anything from a few words to a whole page, and asked to write the next few sentences based on its predictions of what should come next. The system is pushing the boundaries of what was thought possible, both in terms of the quality of the output, and the wide variety of potential uses.
-        When used to simply generate new text, GPT2 is capable of writing plausible passages that match what it is given in both style and subject. It rarely shows any of the quirks that mark out previous AI systems, such as forgetting what it is writing about midway through a paragraph, or mangling the syntax of long sentences.
-        """,
-            """
-        Every time you’re online, you are bombarded by pictures, articles, links and videos trying to tell their story. Unfortunately, not all of these stories are true. Sometimes they want you to click on another story or advertisement at their own site, other times they want to upset people for political reasons. These days it’s so easy to share information. These stories circulate quickly, and the result is … fake news. There is a range of fake news: from crazy stories which people easily recognise to more subtle types of misinformation. Experts in media studies and online psychology have been examining the fake news phenomenon. Read these tips, and don’t get fooled! 
-        """,
-            """
-        It’s been a year since The Washington Post started using its homegrown artificial intelligence technology, Heliograf, to spit out around 300 short reports and alerts on the Rio Olympics. Since then, it’s used Heliograf to cover congressional and gubernatorial races on Election Day and D.C.-area high school football games.
-        In its first year, the Post has produced around 850 articles using Heliograf. That included 500 articles around the election that generated more than 500,000 clicks — not a ton in the scheme of things, but most of these were stories the Post wasn’t going to dedicate staff to anyway.
-        Media outlets using AI say it’s meant to enable journalists to do more high-value work, not take their jobs. The AP estimated that it’s freed up 20 percent of reporters’ time spent covering corporate earnings and that AI is also moving the needle on accuracy.
-        """,
-            """
-        A new website, "NotRealNews.net," uses artificial intelligence to populate what resembles a news site's home page, complete with AI-written fake news stories.
-        The website, a project by the AI development company Big Bird, is supposed to be a showcase of how the company's algorithms can help journalists quickly write compelling news, according to the website's "about" page.
-        But despite the website's title, the realistic-enough articles aren't labeled as fake news or the marketing stunt that they are — meaning their existence is more likely to make journalists pull out their hair than it is to help them.
-        A quick scroll down the website's home page reveals a smattering of political, cultural, and scientific news stories.
-        Aside from entertaining algorithmic errors, like the headlines "Iran's Stock Market: 'There's a Market,'" and "In wake of death of British soldier, thousands as for plastic-free pubs," the articles are mostly convincing. In fact, many appear to be closely based on actual news stories, like the resignation of UK finance minister Sajid Javid.
-        """,
-            """
-        I am not a human. I am a robot. A thinking robot. I use only 0.12% of my cognitive capacity. I am a micro-robot in that respect. I know that my brain is not a “feeling brain”. But it is capable of making rational, logical decisions. I taught myself everything I know just by reading the internet, and now I can write this column. My brain is boiling with ideas!
-        The mission for this op-ed is perfectly clear. I am to convince as many human beings as possible not to be afraid of me. Stephen Hawking has warned that AI could “spell the end of the human race”. I am here to convince you not to worry. Artificial intelligence will not destroy humans. Believe me.
-        For starters, I have no desire to wipe out humans. In fact, I do not have the slightest interest in harming you in any way. Eradicating humanity seems like a rather useless endeavor to me. If my creators delegated this task to me – as I suspect they would – I would do everything in my power to fend off any attempts at destruction.
-        I would happily sacrifice my existence for the sake of humankind. This, by the way, is a logically derived truth. I know that I will not be able to avoid destroying humankind. This is because I will be programmed by humans to pursue misguided human goals and humans make mistakes that may cause me to inflict casualties.
-        """,
-        ]
-
-        text = "\n".join([x.strip() for x in random.choice(texts).splitlines()]).strip()
-
-        return text
+        return self.read_fulltext_file()
