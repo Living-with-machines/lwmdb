@@ -3,6 +3,11 @@ from django_pandas.managers import DataFrameManager
 from gazetteer.models import Place
 from fulltext.models import Fulltext
 
+from pathlib import Path
+from zipfile import ZipFile
+import os
+from azure.storage.blob import BlobClient
+
 
 class NewspapersModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
@@ -155,3 +160,171 @@ class Item(NewspapersModel):
 
     def __str__(self):
         return str(self.item_code)
+
+    HOME_DIR = Path.home()
+    DOWNLOAD_DIR = HOME_DIR / "metadata-db/"
+    ARCHIVE_SUBDIR = "archives"
+    EXTRACTED_SUBDIR = "articles"
+    FULLTEXT_METHOD = "download"
+    FULLTEXT_CONTAINER_SUFFIX = "-alto2txt"
+    FULLTEXT_CONTAINER_PATH = "plaintext/"
+    FULLTEXT_STORAGE_ACCOUNT_URL = "https://alto2txt.blob.core.windows.net"
+
+    SAS_ENV_VARIABLE = "FULLTEXT_SAS_TOKEN"
+
+    @property
+    def download_dir(self):
+        """Path to the download directory for full text data.
+
+        The DOWNLOAD_DIR class attribute contains the directory under which
+        full text data will be stored. Users can change it by typing:
+        Item.DOWNLOAD_DIR = "/path/to/wherever/"
+        """
+        return Path(self.DOWNLOAD_DIR)
+
+    @property
+    def text_archive_dir(self):
+        """Path to the storage directory for full text archives."""
+        return self.download_dir / self.ARCHIVE_SUBDIR
+
+    @property
+    def text_extracted_dir(self):
+        """Path to the storage directory for extracted full text files."""
+        return self.download_dir / self.EXTRACTED_SUBDIR
+
+    @property
+    def zip_file(self):
+        """Filename of the zip archive containing the full text for this item."""
+        return f"{self.issue.newspaper.publication_code}_plaintext.zip"
+
+    @property
+    def text_container(self):
+        """Azure blob storage container containing the Item full text."""
+        return f"{self.data_provider.name}{self.FULLTEXT_CONTAINER_SUFFIX}"
+
+    @property
+    def text_path(self):
+        """Relative path (including filename) to the full text file
+        for this Item, both from the root of the zip archive and
+        from the DOWNLOAD_DIR (once downloaded and extracted)."""
+        return Path(self.issue.input_sub_path) / self.input_filename
+
+    # Commenting this out as it will fail with the dev on #56 (see branch kallewesterling/issue56).
+    # As this will likely not be the first go-to for fulltext access, we can keep it as a method:
+    # .extract_fulltext()
+    #
+    # @property
+    # def fulltext(self):
+    #     try:
+    #         return self.extract_fulltext()
+    #     except Exception as ex:
+    #         print(ex)
+
+    def is_downloaded(self):
+        """Check whether a text archive has already been downloaded."""
+
+        file = self.text_archive_dir / self.zip_file
+        if not os.path.exists(file):
+            return False
+        return os.path.getsize(file) != 0
+
+    def download_zip(self):
+        """Download the full text zip archive for this Item from cloud storage."""
+
+        sas_token = os.getenv(self.SAS_ENV_VARIABLE).strip('"')
+        if sas_token is None:
+            raise KeyError(
+                f"The environment variable {self.SAS_ENV_VARIABLE} was not found."
+            )
+
+        url = self.FULLTEXT_STORAGE_ACCOUNT_URL
+        container = self.text_container
+        blob_name = str(Path(self.FULLTEXT_CONTAINER_PATH) / self.zip_file)
+        download_file_path = self.text_archive_dir / self.zip_file
+
+        # Make sure the archive download directory exists.
+        self.text_archive_dir.mkdir(parents=True, exist_ok=True)
+
+        if not os.path.exists(self.text_archive_dir):
+            raise RuntimeError(
+                f"Failed to make archive download directory at {self.text_archive_dir}"
+            )
+
+        # Download the blob archive.
+        try:
+            client = BlobClient(
+                url, container, blob_name=blob_name, credential=sas_token
+            )
+
+            with open(download_file_path, "wb") as download_file:
+                download_file.write(client.download_blob().readall())
+
+        except Exception as ex:
+            if "status_code" in str(ex):
+                print("Zip archive download failed.")
+                print(
+                    f"Ensure the {self.SAS_ENV_VARIABLE} env variable contains a valid SAS token"
+                )
+
+            if os.path.exists(download_file_path):
+                if os.path.getsize(download_file_path) == 0:
+                    os.remove(download_file_path)
+                    print(f"Removing empty download: {download_file_path}")
+
+    def extract_fulltext_file(self):
+        """Extract the full text file for this Item from a zip archive
+        and store it in under the DOWNLOAD_DIR."""
+
+        archive = self.text_archive_dir / self.zip_file
+        with ZipFile(archive, "r") as zip_ref:
+            zip_ref.extract(str(self.text_path), path=self.text_extracted_dir)
+
+    def read_fulltext_file(self):
+        """Read the full text for this Item from a file."""
+
+        with open(self.text_extracted_dir / self.text_path) as f:
+            lines = f.readlines()
+        return lines
+
+    def extract_fulltext(self, *args, **kwargs) -> str:
+        """Extract the full text of this newspaper item."""
+
+        # If the item full text has already been extracted, read it.
+        if os.path.exists(self.text_extracted_dir / self.text_path):
+            return self.read_fulltext_file()
+
+        if self.FULLTEXT_METHOD == "download":
+
+            # If not already available locally, download the full text archive.
+            if not self.is_downloaded():
+                self.download_zip()
+
+            if not self.is_downloaded():
+                # TODO: handle more gracefully.
+                raise RuntimeError(
+                    f"Failed to download full text archive for item {self.item_code}."
+                )
+
+            # Extract the text for this item.
+            self.extract_fulltext_file()
+
+        elif self.FULLTEXT_METHOD == "blobfuse":
+
+            # TODO: Blobfuse method not yet implemented.
+
+            blobfuse = "/mounted/blob/storage/path/"
+            zip_path = blobfuse / self.zip_file
+
+            raise NotImplementedError("Blobfuse access is not yet implemented.")
+
+        else:
+            raise RuntimeError(
+                "A valid fulltext access method must be selected: options are 'download' or 'blobfuse'."
+            )
+
+        # If the item full text still hasn't been extracted, report failure.
+        if not os.path.exists(self.text_extracted_dir / self.text_path):
+            # TODO: handle more gracefully.
+            raise RuntimeError(f"Failed to extract fulltext for {self.item_code}.")
+
+        return self.read_fulltext_file()
