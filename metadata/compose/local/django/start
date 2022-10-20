@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+
+# poetry run python manage.py migrate
+python manage.py migrate
+python manage.py runserver 0.0.0.0:8000
+# python manage.py  shell_plus --notebook --allow-root
+# poetry run python manage.py shell_plus --notebook --allow-root
+# poetry run python jupyter lab
+# uvicorn config.asgi:application --host 0.0.0.0 --reload --reload-include '*.html'
