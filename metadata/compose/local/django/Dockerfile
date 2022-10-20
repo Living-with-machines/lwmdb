@@ -12,12 +12,14 @@ ARG BUILD_ENVIRONMENT=local
 RUN apt-get update && apt-get install --no-install-recommends -y \
   # dependencies for building Python packages
   build-essential \
-  # psycopg2 dependencies
+  # psycopg2 dependency
   libpq-dev 
 
+# Commented out from example config
 # Requirements are installed here to ensure they will be cached.
 # COPY ./requirements .
 
+# Commented out from example config
 # Create Python Dependency and Sub-Dependency Wheels.
 # RUN pip wheel --wheel-dir /usr/src/app/wheels  \
 #   -r ${BUILD_ENVIRONMENT}.txt
@@ -46,21 +48,22 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*
 
+# Commented out from example config
 # All absolute dir copies ignore workdir instruction. All relative dir copies are wrt to the workdir instruction
 # copy python dependency wheels from python-build-stage
 # COPY --from=python-build-stage /usr/src/app/wheels  /wheels/
 
+# Commented out from example config
 # use wheels to install python dependencies
 # RUN pip install --no-cache-dir --no-index --find-links=/wheels/ /wheels/* \
 # 	&& rm -rf /wheels/
-
 
 # Install poetry following https://python-poetry.org/docs/
 RUN pip install poetry
 
 
 # Using pyproject.toml and poetry.lock, this may end up in the django folder...
-COPY ../pyproject.toml ../poetry.lock .
+COPY pyproject.toml poetry.lock .
 
 # Install local dependencies assuming copy into same folder
 # Project initialization:
@@ -78,14 +81,17 @@ RUN sed -i 's/\r$//g' /start
 RUN chmod +x /start
 
 
+# Commented out from example config
 # COPY ./compose/local/django/celery/worker/start /start-celeryworker
 # RUN sed -i 's/\r$//g' /start-celeryworker
 # RUN chmod +x /start-celeryworker
 
+# Commented out from example config
 # COPY ./compose/local/django/celery/beat/start /start-celerybeat
 # RUN sed -i 's/\r$//g' /start-celerybeat
 # RUN chmod +x /start-celerybeat
-# 
+ 
+# Commented out from example config
 # COPY ./compose/local/django/celery/flower/start /start-flower
 # RUN sed -i 's/\r$//g' /start-flower
 # RUN chmod +x /start-flower
