@@ -13,6 +13,10 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 from pathlib import Path
 import os
 
+from dotenv import dotenv_values
+
+config = dotenv_values(".envs/local")
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -21,12 +25,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-d%2thq11vkpl%sb%y4ny*^3$nfnec8&%@zfx1l)9w!t61c9r5j"
+SECRET_KEY = config["SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# SECURITY WARNING: customise these when run in production
+ALLOWED_HOSTS = ["0.0.0.0", "127.0.0.1", "localhost"]
 
 
 # Application definition
@@ -81,9 +86,16 @@ WSGI_APPLICATION = "metadata.wsgi.application"
 
 DATABASES = {
     "default": {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config['POSTGRES_DB'],  # Perhaps a different name...?
+        'USER': config['POSTGRES_USER'],
+        'PASSWORD': config['POSTGRES_PASSWORD'],
+        'HOST': config['POSTGRES_HOST'],
+    },
+    "local": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
-    }
+    },
 }
 
 
@@ -109,7 +121,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "en-gb"
 
 TIME_ZONE = "UTC"
 
