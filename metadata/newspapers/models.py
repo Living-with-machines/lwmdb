@@ -1,11 +1,11 @@
-from pathlib import Path
-from zipfile import ZipFile
-import os
-
 from django.db import models
 from django_pandas.managers import DataFrameManager
 from gazetteer.models import Place
+from fulltext.models import Fulltext
 
+from pathlib import Path
+from zipfile import ZipFile
+import os
 from azure.storage.blob import BlobClient
 
 
@@ -151,6 +151,7 @@ class Item(NewspapersModel):
         related_name="items",
         related_query_name="item",
     )
+    fulltext = models.OneToOneField(Fulltext, null=True, on_delete=models.SET_NULL)
 
     def save(self, *args, **kwargs):
         # for consistency, we save all item_type in uppercase
