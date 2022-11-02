@@ -156,7 +156,9 @@ class NewspapersFixture(Fixture):
 
                             newspaper_cache_file.write_text(json.dumps(newspaper))
 
-                        issue_cache_path = cache_path / Path(f"issue/{nlp}/issues.json")
+                        issue_cache_path = cache_path / Path(
+                            f"issue/{nlp}/issues.jsonl"
+                        )
                         self.test_parent(issue_cache_path)
 
                         if not issue_identifier in collected:
@@ -207,9 +209,8 @@ class NewspapersFixture(Fixture):
                                 {json.dumps(issue) for issue in current_issues}
                             )
 
-                            # TODO #48: this file should be a .jsonl file
                             with open(
-                                (cache_path / Path(f"issue/{nlp}/issues.json")), "w+"
+                                (cache_path / Path(f"issue/{nlp}/issues.jsonl")), "w+"
                             ) as f:
                                 f.write("\n".join(current_issues))
                                 collected = append(collected, issue_identifier)
@@ -218,15 +219,13 @@ class NewspapersFixture(Fixture):
         """Function for ingesting cache files for Newspaper and Issue items."""
 
         get_newspaper_files = lambda data_provider: [
-            x
-            for x in Path(f"./{newspaper_cache}/{data_provider}/").glob("**/*.json")
-            if not x.name == "issues.json"
+            x for x in Path(f"./{newspaper_cache}/{data_provider}/").glob("**/*.json")
         ]
 
         get_issue_files = lambda data_provider: [
             x
-            for x in Path(f"./{newspaper_cache}/{data_provider}/").glob("**/*.json")
-            if x.name == "issues.json"
+            for x in Path(f"./{newspaper_cache}/{data_provider}/").glob("**/*.jsonl")
+            if x.name == "issues.jsonl"
         ]
 
         def error_msg(kind, **kwargs):
