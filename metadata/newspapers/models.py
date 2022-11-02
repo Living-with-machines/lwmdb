@@ -1,12 +1,15 @@
 from django.db import models
-from django_pandas.managers import DataFrameManager
+
 from gazetteer.models import Place
 from fulltext.models import Fulltext
 
+from django_pandas.managers import DataFrameManager
+from azure.storage.blob import BlobClient
+
 from pathlib import Path
 from zipfile import ZipFile
+
 import os
-from azure.storage.blob import BlobClient
 
 
 class NewspapersModel(models.Model):
@@ -20,7 +23,6 @@ class NewspapersModel(models.Model):
 
 
 class DataProvider(NewspapersModel):
-    # TODO #48: Change unique_together to solely unique on name?
     name = models.CharField(max_length=600, default=None)
     collection = models.CharField(max_length=600, default=None)
     source_note = models.CharField(max_length=255, default=None)
@@ -33,7 +35,6 @@ class DataProvider(NewspapersModel):
 
 
 class Digitisation(NewspapersModel):
-    # TODO #48: Change unique_together to solely unique on software?
     xml_flavour = models.CharField(max_length=255, default=None)
     software = models.CharField(max_length=600, default=None, null=True, blank=True)
     mets_namespace = models.CharField(
@@ -63,7 +64,7 @@ class Ingest(NewspapersModel):
 
 
 class Newspaper(NewspapersModel):
-    # TODO #48: publication_code should be unique, right?
+    # TODO #55: publication_code should be unique? Currently unique (but not tested with BNA)
     publication_code = models.CharField(max_length=600, default=None)
     title = models.CharField(max_length=255, default=None)
     location = models.CharField(max_length=255, default=None, blank=True, null=True)
@@ -80,7 +81,7 @@ class Newspaper(NewspapersModel):
 
 
 class Issue(NewspapersModel):
-    # TODO #48: issue_code should be unique, right?
+    # TODO #55: issue_code should be unique? Currently unique (but not tested with BNA)
     issue_code = models.CharField(max_length=600, default=None)
     issue_date = models.DateField()
     input_sub_path = models.CharField(max_length=255, default=None)
@@ -102,16 +103,16 @@ class Issue(NewspapersModel):
         """
         Return a URL similar to:
         https://www.britishnewspaperarchive.co.uk/viewer/BL/0000347/18890102/001/0001
-
-        TODO #48: This will not generate a correct URL if there is no date available.
         """
+
+        if not self.issue_date:
+            print("Warning: No date available for issue so URL will likely not work.")
 
         return f"https://www.britishnewspaperarchive.co.uk/viewer/BL/{self.newspaper.publication_code}/{str(self.issue_date).replace('-', '')}/001/0001"
 
 
 class Item(NewspapersModel):
-    # TODO #48: item_code should be unique, right?
-    # TODO #48: Should we set a max_length on the title field?
+    # TODO #55: item_code should be unique? Currently, not unique, however so needs fixing in alto2txt2fixture
     item_code = models.CharField(max_length=600, default=None)
     title = models.TextField(default=None)
     item_type = models.CharField(max_length=600, default=None, blank=True, null=True)
@@ -300,22 +301,17 @@ class Item(NewspapersModel):
                 self.download_zip()
 
             if not self.is_downloaded():
-                # TODO: handle more gracefully.
                 raise RuntimeError(
-                    f"Failed to download full text archive for item {self.item_code}."
+                    f"Failed to download full text archive for item {self.item_code}: Expected finished download."
                 )
 
             # Extract the text for this item.
             self.extract_fulltext_file()
 
         elif self.FULLTEXT_METHOD == "blobfuse":
-
-            # TODO: Blobfuse method not yet implemented.
-
+            raise NotImplementedError("Blobfuse access is not yet implemented.")
             blobfuse = "/mounted/blob/storage/path/"
             zip_path = blobfuse / self.zip_file
-
-            raise NotImplementedError("Blobfuse access is not yet implemented.")
 
         else:
             raise RuntimeError(
@@ -324,7 +320,8 @@ class Item(NewspapersModel):
 
         # If the item full text still hasn't been extracted, report failure.
         if not os.path.exists(self.text_extracted_dir / self.text_path):
-            # TODO: handle more gracefully.
-            raise RuntimeError(f"Failed to extract fulltext for {self.item_code}.")
+            raise RuntimeError(
+                f"Failed to extract fulltext for {self.item_code}; path does not exist: {self.text_extracted_dir / self.text_path}"
+            )
 
         return self.read_fulltext_file()
