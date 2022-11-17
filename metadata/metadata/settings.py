@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "mitchells",
     "gazetteer",
     "census",
+    "fulltext.apps.FulltextConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
