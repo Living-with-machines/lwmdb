@@ -12,11 +12,8 @@ from mitchells.models import (
 )
 from .fixtures import Fixture, AUTO_FILE_LOCATIONS
 
-# from django.core.serializers import deserialize
-# from django.utils import timezone
-
-# TODO #48: We want to look closer into the SettingWithCopyWarning that this script generates
-pd.options.mode.chained_assignment = None
+# TODO: We want to look closer into the SettingWithCopyWarning that this script generates
+# pd.options.mode.chained_assignment = None
 
 
 class MitchellsFixture(Fixture):
