@@ -5,10 +5,7 @@ set -o pipefail
 set -o nounset
 
 
-# poetry run python manage.py migrate
 python manage.py migrate
-# python manage.py runserver 0.0.0.0:8000
+python manage.py runserver_plus 0.0.0.0:8000
 # python manage.py shell_plus --notebook
-# poetry run python manage.py shell_plus --notebook --allow-root
-# poetry run python jupyter lab
-uvicorn metadata.asgi:application --host 0.0.0.0 --reload --reload-include '*.html'
+# uvicorn metadata.asgi:application --host 0.0.0.0 --reload --reload-include '*.html' # use if serving async
