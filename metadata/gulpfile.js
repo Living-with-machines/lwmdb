@@ -100,13 +100,11 @@ function imgCompression() {
     .pipe(imagemin()) // Compresses PNG, JPEG, GIF and SVG images
     .pipe(dest(paths.images))
 }// Run django server
-function asyncRunServer() {
-  const cmd = spawn('gunicorn', [
-      'config.asgi', '-k', 'uvicorn.workers.UvicornWorker', '--reload'
-      ], {stdio: 'inherit'}
-  )
+function runServer(cb) {
+  const cmd = spawn('python', ['manage.py', 'runserver'], {stdio: 'inherit'})
   cmd.on('close', function(code) {
-    console.log('gunicorn exited with code ' + code)
+    console.log('runServer exited with code ' + code)
+    cb(code)
   })
 }
 
