@@ -142,4 +142,12 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# Below are specific to development and may need refactoring for deployment
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
+
+NOTEBOOK_ARGUMENTS = [
+    '--ip', '0.0.0.0', 
+    "--port", "9090",
+    '--allow-root',
+    '--no-browser',
+]

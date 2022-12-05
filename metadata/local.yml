@@ -22,9 +22,10 @@ services:
       - ./.envs/local
     ports:
       - "8000:8000"
+      - "9090:9090"  # For Jupyter
     command: /start
 
-  postgres:  # Document the importance in the django config
+  postgres:
     build:
       context: .
       dockerfile: ./compose/production/postgres/Dockerfile
