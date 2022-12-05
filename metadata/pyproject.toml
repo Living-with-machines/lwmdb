@@ -18,13 +18,26 @@ psycopg2-binary = "^2.9.4"
 uvicorn = "^0.18.3"
 python-dotenv = "^0.21.0"
 azure-storage-blob = "^12.13.0"
-
-[tool.poetry.dev-dependencies]
-pyfakefs = "^4.5.1"
-pytest-django = "^4.5.2"
+GDAL = {version = "3.5.3", platform = "darwin"}
+psycopg2 = "^2.9.5"
 
 [tool.poetry.group.dev.dependencies]
+pytest-cov = "^4.0.0"
+pytest-sugar = "^0.9.6"
+mypy = "^0.991"
+pyfakefs = "^4.5.1"
+pytest-django = "^4.5.2"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "metadata.settings"
+addopts = """
+--cov=metadata
+--cov-report=term:skip-covered
+--pdbcls=IPython.terminal.debugger:TerminalPdb
+--doctest-modules
+--ignore=compose
+"""

@@ -12,11 +12,10 @@ services:
       dockerfile: ./compose/local/django/Dockerfile
     image: metadata_local_django
     container_name: metadata_local_django
-    platform: linux/x86_64
     depends_on:
       - postgres
-        # - redis
       - mailhog
+        # - redis
     volumes:
       - .:/app:z
     env_file:
@@ -25,7 +24,7 @@ services:
       - "8000:8000"
     command: /start
 
-  postgres:
+  postgres:  # Document the importance in the django config
     build:
       context: .
       dockerfile: ./compose/production/postgres/Dockerfile
@@ -36,12 +35,19 @@ services:
       - metadata_local_postgres_data_backups:/backups:z
     env_file:
       - ./.envs/local
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   # jupyterhub:
   #   build:
   #     context: .
   #     dockerfile: ./compose/production/jupyterhub/Dockerfile
-
+  #   ports:
+  #     - "3000:3000"
+  #     - "0:0"
 
   # docs:
   #   image: metadata_local_docs

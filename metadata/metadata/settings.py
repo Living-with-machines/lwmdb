@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.gis",
     "django_extensions",
 ]
 
@@ -87,7 +88,7 @@ WSGI_APPLICATION = "metadata.wsgi.application"
 
 DATABASES = {
     "default": {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': config['POSTGRES_DB'],  # Perhaps a different name...?
         'USER': config['POSTGRES_USER'],
         'PASSWORD': config['POSTGRES_PASSWORD'],
