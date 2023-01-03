@@ -1,7 +1,5 @@
 from django.core.management import BaseCommand
 
-from metadata.newspapers.management.commands.items import ItemFixture
-
 from .createfixtures import (
     Connector,
     NewspapersFixture,
