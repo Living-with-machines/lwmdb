@@ -8,7 +8,12 @@ from pyfakefs.fake_filesystem_unittest import patchfs
 from newspapers.models import Newspaper, Issue, Item, DataProvider
 from gazetteer.models import Place
 
+import pytest
+
+
 # Create your tests here.
+
+@pytest.mark.django_db
 class ItemTestCase(TestCase):
     def setUp(self):
 

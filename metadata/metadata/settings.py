@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
-import os
+import os, re
 from typing import Final
 
 from dotenv import dotenv_values
@@ -217,7 +217,17 @@ INTERNAL_IPS = ["127.0.0.1", "10.0.2.2"]
 
 use_docker_key: Final[str] = "USE_DOCKER"
 
-if use_docker_key in config and config[use_docker_key] == "yes":
+
+def is_docker():
+    """Test if currently running in Docker.
+
+    See https://stackoverflow.com/questions/43878953/how-does-one-detect-if-one-is-running-within-a-docker-container-within-python
+    """
+    cgroup = Path("/proc/self/cgroup")
+    return Path('/.dockerenv').is_file() or cgroup.is_file() and cgroup.read_text().find("docker") > -1
+
+
+if use_docker_key in config and config[use_docker_key] == "yes" and is_docker():
     import socket
 
     hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
