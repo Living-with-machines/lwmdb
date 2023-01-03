@@ -21,6 +21,7 @@ azure-storage-blob = "^12.13.0"
 GDAL = {version = "3.5.3", platform = "darwin"}
 psycopg2 = "^2.9.5"
 whitenoise = "^6.2.0"
+tqdm = "^4.64.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest-cov = "^4.0.0"

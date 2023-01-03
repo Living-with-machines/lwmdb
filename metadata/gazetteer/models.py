@@ -1,4 +1,4 @@
-from django.db import models
+from django.contrib.gis.db import models
 
 
 class GazetteerModel(models.Model):
@@ -53,6 +53,7 @@ class Place(GazetteerModel):
     latitude = models.FloatField(null=True)
     longitude = models.FloatField(null=True)
     geonames_ids = models.CharField(max_length=255, default=None, null=True)
+    coordinates = models.PointField(null=True)
 
     historic_county = models.ForeignKey(
         HistoricCounty,
