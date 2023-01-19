@@ -21,6 +21,6 @@ def test_create_place(manc_point) -> None:
         label = 'Manchester',
         latitude = manc_point.x,
         longitude = manc_point.y,
-        coordinates = manc_point
+        coordinates = manc_point,
     )
     assert test_place.coordinates == manc_point

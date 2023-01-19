@@ -15,8 +15,10 @@ import pytest
 
 @pytest.mark.django_db
 class ItemTestCase(TestCase):
-    def setUp(self):
 
+    """Test creating and querying Item, Issue and Newpaper instances."""
+
+    def setUp(self):
         newspaper = Newspaper.objects.create(
             publication_code="0003040",
             title="The Birkenhead News and Wirral General Advertiser",
