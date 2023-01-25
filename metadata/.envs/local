@@ -1,0 +1,22 @@
+# PostgreSQL
+# ------------------------------------------------------------------------------
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_DB=metadata
+POSTGRES_USER=metadata
+# To be replaced
+POSTGRES_PASSWORD=debug
+
+SECRET_KEY=django-insecure-d%2thq11vkpl%sb%y4ny*^3$nfnec8&%@zfx1l)9w!t61c9r5j 
+# General
+# ------------------------------------------------------------------------------
+USE_DOCKER=yes
+IPYTHONDIR=/app/.ipython
+# Redis
+# ------------------------------------------------------------------------------
+REDIS_URL=redis://redis:6379/0
+#
+# Flower
+CELERY_FLOWER_USER=aePSKkcANYKRklVrFMzjQPlsHXUrQEzV
+CELERY_FLOWER_PASSWORD=Ykr75MuBE22sphvBlNzqLkLWRFD9NcnIbAnYkGbQARde4MViE1z6dKQDDafMtmCf
+

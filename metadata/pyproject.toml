@@ -1,0 +1,47 @@
+[tool.poetry]
+name = "metadata"
+version = "0.1.0"
+description = "Metadata database management through Django for Living with Maachines."
+authors = ["Kalle Westerling <kalle.westerling@bl.uk>"]
+
+[tool.poetry.dependencies]
+python = ">=3.8, <3.10"
+django = "^4.0.7"
+seaborn = "^0.11.2"
+pandas = "^1.4.1"
+ipython = "^8.4.0"
+jupyter = "^1.0.0"
+django-pandas = "^0.6.6"
+django-extensions = "^3.2.0"
+colorama = "^0.4.5"
+psycopg2-binary = "^2.9.4"
+uvicorn = "^0.18.3"
+python-dotenv = "^0.21.0"
+azure-storage-blob = "^12.13.0"
+GDAL = {version = "3.5.3", platform = "darwin"}
+psycopg2 = "^2.9.5"
+whitenoise = "^6.2.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest-cov = "^4.0.0"
+pytest-sugar = "^0.9.6"
+mypy = "^0.991"
+pyfakefs = "^4.5.1"
+pytest-django = "^4.5.2"
+Werkzeug = "^2.2.2"
+django-debug-toolbar = "^3.8.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "metadata.settings"
+python_files = ["tests.py", "test_*.py"]
+addopts = """
+--cov=metadata
+--cov-report=term:skip-covered
+--pdbcls=IPython.terminal.debugger:TerminalPdb
+--doctest-modules
+--ignore=compose
+"""
