@@ -1,0 +1,74 @@
+[tool.poetry]
+name = "metadata"
+version = "0.1.0"
+description = "Metadata database management through Django for Living with Maachines."
+authors = ["Kalle Westerling <kalle.westerling@bl.uk>"]
+
+[tool.poetry.dependencies]
+python = ">=3.8, <3.10"
+django = "^4.0.7"
+seaborn = "^0.11.2"
+pandas = "^1.4.1"
+ipython = "^8.4.0"
+jupyter = "^1.0.0"
+django-pandas = "^0.6.6"
+django-extensions = "^3.2.0"
+colorama = "^0.4.5"
+psycopg2-binary = "^2.9.4"
+uvicorn = "^0.18.3"
+python-dotenv = "^0.21.0"
+azure-storage-blob = "^12.13.0"
+GDAL = {version = "3.5.3", platform = "darwin"}
+psycopg2 = "^2.9.5"
+whitenoise = "^6.2.0"
+tqdm = "^4.64.1"
+
+[tool.poetry.group.dev.dependencies]
+pytest-cov = "^4.0.0"
+pytest-sugar = "^0.9.6"
+mypy = "^0.991"
+pyfakefs = "^4.5.1"
+pytest-django = "^4.5.2"
+Werkzeug = "^2.2.2"
+django-debug-toolbar = "^3.8.1"
+pyparsing = "^3.0.9"
+pydot = "^1.4.2"
+pre-commit = "^2.21.0"
+django-coverage-plugin = "^3.0.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "metadata.test_settings"
+python_files = ["tests.py", "test_*.py"]
+addopts = """
+--cov=metadata
+--cov-report=term:skip-covered
+--pdbcls=IPython.terminal.debugger:TerminalPdb
+--doctest-modules
+--ignore=compose
+"""
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore = [
+  "E203", "E501", "E731", "E713", "F821", "E712", "E266", "E711",
+  "E722", "E712", "F841", "F541", "E711", "E841", "W605", "E265",
+]
+exclude = [
+  ".tox", ".git", "*/migrations/*", "*/static/CACHE/*",
+  "docs", "node_modules" , "venv"
+]
+
+[tool.isort]
+profile = "black"
+
+[tool.pycln]
+all = true
+
+[tool.coverage.run]
+include = ["metadata/*"]
+omit = ["*migrations*", "*tests*"]
+plugins = ["django_coverage_plugin"]

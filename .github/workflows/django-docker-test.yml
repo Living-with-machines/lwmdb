@@ -37,7 +37,7 @@ jobs:
           # cache-dependency-path: |
           #   requirements/base.txt
           #   requirements/local.txt
-      
+
           # - name: Install and configure Poetry
           #   uses: snok/install-poetry@v1
 
