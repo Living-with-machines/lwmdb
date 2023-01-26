@@ -55,7 +55,7 @@ addopts = """
 max-line-length = 88
 extend-ignore = [
   "E203", "E501", "E731", "E713", "F821", "E712", "E266", "E711",
-  "E722", "E712", "F841", "F541", "E711", "E841", "W605", "E265",
+  # "E722", "E712", "F841", "F541", "E711", "E841", "W605", "E265",
 ]
 exclude = [
   ".tox", ".git", "*/migrations/*", "*/static/CACHE/*",
