@@ -27,6 +27,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   gdal-bin \
   gcc \
   python3-dev \
+  # for CI lint pre-commit checking
+  git \
   # cleaning up unused files
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*
