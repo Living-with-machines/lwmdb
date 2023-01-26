@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "metadata"
 version = "0.1.0"
-description = "Metadata database management through Django for Living with Maachines."
+description = "Metadata database management through Django for Living with Machines."
 authors = ["Kalle Westerling <kalle.westerling@bl.uk>"]
 
 [tool.poetry.dependencies]
