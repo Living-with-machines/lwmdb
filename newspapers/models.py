@@ -98,11 +98,11 @@ class Issue(NewspapersModel):
 
     @property
     def url(self):
-        """
-        Return a URL similar to:
-        https://www.britishnewspaperarchive.co.uk/viewer/BL/0000347/18890102/001/0001
-        """
+        """Return a URL similar to the British Newspaper Archive structure.
 
+        Example:
+            https://www.britishnewspaperarchive.co.uk/viewer/BL/0000347/18890102/001/0001
+        """
         if not self.issue_date:
             print("Warning: No date available for issue so URL will likely not work.")
 
@@ -193,7 +193,7 @@ class Item(NewspapersModel):
 
     @property
     def zip_file(self):
-        """Filename of the zip archive containing the full text for this item."""
+        """Filename for this Item's zip archive containing the full text."""
         return f"{self.issue.newspaper.publication_code}_plaintext.zip"
 
     @property
@@ -203,9 +203,11 @@ class Item(NewspapersModel):
 
     @property
     def text_path(self):
-        """Relative path (including filename) to the full text file
-        for this Item, both from the root of the zip archive and
-        from the DOWNLOAD_DIR (once downloaded and extracted)."""
+        """Return a path relative to the full text file for this Item.
+
+        This is generated from the zip archive (once downloaded and
+        extracted) from the DOWNLOAD_DIR and the filename.
+        """
         return Path(self.issue.input_sub_path) / self.input_filename
 
     # Commenting this out as it will fail with the dev on #56 (see branch kallewesterling/issue56).
@@ -221,15 +223,13 @@ class Item(NewspapersModel):
 
     def is_downloaded(self):
         """Check whether a text archive has already been downloaded."""
-
         file = self.text_archive_dir / self.zip_file
         if not os.path.exists(file):
             return False
         return os.path.getsize(file) != 0
 
     def download_zip(self):
-        """Download the full text zip archive for this Item from cloud storage."""
-
+        """Download this Item's full text zip archive from cloud storage."""
         sas_token = os.getenv(self.SAS_ENV_VARIABLE).strip('"')
         if sas_token is None:
             raise KeyError(
@@ -271,23 +271,19 @@ class Item(NewspapersModel):
                     print(f"Removing empty download: {download_file_path}")
 
     def extract_fulltext_file(self):
-        """Extract the full text file for this Item from a zip archive
-        and store it in under the DOWNLOAD_DIR."""
-
+        """Extract Item's full text file from a zip archive to DOWNLOAD_DIR."""
         archive = self.text_archive_dir / self.zip_file
         with ZipFile(archive, "r") as zip_ref:
             zip_ref.extract(str(self.text_path), path=self.text_extracted_dir)
 
     def read_fulltext_file(self):
         """Read the full text for this Item from a file."""
-
         with open(self.text_extracted_dir / self.text_path) as f:
             lines = f.readlines()
         return lines
 
     def extract_fulltext(self, *args, **kwargs) -> str:
         """Extract the full text of this newspaper item."""
-
         # If the item full text has already been extracted, read it.
         if os.path.exists(self.text_extracted_dir / self.text_path):
             return self.read_fulltext_file()

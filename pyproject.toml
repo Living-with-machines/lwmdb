@@ -72,3 +72,26 @@ all = true
 include = ["metadata/*"]
 omit = ["*migrations*", "*tests*"]
 plugins = ["django_coverage_plugin"]
+
+[tool.bandit]
+exclude_dirs = [
+  "tests", "*/migrations/*", "*/static/CACHE/*", "docs", "node_modules"
+]
+tests = ["B201", "B301"]
+skips = ["B101", "B601"]
+
+[too.docuformatter]
+recursive = true
+blank = true
+pre-summary-space = true
+wrap-summaries = 88
+wrap-descriptions = 88
+non-strict = true
+
+[tool.pydocstyle]
+convention = "google"
+match = '(?!test_).*\.py'
+add-ignore = [
+  "D100", "D101", "D102", "D104", "D105", "D106", "D107", "D203",
+  "D204", "D211", "D213"
+]

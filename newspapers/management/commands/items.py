@@ -55,13 +55,13 @@ class ItemFixture(NewspapersFixture):
             path.parent.mkdir(parents=True, exist_ok=True)
 
     def build_cache(self):
-        """
-        Builds a cache in a file structure:
+        """Build a cache in a `jsonl` file structure of a list of `Items`.
+
+         Build a cache within a jsonl file which contains a list of Items,
+         in the following structure:
+
         ./{item_cache}/{name of data provider}/2/2/0002246.jsonl
-
-        Each jsonl file contains a list of Items.
         """
-
         for data_provider in DATA_PROVIDERS:
             ZIPFILES = self.get_zipfiles(data_provider)
 
