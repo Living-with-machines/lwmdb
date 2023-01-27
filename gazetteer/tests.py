@@ -22,8 +22,11 @@ def liverpool_point() -> Point:
 
 @pytest.mark.django_db
 class TestGeoSpatial:
+
+    """Test using geospatial functionality of `coordinates` `Point`."""
+
     def test_create_place_and_distance(self, manc_point, liverpool_point) -> None:
-        """Test creating a Place with a coordinates component and calc distance.
+        """Test creating a Place with `coordinates` and calc distance.
 
         Note:
             * Curvature not included in distance between points see:

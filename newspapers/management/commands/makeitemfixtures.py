@@ -22,6 +22,13 @@ current = timezone.now()
 
 
 def fix_fields(fields):
+    """Check correctness of newspapers Item model fields.
+
+    Iterate over the the `digitisation`, `ingest`, `data_provider`,
+    `issue`, `ocr_quality_mean` and `ocr_quality_sd` fields, adjusting
+    if necessarry. Conclude by updating the `created_at` and
+    `updated_at` fields.
+    """
     locator_software = fields.get("digitisation__software")
     if not LOCAL_STORE["software"].get(locator_software):
         LOCAL_STORE["software"][locator_software] = Digitisation.objects.get(
