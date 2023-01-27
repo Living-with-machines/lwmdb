@@ -84,13 +84,13 @@ class NewspapersFixture(Fixture):
             path.parent.mkdir(parents=True, exist_ok=True)
 
     def build_cache(self):
-        """
-        Builds a cache in a file structure of Newspapers and Issues:
-        ./{newspaper_cache}/{name of data provider}/2/2/0002246.json
+        """Build a cache in a file structure of Newspapers and Issues.
+
+        Caches follow this file structure:
+            ./{newspaper_cache}/{name of data provider}/2/2/0002246.json
 
         Each json file contains either an object (Newspapers) or a list of issues (Issues).
         """
-
         UNNAMED = 0
 
         for data_provider in DATA_PROVIDERS:
@@ -217,7 +217,6 @@ class NewspapersFixture(Fixture):
 
     def ingest_cache(self):
         """Function for ingesting cache files for Newspaper and Issue items."""
-
         get_newspaper_files = lambda data_provider: [
             x for x in Path(f"./{newspaper_cache}/{data_provider}/").glob("**/*.json")
         ]
