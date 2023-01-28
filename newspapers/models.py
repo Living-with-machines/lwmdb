@@ -276,13 +276,13 @@ class Item(NewspapersModel):
         with ZipFile(archive, "r") as zip_ref:
             zip_ref.extract(str(self.text_path), path=self.text_extracted_dir)
 
-    def read_fulltext_file(self):
+    def read_fulltext_file(self) -> list[str]:
         """Read the full text for this Item from a file."""
         with open(self.text_extracted_dir / self.text_path) as f:
             lines = f.readlines()
         return lines
 
-    def extract_fulltext(self, *args, **kwargs) -> str:
+    def extract_fulltext(self) -> list[str]:
         """Extract the full text of this newspaper item."""
         # If the item full text has already been extracted, read it.
         if os.path.exists(self.text_extracted_dir / self.text_path):
