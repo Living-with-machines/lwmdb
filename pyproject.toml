@@ -35,6 +35,7 @@ pyparsing = "^3.0.9"
 pydot = "^1.4.2"
 pre-commit = "^2.21.0"
 django-coverage-plugin = "^3.0.0"
+django-stubs = {extras = ["compatible-mypy"], version = "^1.14.0"}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -95,3 +96,21 @@ add-ignore = [
   "D100", "D101", "D102", "D104", "D105", "D106", "D107", "D203",
   "D204", "D211", "D213"
 ]
+
+[tool.mypy]
+python_version = "3.10"
+# check_untyped_defs = True
+ignore_missing_imports = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_unused_configs = true
+warn_return_any = true
+plugins =  "mypy_django_plugin.main"
+# Add "mypy_drf_plugin.main" if usig django-rest-framework API
+
+[tool.django-stubs]
+django_settings_module = "metadata.test_settings"
+
+[[tool.mypy.overrides]]
+module = "*.migrations.*"
+ignore_errors = true

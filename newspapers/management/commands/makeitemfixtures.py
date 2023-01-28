@@ -12,7 +12,7 @@ from newspapers.models import DataProvider, Digitisation, Ingest, Issue, Item
 
 from .items import item_cache
 
-LOCAL_STORE = {
+LOCAL_STORE: dict[str, dict] = {
     "software": {},
     "ingest": {},
     "data_provider": {},
