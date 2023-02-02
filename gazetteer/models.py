@@ -12,6 +12,7 @@ class GazetteerModel(models.Model):
 class AdminCounty(GazetteerModel):
     label = models.CharField(max_length=255, default=None)
     wikidata_id = models.CharField(max_length=30, default=None)
+    geom = models.GeometryCollectionField(null=True)
 
     def __str__(self):
         return str(self.label)
@@ -23,6 +24,7 @@ class AdminCounty(GazetteerModel):
 class Country(GazetteerModel):
     label = models.CharField(max_length=255, default=None)
     wikidata_id = models.CharField(max_length=30, default=None)
+    geom = models.GeometryCollectionField(null=True)
 
     def __str__(self):
         return str(self.label)
@@ -34,6 +36,7 @@ class Country(GazetteerModel):
 class HistoricCounty(GazetteerModel):
     label = models.CharField(max_length=255, default=None)
     wikidata_id = models.CharField(max_length=30, default=None)
+    geom = models.GeometryCollectionField(null=True)
 
     def __str__(self):
         return str(self.label)
@@ -53,7 +56,7 @@ class Place(GazetteerModel):
     latitude = models.FloatField(null=True)
     longitude = models.FloatField(null=True)
     geonames_ids = models.CharField(max_length=255, default=None, null=True)
-    coordinates = models.PointField(null=True)
+    geom = models.GeometryCollectionField(null=True)
 
     historic_county = models.ForeignKey(
         HistoricCounty,
