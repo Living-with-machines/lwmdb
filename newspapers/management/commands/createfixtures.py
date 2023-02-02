@@ -17,7 +17,6 @@ ALLOWED_APPS = [
 
 
 class Command(BaseCommand):
-
     # Show this when the user types help
     help = "Creates fixtures for any given type of model"
 
