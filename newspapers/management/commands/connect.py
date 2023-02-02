@@ -11,7 +11,6 @@ ALLOWED_APPS = [
 
 
 class Command(BaseCommand):
-
     # Show this when the user types help
     help = "Connects any related models"
 

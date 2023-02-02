@@ -87,9 +87,10 @@ class NewspapersFixture(Fixture):
         """Build a cache in a file structure of Newspapers and Issues.
 
         Caches follow this file structure:
-            ./{newspaper_cache}/{name of data provider}/2/2/0002246.json
+        ./{newspaper_cache}/{name of data provider}/2/2/0002246.json
 
-        Each json file contains either an object (Newspapers) or a list of issues (Issues).
+        Each json file contains either an object (Newspapers) or a list
+        of issues (Issues).
         """
         UNNAMED = 0
 

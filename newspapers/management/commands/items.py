@@ -57,8 +57,8 @@ class ItemFixture(NewspapersFixture):
     def build_cache(self):
         """Build a cache in a `jsonl` file structure of a list of `Items`.
 
-         Build a cache within a jsonl file which contains a list of Items,
-         in the following structure:
+        Build a cache within a jsonl file which contains a list of
+        Items, in the following structure:
 
         ./{item_cache}/{name of data provider}/2/2/0002246.jsonl
         """
