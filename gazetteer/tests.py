@@ -22,7 +22,6 @@ def liverpool_point() -> Point:
 
 @pytest.mark.django_db
 class TestGeoSpatial:
-
     """Test using geospatial functionality of `coordinates` `Point`."""
 
     def test_create_place_and_distance(self, manc_point, liverpool_point) -> None:

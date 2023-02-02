@@ -12,7 +12,6 @@ from newspapers.models import DataProvider, Issue, Item, Newspaper
 
 @pytest.mark.django_db
 class ItemTestCase(TestCase):
-
     """Test creating and querying Item, Issue and Newpaper instances."""
 
     def setUp(self):
@@ -41,7 +40,6 @@ class ItemTestCase(TestCase):
         )
 
     def test_item_parameters(self):
-
         item = Item.objects.get(item_code="0003040-18940905-art0030")
 
         self.assertEqual(item.title, "SAD END OF A RAILWAY")
@@ -63,7 +61,6 @@ class ItemTestCase(TestCase):
 
     @patchfs
     def test_is_downloaded(self, fs):
-
         item = Item.objects.get(item_code="0003040-18940905-art0030")
 
         self.assertFalse(item.is_downloaded())
@@ -78,7 +75,6 @@ class ItemTestCase(TestCase):
         self.assertTrue(item.is_downloaded())
 
     def test_extract_fulltext(self):
-
         item = Item.objects.get(item_code="0003040-18940905-art0030")
         last_57_chars = "Tile—jUr7 concurred, and returned • verdict accordingly.\n"
         # TODO #24: testing.

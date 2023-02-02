@@ -289,7 +289,6 @@ class Item(NewspapersModel):
             return self.read_fulltext_file()
 
         if self.FULLTEXT_METHOD == "download":
-
             # If not already available locally, download the full text archive.
             if not self.is_downloaded():
                 self.download_zip()
