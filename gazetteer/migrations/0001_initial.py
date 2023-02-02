@@ -7,8 +7,6 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    replaces = [('gazetteer', '0001_initial'), ('gazetteer', '0002_place_coordinates'), ('gazetteer', '0003_remove_place_coordinates_admincounty_geom_and_more'), ('gazetteer', '0004_alter_admincounty_geom_alter_country_geom_and_more')]
-
     initial = True
 
     dependencies = [
