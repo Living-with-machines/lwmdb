@@ -11,7 +11,7 @@ on:
     paths-ignore: [ "docs/**" ]
 
   push:
-    branches: [ "geodjango" ]
+    branches: [ "main", "geodjango" ]
     paths-ignore: [ "docs/**" ]
 
 concurrency:
