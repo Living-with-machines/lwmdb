@@ -22,3 +22,5 @@ scripts
 alto2txt2fixture/output/*
 wikidata_gazetteer.csv
 _dev
+*.min.js
+*.min.css
