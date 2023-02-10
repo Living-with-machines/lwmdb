@@ -24,3 +24,5 @@ wikidata_gazetteer.csv
 _dev
 *.min.js
 *.min.css
+.coverage
+.ipython
