@@ -112,7 +112,7 @@ class Issue(NewspapersModel):
 class Item(NewspapersModel):
     # TODO #55: item_code should be unique? Currently, not unique, however so needs fixing in alto2txt2fixture
     item_code = models.CharField(max_length=600, default=None)
-    title = models.TextField(default=None)
+    title = models.CharField(max_length=280, default=None)
     item_type = models.CharField(max_length=600, default=None, blank=True, null=True)
     word_count = models.IntegerField(null=True, db_index=True)
     ocr_quality_mean = models.FloatField(null=True, blank=True)
