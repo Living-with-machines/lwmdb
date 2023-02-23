@@ -1,5 +1,7 @@
 import os
+from logging import getLogger
 from pathlib import Path
+from typing import Final
 from zipfile import ZipFile
 
 from azure.storage.blob import BlobClient
@@ -8,6 +10,13 @@ from django_pandas.managers import DataFrameManager
 
 from fulltext.models import Fulltext
 from gazetteer.models import Place
+
+logger = getLogger(__name__)
+
+
+def word_count(text: str) -> int:
+    """Assuming English sentence structure, count words in `text`."""
+    return len(text.split())
 
 
 class NewspapersModel(models.Model):
@@ -111,10 +120,16 @@ class Issue(NewspapersModel):
 
 class Item(NewspapersModel):
     # TODO #55: item_code should be unique? Currently, not unique, however so needs fixing in alto2txt2fixture
+    MAX_TITLE_CHAR_COUNT: Final[int] = 280
+
     item_code = models.CharField(max_length=600, default=None)
-    title = models.CharField(max_length=280, default=None)
+    title = models.CharField(max_length=MAX_TITLE_CHAR_COUNT, default=None)
+    title_word_count = models.IntegerField(null=True)
+    title_char_count = models.IntegerField(null=True)
+    title_truncated = models.BooleanField(default=False)
     item_type = models.CharField(max_length=600, default=None, blank=True, null=True)
     word_count = models.IntegerField(null=True, db_index=True)
+    word_char_count = models.IntegerField(null=True)
     ocr_quality_mean = models.FloatField(null=True, blank=True)
     ocr_quality_sd = models.FloatField(null=True, blank=True)
     input_filename = models.CharField(max_length=255, default=None)
@@ -152,13 +167,52 @@ class Item(NewspapersModel):
     )
     fulltext = models.OneToOneField(Fulltext, null=True, on_delete=models.SET_NULL)
 
-    def save(self, *args, **kwargs):
+    def save(self, sync_title_counts: bool = False, *args, **kwargs):
         # for consistency, we save all item_type in uppercase
         self.item_type = str(self.item_type).upper()
+        self._sync_title_counts(force=sync_title_counts)
         return super(Item, self).save(*args, **kwargs)
 
     def __str__(self):
         return str(self.item_code)
+
+    def _sync_title_char_count(self, force: bool = False) -> None:
+        title_text_char_count: int = len(self.title)
+        if not self.title_char_count or force:
+            logger.debug(
+                f"Setting `title_char_count` for {self} to {title_text_char_count}"
+            )
+            self.title_char_count = title_text_char_count
+        else:
+            if self.title_char_count != title_text_char_count:
+                if self.title_char_count < self.MAX_TITLE_CHAR_COUNT:
+                    raise self.TitleLengthError(
+                        f"{self.title_char_count} characters does not equal {title_text_char_count}: the length of title of {self}"
+                    )
+
+    def _sync_title_word_count(self, force: bool = False) -> None:
+        title_text_word_count: int = word_count(self.title)
+        if not self.title_word_count or force:
+            logger.debug(
+                f"Setting `title_word_count` for {self} to {title_text_word_count}"
+            )
+            self.title_word_count = title_text_word_count
+        else:
+            if self.title_word_count != title_text_word_count:
+                raise self.TitleLengthError(
+                    f"{self.title_word_count} does not equal {title_text_word_count}: the length of words in title of {self}"
+                )
+
+    def _sync_title_counts(self, force: bool = False) -> None:
+        """Run `_sync` methods, then trim title if long."""
+        self._sync_title_char_count(force=force)
+        self._sync_title_word_count(force=force)
+        if self.title_char_count > self.MAX_TITLE_CHAR_COUNT:
+            logger.debug(
+                f"Trimming title of {self} to {self.MAX_TITLE_CHAR_COUNT} chars."
+            )
+            self.title = self.title[: self.MAX_TITLE_CHAR_COUNT]
+            self.title_truncated = True
 
     HOME_DIR = Path.home()
     DOWNLOAD_DIR = HOME_DIR / "metadata-db/"
@@ -170,6 +224,9 @@ class Item(NewspapersModel):
     FULLTEXT_STORAGE_ACCOUNT_URL = "https://alto2txt.blob.core.windows.net"
 
     SAS_ENV_VARIABLE = "FULLTEXT_SAS_TOKEN"
+
+    class TitleLengthError(Exception):
+        ...
 
     @property
     def download_dir(self):

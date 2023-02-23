@@ -50,6 +50,7 @@ addopts = """
 --pdbcls=IPython.terminal.debugger:TerminalPdb
 --doctest-modules
 --ignore=compose
+--ignore=jupyterhub_config.py
 """
 
 [tool.flake8]
