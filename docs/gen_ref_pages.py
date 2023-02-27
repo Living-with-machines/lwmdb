@@ -15,6 +15,13 @@ GEN_DOC_PATH: str = "reference"
 DOC_NAV_FILE_NAME: str = "DOC_STRINGS.md"
 DOC_NAV_FILE_PATH: Path = Path(str(GEN_DOC_PATH)) / str(DOC_NAV_FILE_NAME)
 
+EXCLUDE_PATHS: list[str] = [
+    "jupyterhub_config.js",
+    ".ipynb_checkpoints",
+    "migrations",
+    "manage.py",
+    "docs",
+]
 IPYNB_PATH: str = ".ipynb_checkpoints"
 
 nav = mkdocs_gen_files.Nav()
@@ -36,7 +43,7 @@ for path in sorted(Path(str(CODE_PATH)).rglob(CODE_DOC_REGEX)):
             continue
         doc_path = doc_path.with_name("index.md")
         full_doc_path = full_doc_path.with_name("index.md")
-    elif parts[-1] == "__main__" or IPYNB_PATH in parts:
+    elif parts[-1] == "__main__" or set(EXCLUDE_PATHS) & set(parts):
         logger.debug(f"Skipping module path {parts}")
         continue
 
@@ -48,6 +55,8 @@ for path in sorted(Path(str(CODE_PATH)).rglob(CODE_DOC_REGEX)):
         doc_md_path: str = f"{CODE_PATH}." + ".".join(parts)
         section_heading: str = "::: " + doc_md_path
         logger.info(f"Adding {section_heading}")
+        if 'manage' or 'index' in str(full_doc_path):
+            continue
         fd.write(section_heading)
 
     mkdocs_gen_files.set_edit_path(full_doc_path, path)
