@@ -1,8 +1,9 @@
-site_name: 'estios: Economic Spatial and Temporal Input-Output Systems'
+site_name: 'lwmdb: Living with Machines Database'
 
 nav:
 - Home: index.md
 - Issues: https://github.com/living-with-machines/lib_metadata_db/issues
+- Reference: reference/
 
 repo_url: https://github.com/living-with-machines/lib_metadata_db/
 
@@ -36,15 +37,15 @@ theme:
 
 plugins:
 - search:
-    min_search_length: 3
     lang: en
+    min_search_length: 3
+- section-index
 - markdown-exec
 - gen-files:
     scripts:
     - docs/gen_ref_pages.py
 - literate-nav:
     nav_file: DOC_STRINGS.md
-- section-index
 - mkdocstrings:
     handlers:
       python:
