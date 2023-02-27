@@ -125,7 +125,10 @@ class ItemTestCase(TestCase):
 
     def test_sync_title_length_too_long(self):
         """Test managing title length beyond max characters."""
-        title_extension: str = " TOO LONG" * 50
+        max_title_char_count: int = Item.MAX_TITLE_CHAR_COUNT
+        title_extension: str = " TOO LONG" * int(
+            max_title_char_count / 4
+        )  # Ensure longer than MX
         test_item = Item.objects.get(item_code=TEST_ITEM_CODE)
         assert test_item.title == TEST_ITEM_TITLE
         new_title = TEST_ITEM_TITLE + title_extension
@@ -136,7 +139,7 @@ class ItemTestCase(TestCase):
         correct_word_count: int = word_count(new_title)
         with self.assertLogs(level=DEBUG) as logs:
             test_item.save(sync_title_counts=True)
-        assert test_item.title == new_title[: test_item.MAX_TITLE_CHAR_COUNT]
+        assert test_item.title == new_title[:max_title_char_count]
         assert test_item.title_char_count == correct_char_count
         assert test_item.title_word_count == correct_word_count
         correct_logs: list[str] = [

@@ -120,7 +120,7 @@ class Issue(NewspapersModel):
 
 class Item(NewspapersModel):
     # TODO #55: item_code should be unique? Currently, not unique, however so needs fixing in alto2txt2fixture
-    MAX_TITLE_CHAR_COUNT: Final[int] = 280
+    MAX_TITLE_CHAR_COUNT: Final[int] = 800
 
     item_code = models.CharField(max_length=600, default=None)
     title = models.CharField(max_length=MAX_TITLE_CHAR_COUNT, default=None)
