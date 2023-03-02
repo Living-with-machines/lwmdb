@@ -220,8 +220,8 @@ use_docker_key: Final[str] = "USE_DOCKER"
 def is_docker():
     """Test if currently running in Docker.
 
-    See
-    https://stackoverflow.com/questions/43878953/how-does-one-detect-if-one-is-running-within-a-docker-container-within-python
+    See https://stackoverflow.com/questions/43878953/how-does-one-
+    detect-if-one-is-running-within-a-docker-container-within-python
     """
     cgroup = Path("/proc/self/cgroup")
     return (
