@@ -60,6 +60,7 @@ addopts = """
 --doctest-modules
 --ignore=compose
 --ignore=jupyterhub_config.py
+--ignore=notebooks
 """
 
 [tool.flake8]
