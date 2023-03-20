@@ -12,13 +12,13 @@ It is possible to run this code without Docker, but at present we are only maint
 
 Run the following command on your command line:
 
-```
+```console
 $ git clone git@github.com:Living-with-machines/lib_metadata_db.git
 ```
 
 Follow by:
 
-```
+```console
 $ cd lib_metadata_db
 ```
 
@@ -52,7 +52,32 @@ metadata_local_django    |  * Debugger PIN: 139-826-693
 
 Indicating it's up and running. You should then be able to go to `http://127.0.0.1:8000` in your local browser and see a start page.
 
-### Put the database into place
+### Build issues
+
+The current configuration attempts to apply all database migrations in the `docker` build. If there's a failure like
+
+```console
+metadata_local_django    | CommandError: Conflicting migrations detected; multiple leaf nodes in the migration graph: (0004_alter_item_title, 0005_alt
+er_item_title in newspapers).
+metadata_local_django    | To fix them run 'python manage.py makemigrations --merge'
+metadata_local_django exited with code 1
+```
+
+then, *assuming you don't have the database in a state that you need to keen* you can try building with
+
+```console
+docker compose -f local.yml build --no-cache
+```
+
+This *should* reset the `postgresl` [`container`](https://docs.docker.com/engine/reference/commandline/container/). If you have database modifications that you would like to retain, please raise a pull request so we can try to accomodate. This will involve running that suggested command, but there could be risks to the state the database is in at that point.
+
+For completeness here is how that command could be run, but safest to avoid until *certain* this is best for you database:
+
+```console
+docker compose -f local.yml exec django /app/manage.py makemigrations --merge
+```
+
+### Add database fixtures
 
 Now you need to access the **correct** and **most up-to-date** version of the database and place files in the `fixtures` folder. Currently these need to be requested. Feel free to report an [issue](https://github.com/Living-with-machines/lib_metadata_db/issues) indicating you need fixtures and we will help provide that if permission allows.
 
@@ -68,8 +93,9 @@ The files can then be processed by loading each via
 
 ```console
 $ docker compose -f local.yml exec django /app/manage.py loaddata fixtures/Newspaper-1.json
+$ docker compose -f local.yml exec django /app/manage.py loaddata fixtures/Issue-1.json 
+$ docker compose -f local.yml exec django /app/manage.py loaddata fixtures/Item-1.json 
 $ docker compose -f local.yml exec django /app/manage.py loaddata fixtures/Item-2.json 
-...
 ```
 
 Once all of these are loaded, you should be able to interact with the database.
