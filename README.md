@@ -76,7 +76,7 @@ The files can then be imported via
 
 ```console
 $ docker compose -f local.yml exec django /app/manage.py loaddata fixtures/Newspaper-1.json
-$ docker compose -f local.yml exec django /app/manage.py loaddata fixtures/Issue-1.json 
+$ docker compose -f local.yml exec django /app/manage.py loaddata fixtures/Issue-1.json
 ...
 ```
 
@@ -105,7 +105,7 @@ Then run the `restore` command with the filename of the backup. By default backu
 docker compose -f local.yml exec postgres restore backup_2023_04_03T07_22_10.sql.gz
 ```
 
-> :warning: If the version of the database you are loading is *not* compatible with the current version of the python package, this can cause significant errors. 
+> :warning: If the version of the database you are loading is *not* compatible with the current version of the python package, this can cause significant errors.
 
 ## Querying the database
 
