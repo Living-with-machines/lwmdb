@@ -52,11 +52,19 @@ metadata_local_django    |  * Debugger PIN: 139-826-693
 
 Indicating it's up and running. You should then be able to go to `http://127.0.0.1:8000` in your local browser and see a start page.
 
-### Put the database into place
+To stop the app call the `down` command:
 
-Now you need to access the **correct** and **most up-to-date** version of the database and place files in the `fixtures` folder. Currently these need to be requested. Feel free to report an [issue](https://github.com/Living-with-machines/lib_metadata_db/issues) indicating you need fixtures and we will help provide that if permission allows.
+```console
+$ docker compose -f local.yml down
+```
 
-Assuming data is available, you should be able to import the data provided by placing those files in a `fixtures` folder in your local checkout:
+### Importing data
+
+If a previous version of the database is available as either `json` fixtures or raw `sql` via a `pg_dump` (or similar) command.
+
+#### `json` import
+
+`json` `fixtures` need to be placed in a `fixtures` folder in your local checkout:
 
 ```console
 $ cd lib_metadata_db
@@ -64,15 +72,40 @@ $ mkdir fixtures
 $ cp DataProvider-1.json  Ingest-1.json Item-1.json Newspaper-1.json Digitisation-1.json Issue-1.json Item-2.json fixtures/
 ```
 
-The files can then be processed by loading each via
+The files can then be imported via
 
 ```console
 $ docker compose -f local.yml exec django /app/manage.py loaddata fixtures/Newspaper-1.json
-$ docker compose -f local.yml exec django /app/manage.py loaddata fixtures/Item-2.json 
+$ docker compose -f local.yml exec django /app/manage.py loaddata fixtures/Issue-1.json 
 ...
 ```
 
-Once all of these are loaded, you should be able to interact with the database.
+> :warning: Note the import order is important, specifically: `Newspaper`, `Issue` and any other data `json` files *prior* to `Item` `json`.
+
+#### Importing a `postgres` database
+
+Importing from `json` can be very slow. If provided a `postgres` data file, it is possible to import that directly. First copy the database file(s) to a `backups` folder on the `postgres` instance (assuming you've run the `build` command)
+
+```console
+docker compose -f local.yml cp backups/* $(docker compose -f local.yml ps -q postgres):/backups/
+```
+
+Next make sure the app is shut down, then start up with *only the `postgres`* container running:
+
+```console
+docker compose -f local.yml down
+docker compose -f local.yml up postgres
+```
+
+Then run the `restore` command with the filename of the backup. By default backup filenames indicates when the backup was made and are compressed (using [`gzip`](https://en.wikipedia.org/wiki/Gzip) compression in the example below `backup_2023_04_03T07_22_10.sql.gz` ) :
+
+> :warning: There is a chance the default `docker` size allocated is not big enough for a full version of the dataset (especially if running on a desktop). If so, you may need to increase the allocated disk space. For example, see [`Docker Mac FAQs`](https://docs.docker.com/desktop/faqs/macfaqs/#where-does-docker-desktop-store-linux-containers-and-images) for instructions to increase available disk space.
+
+```console
+docker compose -f local.yml exec postgres restore backup_2023_04_03T07_22_10.sql.gz
+```
+
+> :warning: If the version of the database you are loading is *not* compatible with the current version of the python package, this can cause significant errors. 
 
 ## Querying the database
 
@@ -92,7 +125,7 @@ This should launch a normal Jupyter Notebook in your browser window where you ca
 
 ## Upgrade development version
 
-In order to upgrade the current development version that you have, make sure that you have synchronised the repository to your local drive, and that you have dropped the correct and most up-to-date `db.sqlite3` file into the same folder as the `manage.py` file. (See above, under ”Put the database into place“, for further explanation.)
+In order to upgrade the current development version that you have, make sure that you have synchronised the repository to your local drive:
 
 **Step 1**: `$ git pull`
 
