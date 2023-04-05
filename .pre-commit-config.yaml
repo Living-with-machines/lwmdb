@@ -80,7 +80,7 @@ repos:
           - django-debug-toolbar
           - azure-storage-blob
           - django_pandas
-          - psycopg2
+          - psycopg2-binary
 # sets up .pre-commit-ci.yaml to ensure pre-commit dependencies stay up to date
 ci:
   autoupdate_schedule: weekly
