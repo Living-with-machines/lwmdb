@@ -81,6 +81,7 @@ repos:
           - azure-storage-blob
           - django_pandas
           - psycopg2-binary
+          - tqdm
 # sets up .pre-commit-ci.yaml to ensure pre-commit dependencies stay up to date
 ci:
   autoupdate_schedule: weekly
