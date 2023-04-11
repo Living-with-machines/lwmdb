@@ -11,12 +11,9 @@ from django_pandas.managers import DataFrameManager
 from fulltext.models import Fulltext
 from gazetteer.models import Place
 
+from .utils import word_count
+
 logger = getLogger(__name__)
-
-
-def word_count(text: str) -> int:
-    """Assuming English sentence structure, count words in `text`."""
-    return len(text.split())
 
 
 class NewspapersModel(models.Model):
