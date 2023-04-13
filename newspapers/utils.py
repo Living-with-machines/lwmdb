@@ -77,7 +77,7 @@ def natural_keys(
 
 def filter_starts_with(
     fixture_paths: Sequence[str],
-    starts_with_str: str,
+    starts_with_str: str = NEWSPAPER_MODEL_NAME,
     key_func: Callable = natural_keys,
 ) -> list[str]:
     """Filter and sort `fixture_paths` that begin with `starts_with_str`.
@@ -96,28 +96,10 @@ def filter_starts_with(
     )
 
 
-# def filter_news_fixtures(
-#     fixture_paths: Sequence[str],
-#     starts_with_str: str = "News",
-#     key_func: Callable = natural_keys,
-# ) -> list[str]:
-#     """Filter `fixture_paths` that begin with `starts_with_str` and apply `key_func` sort.
-#
-#     >>> filter_news_fixtures(['path/Newspaper-11.json', 'path/Issue-11.json', 'path/News-1.json'])
-#     ['path/News-1.json', 'path/Newspaper-11.json']
-#     """
-#     return sorted(
-#         (f for f in fixture_paths if f.startswith(f"{Path(f).parent}/{starts_with_str}")),
-#         key=key_func,
-#     )
-
-
 def filter_exclude_starts_with(
     fixture_paths: Sequence[str],
-    # starts_str1: str = "Item-",
-    # starts_str2: str = "News",
-    starts_str1: str,
-    starts_str2: str = "News",
+    starts_str1: str = ITEM_MODEL_NAME,
+    starts_str2: str = NEWSPAPER_MODEL_NAME,
     key_func: Callable = natural_keys,
 ) -> list[str]:
     """Exclude sort `fixture_paths` starting with `starts_str1`, `starts_str1`.
@@ -136,29 +118,23 @@ def filter_exclude_starts_with(
     )
 
 
-#
-# def filter_item_fixtures(
-#     fixture_paths: Sequence[str], key_func: Callable = natural_keys
-# ) -> list[str]:
-#     return sorted(
-#         (f for f in fixture_paths if f.startswith(f"{Path(f).parent}/Item-")),
-#         key=key_func,
-#     )
-
-
 def sort_all_fixture_paths(
     unsorted_fixture_paths: Sequence[str], key_func: Callable = natural_keys
 ) -> list[str]:
-    """Sort fixture paths to correct order for importing."""
+    """Sort fixture paths to correct order for importing.
+
+    >>> sort_all_fixture_paths(['path/Item-1.json', 'path/Newspaper-11.json', 'path/Issue-11.json', 'cat'])
+    ['path/Newspaper-11.json', 'path/Issue-11.json', 'path/Item-1.json', ]
+    """
     newspaper_fixture_paths: list[str] = filter_starts_with(
-        unsorted_fixture_paths, "News", key_func
+        unsorted_fixture_paths, NEWSPAPER_MODEL_NAME, key_func
     )
     non_newspaper_non_item_fixture_paths: list[str] = filter_exclude_starts_with(
-        unsorted_fixture_paths,
-        key_func,
+        fixture_paths=unsorted_fixture_paths,
+        key_func=key_func,
     )
-    item_fixtures: list[str] = filter_item_starts_with(
-        unsorted_fixture_paths, "Item-", key_func
+    item_fixtures: list[str] = filter_starts_with(
+        unsorted_fixture_paths, ITEM_MODEL_NAME, key_func
     )
     return (
         newspaper_fixture_paths + non_newspaper_non_item_fixture_paths + item_fixtures
@@ -199,9 +175,8 @@ def log_and_django_terminal(
 def callable_on_chunks(
     qs: QuerySet,
     method_name: str = "save",
-    mod_amount: int = 1000,
-    start_index: int | None = 20000,
-    end_index: int | None = 200000,
+    start_index: int | None = None,
+    end_index: int | None = None,
     chunk_size: int = 20000,
     terminal_print: bool = False,
     **kwargs,
@@ -227,8 +202,10 @@ def callable_on_chunks(
     )
     try:
         assert count_to_process >= 0
-        assert start_index is None or start_index < qs_len
-        assert end_index is None or end_index < qs_len
+        if start_index:
+            assert start_index < qs_len
+        if end_index:
+            assert end_index < qs_len
     except AssertionError:
         IndexError(
             (
@@ -256,13 +233,11 @@ def callable_on_chunks(
             terminal_print=terminal_print,
         )
 
-    # for i, record in enumerate(qs[start_index:end_index].iterator(chunk_size=chunk_size)):
-    for record in tqdm(qs[start_index:end_index].iterator(chunk_size=chunk_size)):
+    for record in tqdm(
+        qs[start_index:end_index].iterator(chunk_size=chunk_size),
+        total=count_to_process,
+    ):
         getattr(record, method_name)(**kwargs)
-        # if (i % mod_amount) == 0:
-        #     iter_time = datetime.now()
-        #     log_and_django_terminal(f"Processed {i + (start_index or 0)} of {count_to_process} at {iter_time}", terminal_print=terminal_print)
-        #     log_and_django_terminal(f"Time elapsed: {iter_time - start_time}", terminal_print=terminal_print)
     end_time = datetime.now()
     log_and_django_terminal(
         f"Processed records {start_index_str} to {end_index_str} (total {count_to_process}) of {qs_len} {model_name} at {end_time}.",
@@ -272,10 +247,11 @@ def callable_on_chunks(
         f"Toral process time: {end_time - post_count_time}",
         terminal_print=terminal_print,
     )
-    log_and_django_terminal(
-        f"Average process time: {(end_time - post_count_time)/count_to_process}",
-        terminal_print=terminal_print,
-    )
+    if count_to_process:
+        log_and_django_terminal(
+            f"Average process time: {(end_time - post_count_time)/count_to_process}",
+            terminal_print=terminal_print,
+        )
 
 
 def import_fixtures(
