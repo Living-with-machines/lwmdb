@@ -6,7 +6,7 @@ authors = ["Kalle Westerling <kalle.westerling@bl.uk>"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-django = "^4.1.7"
+django = "^4.2"
 seaborn = "^0.11.2"
 pandas = "^1.4.1"
 ipython = "^8.4.0"
