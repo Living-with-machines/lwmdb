@@ -68,7 +68,7 @@ The files can then be processed by loading each via
 
 ```console
 $ docker compose -f local.yml exec django /app/manage.py loaddata fixtures/Newspaper-1.json
-$ docker compose -f local.yml exec django /app/manage.py loaddata fixtures/Item-2.json 
+$ docker compose -f local.yml exec django /app/manage.py loaddata fixtures/Item-2.json
 ...
 ```
 
