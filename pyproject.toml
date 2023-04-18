@@ -21,7 +21,6 @@ GDAL = {version = "3.5.3", platform = "darwin"}
 whitenoise = "^6.4.0"
 tqdm = "^4.65.0"
 psycopg = {extras = ["binary"], version = "^3.1.8"}
-psycopg2-binary = "^2.9.6"
 django-debug-toolbar = "^4.0.0"
 psutil = "5.9.4"
 gunicorn = "^20.1.0"
