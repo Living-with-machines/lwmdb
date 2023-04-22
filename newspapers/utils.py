@@ -14,7 +14,11 @@ DEFAULT_FIXTURE_PATH: Final[str] = "fixtures"
 JSON_FORMAT_EXTENSION: Final[str] = ".json"
 
 DEFAULT_MAX_LOG_STR_LENGTH: Final[int] = 30
+DEFAULT_CALLABLE_CHUNK_SIZE: Final[int] = 20000
+DEFAULT_CALLABLE_CHUNK_METHOD_NAME: Final["save"] = str
+
 DEFAULT_TRUNCATION_CHARS: Final[str] = "..."
+
 DIGITS_REGEX: Final[str] = r"(\d+)"
 
 NEWSPAPER_MODEL_NAME: Final[str] = "Newspaper"
@@ -178,10 +182,10 @@ def log_and_django_terminal(
 
 def callable_on_chunks(
     qs: QuerySet,
-    method_name: str = "save",
+    method_name: str = DEFAULT_CALLABLE_CHUNK_METHOD_NAME,
     start_index: int | None = None,
     end_index: int | None = None,
-    chunk_size: int = 20000,
+    chunk_size: int = DEFAULT_CALLABLE_CHUNK_SIZE,
     terminal_print: bool = False,
     **kwargs,
 ) -> None:
