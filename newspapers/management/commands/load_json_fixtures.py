@@ -2,7 +2,7 @@ from pathlib import Path
 
 from django.core.management.base import BaseCommand
 
-from ..utils import (
+from ...utils import (
     DEFAULT_FIXTURE_PATH,
     JSON_FORMAT_EXTENSION,
     get_fixture_paths,

@@ -39,8 +39,8 @@ def truncate_str(
 ) -> str:
     """If `len(text) > max_length` return `text` followed by `trail_str`.
 
-    >>> truncate_str("Standing on the shoulders of giants.", 3)
-    "Standing on the..."
+    >>> truncate_str('Standing on the shoulders of giants.', 15)
+    'Standing on the...'
     """
     return text[:max_length] + trail_str if len(text) > max_length else text
 
@@ -66,8 +66,8 @@ def natural_keys(
     Designed for application to a list of fixture filenames with integers
 
     >>> example = ["fixture/Item-1.json", "fixture/Item-2.json", "fixture/Item-10.json"]
-    >>> example.sort(key=natural_keys)
-    ["fixture/Item-1.json", "fixture/Item-2.json", "fixture/Item-10.json"]
+    >>> sorted(example, key=natural_keys)
+    ['fixture/Item-1.json', 'fixture/Item-2.json', 'fixture/Item-10.json']
 
     Inspiration:
         http://nedbatchelder.com/blog/200712/human_sorting.html
@@ -82,8 +82,8 @@ def filter_starts_with(
 ) -> list[str]:
     """Filter and sort `fixture_paths` that begin with `starts_with_str`.
 
-    >>> filter_start_swith(['path/Newspaper-11.json', 'path/Issue-11.json', 'path/News-1.json'],
-                           "News")
+    >>> paths = ['path/Newspaper-11.json', 'path/Issue-11.json', 'path/News-1.json']
+    >>> filter_starts_with(fixture_paths=paths, starts_with_str="News")
     ['path/News-1.json', 'path/Newspaper-11.json']
     """
     return sorted(
@@ -123,8 +123,12 @@ def sort_all_fixture_paths(
 ) -> list[str]:
     """Sort fixture paths to correct order for importing.
 
-    >>> sort_all_fixture_paths(['path/Item-1.json', 'path/Newspaper-11.json', 'path/Issue-11.json', 'cat'])
-    ['path/Newspaper-11.json', 'path/Issue-11.json', 'path/Item-1.json', ]
+    >>> paths = [
+    ...     'path/Item-1.json', 'path/Newspaper-11.json',
+    ...     'path/Issue-11.json', 'cat'
+    ... ]
+    >>> sort_all_fixture_paths(paths)
+    ['path/Newspaper-11.json', 'cat', 'path/Issue-11.json', 'path/Item-1.json']
     """
     newspaper_fixture_paths: list[str] = filter_starts_with(
         unsorted_fixture_paths, NEWSPAPER_MODEL_NAME, key_func
