@@ -2,6 +2,7 @@ site_name: 'lwmdb: Living with Machines Database'
 
 nav:
 - Home: index.md
+- Deploy: deploy.md
 - Issues: https://github.com/living-with-machines/lib_metadata_db/issues
 - Reference: reference/
 
