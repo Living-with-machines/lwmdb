@@ -25,10 +25,12 @@ $ cd lib_metadata_db
 ### Running locally
 
 ```console
-$ docker compose -f local.yml up --build
+$ docker compose -f local.yml up --env-file=.envs/local --build
 ```
 
-It will take some time to download a set of `docker` images required to run locally, after which it should attempt to start the server in the `django` container. If successful, the console should print
+Note: this uses the `.envs/local` file provided in the repo. This *must not* be used in production, it is simply for local development and to ease demonstrating what is required for `.envs/production`, which *must* be generated separately for deploying via `production.yml`.
+
+It will take some time to download a set of `docker` images required to run locally, after which it should attempt to start the server in the `django` container. If successful, the console should print logs resembling
 
 ```console
 metadata_local_django    | WARNING: This is a development server. Do not use it in a production
@@ -55,7 +57,7 @@ Indicating it's up and running. You should then be able to go to `http://127.0.0
 To stop the app call the `down` command:
 
 ```console
-$ docker compose -f local.yml down
+$ docker compose -f local.yml --env-file=.envs/local down
 ```
 
 ### Importing data
@@ -130,7 +132,7 @@ In order to upgrade the current development version that you have, make sure tha
 
 **Step 1**: `$ git pull`
 
-**Step 2**: `$ docker compose -f local.yml up --build`
+**Step 2**: `$ docker compose -f local.yml --env-file=.envs/local up --build`
 
 ## Accessing full-text using `extract_fulltext` method
 
@@ -154,6 +156,15 @@ item.extract_fulltext()
 If you need help setting up a SAS token, see [instructions here](https://github.com/Living-with-machines/fulltext#sas-token-creation).
 
 _Please note, access via Blobfuse is planned but not yet implemented._
+
+## Running on a server
+
+To run in production, a `.envs/production` `ENV` file is required. This is not provided to help encryption keys are generated locally and uniquely. The keys set in `.envs/local` are all needed, as well as the follwing two:
+
+- TRAEFIK_EMAIL="email.register.for.traefik.account@test.com"
+- HOST_URL="host.for.lwmdb.deploy.org"
+
+A domain name (in this example `"host.for.lwmdb.deploy.org`) must be registered for `https` (encripyted) usage, and a `TLS` certificate is needed. See [`traefik` docs](https://doc.traefik.io/traefik/https/acme/) for details.
 
 ## Troubleshooting: Common issues
 
