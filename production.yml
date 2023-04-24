@@ -14,15 +14,15 @@ services:
     container_name: metadata_production_django
     depends_on:
       - postgres
-      # - redis
+      - redis
     volumes:
       - .:/app:z
     env_file:
       - ./.envs/production
     ports:
-      - "8000:8000"
-      - "9090:9090"  # For Jupyter
-      - "5000:5000"
+      - '8000:8000'
+      # - '9090:9090'  # For Jupyter
+      - '5000:5000'
     command: /start
 
   postgres:
@@ -37,7 +37,7 @@ services:
     env_file:
       - ./.envs/production
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER}']
       interval: 5s
       timeout: 5s
       retries: 5
@@ -54,11 +54,11 @@ services:
   #   env_file:
   #     - ./.envs/.production/.caddy
   #   ports:
-  #     - "0.0.0.0:80:80"
-  #     - "0.0.0.0:443:443"
+  #     - '0.0.0.0:80:80'
+  #     - '0.0.0.0:443:443'
 
   redis:
-    image: redis:3.2
+    image: redis:7
 
   # celeryworker:
   #   <<: *django
@@ -74,5 +74,5 @@ services:
   #   <<: *django
   #   image: metadata_production_flower
   #   ports:
-  #     - "5555:5555"
+  #     - '5555:5555'
   #   command: /start-flower
