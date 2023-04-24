@@ -26,3 +26,4 @@ _dev
 *.min.css
 .coverage
 .ipython
+.envs/production
