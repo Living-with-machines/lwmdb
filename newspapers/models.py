@@ -120,7 +120,7 @@ class Item(NewspapersModel):
     MAX_TITLE_CHAR_COUNT: Final[int] = 100
 
     item_code = models.CharField(max_length=600, default=None)
-    title = models.CharField(max_length=MAX_TITLE_CHAR_COUNT, default=None)
+    title = models.TextField(max_length=MAX_TITLE_CHAR_COUNT, default=None)
     title_word_count = models.IntegerField(null=True)
     title_char_count = models.IntegerField(null=True)
     title_truncated = models.BooleanField(default=False)
