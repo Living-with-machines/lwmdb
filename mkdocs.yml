@@ -38,14 +38,13 @@ theme:
 plugins:
 - search:
     lang: en
-    min_search_length: 3
-- section-index
 - markdown-exec
 - gen-files:
     scripts:
     - docs/gen_ref_pages.py
 - literate-nav:
     nav_file: DOC_STRINGS.md
+- section-index
 - mkdocstrings:
     handlers:
       python:
