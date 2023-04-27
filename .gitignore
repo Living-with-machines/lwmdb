@@ -27,3 +27,4 @@ _dev
 .coverage
 .ipython
 .envs/production
+certs/*
