@@ -62,6 +62,7 @@ addopts = """
 --ignore=compose
 --ignore=jupyterhub_config.py
 --ignore=notebooks
+--ignore=docs
 """
 
 [tool.flake8]

@@ -7,7 +7,15 @@ import pytest
 from django.test import TestCase
 from pyfakefs.fake_filesystem_unittest import patchfs
 
-from newspapers.models import DataProvider, Issue, Item, Newspaper, word_count
+from newspapers.models import (
+    MAX_PRINT_SELF_STR_LENGTH,
+    DataProvider,
+    Issue,
+    Item,
+    Newspaper,
+    word_count,
+)
+from newspapers.utils import truncate_str
 
 TEST_ITEM_CODE: Final[str] = "0003040-18940905-art0030"
 TEST_ITEM_TITLE: Final[str] = "SAD END OF A RAILWAY"
@@ -158,3 +166,6 @@ class ItemTestCase(TestCase):
         ]
         assert logs.output == correct_logs
         assert test_item.title_truncated
+        assert str(test_item) == truncate_str(
+            test_item.title, MAX_PRINT_SELF_STR_LENGTH
+        )
