@@ -42,6 +42,28 @@ services:
       timeout: 5s
       retries: 5
 
+  nginx-proxy:
+    image: jwilder/nginx-proxy:alpine
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./certs:/etc/nginx/certs
+    restart: always
+    depends_on:
+      - django
+
+  # Uncomment to test out nginx-proxy config
+  # whoami:
+  #   image: jwilder/whoami
+  #   expose:
+  #     - "8000"
+  #   environment:
+  #     - VIRTUAL_HOST=whoami.local
+  #     - VIRTUAL_PORT=8000
+
   # jupyterhub:
   #   build:
   #     context: .
@@ -75,38 +97,38 @@ services:
 
   # Only used with celery/flower when local
   # redis:
-  # image: redis:7
-  # container_name: metadata_local_redis
+  #   image: redis:7
+  #   container_name: metadata_local_redis
 
-    # celeryworker:
-  # <<: *django
-    # image: metadata_local_celeryworker
-    # container_name: metadata_local_celeryworker
-    # depends_on:
-    # - redis
-      # - postgres
-      # - mailhog
-      # ports: []
-    # command: /start-celeryworker
+  # celeryworker:
+  #   <<: *django
+  #   image: metadata_local_celeryworker
+  #   container_name: metadata_local_celeryworker
+  #   depends_on:
+  #     - redis
+  #     - postgres
+  #     - mailhog
+  #   ports: []
+  #   command: /start-celeryworker
 
-    # celerybeat:
-  # <<: *django
-    # image: metadata_local_celerybeat
-    # container_name: metadata_local_celerybeat
-    # depends_on:
-    # - redis
-      # - postgres
-      # - mailhog
-      # ports: []
-    # command: /start-celerybeat
+  # celerybeat:
+  #   <<: *django
+  #   image: metadata_local_celerybeat
+  #   container_name: metadata_local_celerybeat
+  #   depends_on:
+  #     - redis
+  #     - postgres
+  #     - mailhog
+  #   ports: []
+  #   command: /start-celerybeat
 
-    # flower:
-  # <<: *django
-    # image: metadata_local_flower
-    # container_name: metadata_local_flower
-    # ports:
-#     - '5555:5555'
-#    command: /start-flower
+  # flower:
+  #   <<: *django
+  #   image: metadata_local_flower
+  #   container_name: metadata_local_flower
+  #   ports:
+  #    - '5555:5555'
+  #   command: /start-flower
 
   node:
     build:

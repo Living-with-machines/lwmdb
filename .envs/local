@@ -19,3 +19,8 @@ REDIS_URL=redis://redis:6379/0
 # Flower
 CELERY_FLOWER_USER=aePSKkcANYKRklVrFMzjQPlsHXUrQEzV
 CELERY_FLOWER_PASSWORD=Ykr75MuBE22sphvBlNzqLkLWRFD9NcnIbAnYkGbQARde4MViE1z6dKQDDafMtmCf
+
+# HTTPS
+# ------------------------------------------------------------------------------
+VIRTUAL_HOST=lwmdb-test.local
+VIRTUAL_PORT=8000
