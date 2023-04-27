@@ -1,6 +1,6 @@
 # Deploy
 
-There are two main options for deploying this data. Both require `docker` to manage build, testing and interoperability, and at the time of this writing *at least* 10 GB of free harddrive space, preferable two or three times that for flexibility.
+There are two main options for deploying this data. Both require `docker` to manage build, testing and interoperability, and at the time of this writing *at least* 30 GB of free harddrive space, preferable two or three times that for flexibility.
 
 ## Local Deploy:
 
@@ -10,7 +10,7 @@ Local deploys are well suited for
 - Testing new features
 - Contributing to bug fixes or documentation
 
-Assuming a personal computer, `docker` [`Desktop`](https://www.docker.com/products/docker-desktop/) is one of the easier options, with options for `Linux` distributions, `Windows` and `macOS`.
+Assuming a personal computer, `docker` [Desktop](https://www.docker.com/products/docker-desktop/) is one of the easier options and works for `Linux` distributions, `Windows` and `macOS`.
 
 ### Clone repository to local drive
 
@@ -18,13 +18,10 @@ Run the following command on your command line:
 
 ```
 $ git clone git@github.com:Living-with-machines/lib_metadata_db.git
-```
-
-Follow by:
-
-```
 $ cd lib_metadata_db
 ```
+
+The subsequent sections assume commands are run from within the `lib_metadata_db` folder.
 
 ### Local Build
 
@@ -48,7 +45,7 @@ metadata_local_django    | Performing system checks...
 metadata_local_django    |
 metadata_local_django    | System check identified no issues (0 silenced).
 metadata_local_django    |
-metadata_local_django    | Django version 4.1.7, using settings 'metadata.settings'
+metadata_local_django    | Django version 4.2, using settings 'metadata.settings'
 metadata_local_django    | Development server is running at http://0.0.0.0:8000/
 metadata_local_django    | Using the Werkzeug debugger (http://werkzeug.pocoo.org/)
 metadata_local_django    | Quit the server with CONTROL-C.
@@ -61,5 +58,83 @@ Indicating it's up and running. You should then be able to go to `http://127.0.0
 To stop the app call the `down` command:
 
 ```console
-$ docker compose -f local.yml --env-file=.envs/local down
+$ docker compose -f local.yml down
 ```
+
+## Local Encryption (`https`)
+
+Note the example url's provided above are primarily `http` via ports `8000` (like `http://127.0.0.1:8000`). Web security---even when running work locally---has become a crucial element of even local development, and to work towards a production deploy local encryption is a very helpful process.
+
+[`django-cookie-cutter`](https://cookiecutter-django.readthedocs.io/en/latest/developing-locally-docker.html#developing-locally-with-https) suggests options for using [Fillipo Valsorda's](https://filippo.io/) [`mkcert`](https://github.com/FiloSottile/mkcert).
+
+To install `mkcert` follow the install [docs](https://github.com/FiloSottile/mkcert#installation)  and t. Once installed, follow the instructions to generate a local host certificate:
+
+```console
+$ mkcert -install
+Created a new local CA 💥
+Sudo password:
+The local CA is now installed in the system trust store! ⚡️
+The local CA is now installed in the Firefox trust store (requires browser restart)! 🦊
+```
+
+Once installed, create a `certs` local directory in the same folder as the `local.yml` file, and enter it to generate a local certificate files
+
+```console
+$ mkdir certs
+$ cd certs
+$ mkcert lwmdb-test.local localhost 127.0.0.1 ::1
+
+Created a new certificate valid for the following names 📜
+ - "lwmdb-test.local"
+ - "localhost"
+ - "127.0.0.1"
+ - "::1"
+
+The certificate is at "./lwmdb-test.local+3.pem" and the key at "./lwmdb-test.local+3-key.pem" ✅
+
+It will expire on 25 July 2025 🗓
+```
+
+For the generated keys to work with `nginx-proxy`, they need to be renamed as follows:
+
+```console
+$ mv lwmdb-test.local+3.pem lwmdb-test.local.crt
+$ mv lwmdb-test.local+3-key.pem lwmdb-test.local.key
+```
+
+Once generated and stored, rebuild:
+
+```console
+$ docker compose -f local.yml up --env-file=.envs/local --build
+```
+
+!!! note 
+
+    Default configuration of certificates expire every 3 months
+    (hence the `+3` file name) after generation. Follow the
+    `mkcert` instructions as necessary to replace expired `certs`
+    files.
+
+Once up, you can test the configuration with:
+
+```console
+$ curl -H "Host: lwmdb-test.local" localhost
+```
+
+It may have configuration issues leading to a response like
+
+```html
+<html>
+<head><title>301 Moved Permanently</title></head>
+<body>
+<center><h1>301 Moved Permanently</h1></center>
+<hr><center>nginx/1.23.4</center>
+</body>
+</html>
+```
+
+This is a known issue currently being addressed.
+
+## Production Deploy
+
+A local production deploy should be available without aditional modification. Deploying for exteral users is a more involved process and will require registering a domain name.
