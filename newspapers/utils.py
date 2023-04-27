@@ -30,8 +30,9 @@ logger = getLogger(__name__)
 def word_count(text: str) -> int:
     """Assuming English sentence structure, count words in `text`.
 
-    >>> word_count("A big brown dog, left-leaning, loomed! Another joined.")
-    8
+    Examples:
+        >>> word_count("A big brown dog, left-leaning, loomed! Another joined.")
+        8
     """
     return len(text.split())
 
@@ -43,8 +44,9 @@ def truncate_str(
 ) -> str:
     """If `len(text) > max_length` return `text` followed by `trail_str`.
 
-    >>> truncate_str('Standing on the shoulders of giants.', 15)
-    'Standing on the...'
+    Examples:
+        >>> truncate_str('Standing on the shoulders of giants.', 15)
+        'Standing on the...'
     """
     return text[:max_length] + trail_str if len(text) > max_length else text
 
@@ -52,10 +54,11 @@ def truncate_str(
 def text2int(text: str) -> int | str:
     """If `text` is a sequence of digits convert `text` to `int`.
 
-    >>> text2int('cat')
-    'cat'
-    >>> text2int('10')
-    10
+    Examples:
+        >>> text2int('cat')
+        'cat'
+        >>> text2int('10')
+        10
     """
     return int(text) if text.isdigit() else text
 
@@ -69,9 +72,10 @@ def natural_keys(
 
     Designed for application to a list of fixture filenames with integers
 
-    >>> example = ["fixture/Item-1.json", "fixture/Item-2.json", "fixture/Item-10.json"]
-    >>> sorted(example, key=natural_keys)
-    ['fixture/Item-1.json', 'fixture/Item-2.json', 'fixture/Item-10.json']
+    Examples:
+        >>> example = ["fixture/Item-1.json", "fixture/Item-2.json", "fixture/Item-10.json"]
+        >>> sorted(example, key=natural_keys)
+        ['fixture/Item-1.json', 'fixture/Item-2.json', 'fixture/Item-10.json']
 
     Inspiration:
         http://nedbatchelder.com/blog/200712/human_sorting.html
@@ -86,9 +90,10 @@ def filter_starts_with(
 ) -> list[str]:
     """Filter and sort `fixture_paths` that begin with `starts_with_str`.
 
-    >>> paths = ['path/Newspaper-11.json', 'path/Issue-11.json', 'path/News-1.json']
-    >>> filter_starts_with(fixture_paths=paths, starts_with_str="News")
-    ['path/News-1.json', 'path/Newspaper-11.json']
+    Examples:
+        >>> paths = ['path/Newspaper-11.json', 'path/Issue-11.json', 'path/News-1.json']
+        >>> filter_starts_with(fixture_paths=paths, starts_with_str="News")
+        ['path/News-1.json', 'path/Newspaper-11.json']
     """
     return sorted(
         (
@@ -108,8 +113,10 @@ def filter_exclude_starts_with(
 ) -> list[str]:
     """Exclude sort `fixture_paths` starting with `starts_str1`, `starts_str1`.
 
-    >>> filter_exclude_starts_with(['path/Newspaper-11.json', 'path/Issue-11.json', 'path/Item-1.json', 'cat'])
-    ['cat', 'path/Issue-11.json']
+    Examples:
+        >>> filter_exclude_starts_with(['path/Newspaper-11.json', 'path/Issue-11.json',
+        ...                             'path/Item-1.json', 'cat'])
+        ['cat', 'path/Issue-11.json']
     """
     return sorted(
         (
@@ -127,12 +134,13 @@ def sort_all_fixture_paths(
 ) -> list[str]:
     """Sort fixture paths to correct order for importing.
 
-    >>> paths = [
-    ...     'path/Item-1.json', 'path/Newspaper-11.json',
-    ...     'path/Issue-11.json', 'cat'
-    ... ]
-    >>> sort_all_fixture_paths(paths)
-    ['path/Newspaper-11.json', 'cat', 'path/Issue-11.json', 'path/Item-1.json']
+    Examples:
+        >>> paths = [
+        ...     'path/Item-1.json', 'path/Newspaper-11.json',
+        ...     'path/Issue-11.json', 'cat'
+        ... ]
+        >>> sort_all_fixture_paths(paths)
+        ['path/Newspaper-11.json', 'cat', 'path/Issue-11.json', 'path/Item-1.json']
     """
     newspaper_fixture_paths: list[str] = filter_starts_with(
         unsorted_fixture_paths, NEWSPAPER_MODEL_NAME, key_func

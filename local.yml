@@ -72,22 +72,21 @@ services:
   #     - '3000:3000'
   #     - '0:0'
 
-  # docs:
-  #   image: metadata_local_docs
-  #   container_name: metadata_local_docs
-  #   platform: linux/x86_64
-  #   build:
-  #     context: .
-  #     dockerfile: ./compose/local/docs/Dockerfile
-  #   env_file:
-  #     - ./.envs/.local/.django
-  #   volumes:
-  #     - ./docs:/docs:z
-  #     - ./config:/app/config:z
-  #     - ./metadata:/app/metadata:z
-  #   ports:
-  #     - '9000:9000'
-  #   command: /start-docs
+  docs:
+    image: metadata_local_docs
+    container_name: metadata_local_docs
+    build:
+      context: .
+      dockerfile: ./compose/local/docs/Dockerfile
+    env_file:
+      - ./.envs/local
+    volumes:
+      - ./docs:/docs:z
+      - ./config:/app/config:z
+      - ./metadata:/app/metadata:z
+    ports:
+      - '9000:9000'
+    command: /start-docs
 
   mailhog:
     image: mailhog/mailhog:v1.0.0
