@@ -29,7 +29,10 @@ The subsequent sections assume commands are run from within the `lib_metadata_db
 $ docker compose -f local.yml up --env-file=.envs/local --build
 ```
 
-Note: this uses the `.envs/local` file provided in the repo. This *must not* be used in production, it is simply for local development and to ease demonstrating what is required for `.envs/production`, which *must* be generated separately for deploying via `production.yml`.
+
+!!! note 
+
+    This uses the `.envs/local` file provided in the repo. This *must not* be used in production, it is simply for local development and to ease demonstrating what is required for `.envs/production`, which *must* be generated separately for deploying via `production.yml`.
 
 It will take some time to download a set of `docker` images required to run locally, after which it should attempt to start the server in the `django` container. If successful, the console should print logs resembling
 
@@ -138,3 +141,11 @@ This is a known issue currently being addressed.
 ## Production Deploy
 
 A local production deploy should be available without aditional modification. Deploying for exteral users is a more involved process and will require registering a domain name.
+
+To run in production, a `.envs/production` `ENV` file is required. This is not provided to help encryption keys are generated locally and uniquely. The keys set in `.envs/local` are all needed, as well as the follwing two:
+
+- `TRAEFIK_EMAIL="email.register.for.traefik.account@test.com"`
+- `HOST_URL="host.for.lwmdb.deploy.org"`
+
+A domain name (in this example `"host.for.lwmdb.deploy.org`) must be registered for `https` (encripyted) usage, and a `TLS` certificate is needed. See [`traefik` docs](https://doc.traefik.io/traefik/https/acme/) for details.
+
