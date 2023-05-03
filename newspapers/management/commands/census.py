@@ -10,14 +10,22 @@ from gazetteer.models import AdminCounty, HistoricCounty, Place
 
 from .fixtures import Fixture
 
+CSV_FIXTURE_PATH: Path = Path("./fixture-files/UKDA-8613-csv/")
+JSON_FIXTURE_WRITE_PATH: Path = Path("./census/fixtures/Record.json")
+
 
 class CensusFixture(Fixture):
+    """Build census."""
+
+    csv_fixture_path: Path = CSV_FIXTURE_PATH
+    json_fixture_write_path: Path = JSON_FIXTURE_WRITE_PATH
+
     def __init__(self, force=False):
         self.force = force
         super(Fixture, self).__init__()
 
     def build_fixture(self):
-        CSV_FILES = [x for x in Path("./fixture-files/UKDA-8613-csv/").glob("*.csv")]
+        CSV_FILES = [x for x in self.csv_fixture_path.glob("*.csv")]
 
         df = pd.DataFrame()
         now = timezone.now()
@@ -25,7 +33,7 @@ class CensusFixture(Fixture):
         for file in (bar1 := tqdm(CSV_FILES, leave=False)):
             bar1.set_description(file.name)
 
-            year, *_ = re.findall("\d{4}", str(file.name))
+            year, *_ = re.findall(r"\d{4}", str(file.name))
             _df = pd.read_csv(file)
             _df = _df.rename({f"CEN_{year}": "CEN"}, axis=1)
             _df["CENSUS_YEAR"] = year
@@ -125,11 +133,13 @@ class CensusFixture(Fixture):
             pk = record.pop("pk")
             lst.append({"model": "census.Record", "pk": pk, "fields": record})
 
-        Path("./census/fixtures/Record.json").write_text(json.dumps(lst))
+        self.json_fixture_write_path.write_text(json.dumps(lst))
 
         self.stdout.write(
             self.style.SUCCESS("Fixture file written. Now run the following command:")
         )
         self.stdout.write(
-            self.style.SUCCESS("python manage.py loaddata census/fixtures/Record.json")
+            self.style.SUCCESS(
+                f"python manage.py loaddata {self.json_fixture_write_path}"
+            )
         )
