@@ -22,5 +22,8 @@ CELERY_FLOWER_PASSWORD=Ykr75MuBE22sphvBlNzqLkLWRFD9NcnIbAnYkGbQARde4MViE1z6dKQDD
 
 # HTTPS
 # ------------------------------------------------------------------------------
-VIRTUAL_HOST=lwmdb-test.local
-VIRTUAL_PORT=8000
+# VIRTUAL_HOST=lwmdb-test.local
+# VIRTUAL_PORT=8000
+# Warning: TRUST_DOWNSTREAM_PROXY is not set; defaulting to "true". For security, you should explicitly set TRUST_DOWNSTREAM_PROXY to "false" if there is not a trusted reverse proxy in front of this proxy.
+# TRUST_DOWNSTREAM_PROXY=false
+# Doesn't currently appply...

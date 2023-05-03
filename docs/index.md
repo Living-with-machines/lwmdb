@@ -13,19 +13,19 @@ It is possible to run this code without Docker, but at present we are only maint
 Run the following command on your command line:
 
 ```
-$ git clone git@github.com:Living-with-machines/lib_metadata_db.git
+git clone git@github.com:Living-with-machines/lib_metadata_db.git
 ```
 
 Follow by:
 
 ```
-$ cd lib_metadata_db
+cd lib_metadata_db
 ```
 
 ### Running locally
 
 ```console
-$ docker compose -f local.yml up --env-file=.envs/local --build
+docker compose -f local.yml up --build
 ```
 
 !!! note
@@ -59,7 +59,7 @@ Indicating it's up and running. You should then be able to go to `http://127.0.0
 To stop the app call the `down` command:
 
 ```console
-$ docker compose -f local.yml --env-file=.envs/local down
+docker compose -f local.yml down
 ```
 
 ### Importing data
@@ -71,17 +71,17 @@ If a previous version of the database is available as either `json` fixtures or 
 `json` `fixtures` need to be placed in a `fixtures` folder in your local checkout:
 
 ```console
-$ cd lib_metadata_db
-$ mkdir fixtures
-$ cp DataProvider-1.json  Ingest-1.json Item-1.json Newspaper-1.json Digitisation-1.json Issue-1.json Item-2.json fixtures/
+cd lib_metadata_db
+mkdir fixtures
+cp DataProvider-1.json  Ingest-1.json Item-1.json Newspaper-1.json Digitisation-1.json Issue-1.json Item-2.json fixtures/
 ```
 
 The files can then be imported via
 
 ```console
-$ docker compose -f local.yml exec django /app/manage.py loaddata fixtures/Newspaper-1.json
-$ docker compose -f local.yml exec django /app/manage.py loaddata fixtures/Issue-1.json
-$ docker compose -f local.yml exec django /app/manage.py loaddata fixtures/Item-2.json
+docker compose -f local.yml exec django /app/manage.py loaddata fixtures/Newspaper-1.json
+docker compose -f local.yml exec django /app/manage.py loaddata fixtures/Issue-1.json
+docker compose -f local.yml exec django /app/manage.py loaddata fixtures/Item-2.json
 ...
 ```
 
@@ -125,7 +125,7 @@ docker compose -f local.yml exec postgres restore backup_2023_04_03T07_22_10.sql
 In order to run the Django framework inside a notebook, open another terminal window once you have it running via `docker` as described above and run
 
 ```console
-$ docker compose -f local.yml exec django /app/manage.py shell_plus --notebook
+docker compose -f local.yml exec django /app/manage.py shell_plus --notebook
 ```
 
 This should launch a normal Jupyter Notebook in your browser window where you can create any notebooks and access the database in different ways.
@@ -140,9 +140,9 @@ The package comes with a `getting-started.ipynb` notebook and a `explore-newspap
 
 In order to upgrade the current development version that you have, make sure that you have synchronised the repository to your local drive:
 
-**Step 1**: `$ git pull`
+**Step 1**: `git pull`
 
-**Step 2**: `$ docker compose -f local.yml --env-file=.envs/local up --build`
+**Step 2**: `docker compose -f local.yml up --build`
 
 ## Accessing full-text using `extract_fulltext` method
 

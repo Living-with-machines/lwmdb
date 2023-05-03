@@ -12,6 +12,8 @@ services:
       dockerfile: ./compose/local/django/Dockerfile
     image: metadata_local_django
     container_name: metadata_local_django
+    # expose:
+    #   - "8000"
     depends_on:
       - postgres
       - mailhog
@@ -37,23 +39,25 @@ services:
     env_file:
       - ./.envs/local
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER}']
+      test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER}']
       interval: 5s
       timeout: 5s
       retries: 5
 
-  nginx-proxy:
-    image: jwilder/nginx-proxy:alpine
-    container_name: nginx-proxy
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - /var/run/docker.sock:/tmp/docker.sock:ro
-      - ./certs:/etc/nginx/certs
-    restart: always
-    depends_on:
-      - django
+  # nginx-proxy:
+  #   image: jwilder/nginx-proxy:alpine
+  #   container_name: nginx-proxy
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #     # - "5000:5000"
+  #     # - "5010:5010"
+  #   volumes:
+  #     - /var/run/docker.sock:/tmp/docker.sock:ro
+  #     - ./certs:/etc/nginx/certs
+  #   restart: always
+  #   depends_on:
+  #     - django
 
   # Uncomment to test out nginx-proxy config
   # whoami:
