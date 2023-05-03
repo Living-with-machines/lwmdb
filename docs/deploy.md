@@ -25,14 +25,17 @@ The subsequent sections assume commands are run from within the `lib_metadata_db
 
 ### Local Build
 
-```console
-docker compose -f local.yml up --build
-```
+=== "user"
 
+    ```console
+    docker compose -f local.yml up --build
+    ```
 
-!!! note 
-    
-    This section of documentation is no longer usable and will be replaceddue to errors in the official documentation (see [#2840](https://github.com/cookiecutter/cookiecutter-django/issues/2840) for example). Another solution will be added in the future.
+=== "sudo"
+
+    ```console
+    sudo docker compose -f local.yml up --build
+    ```
 
 This uses the `.envs/local` file provided in the repo. This *must not* be used in production, it is simply for local development and to ease demonstrating what is required for `.envs/production`, which *must* be generated separately for deploying via `production.yml`.
 
@@ -62,19 +65,31 @@ Indicating it's up and running. You should then be able to go to `http://127.0.0
 
 To stop the app call the `down` command:
 
-```console
-docker compose -f local.yml down
-```
+=== "user"
+
+    ```console
+    docker compose -f local.yml down
+    ```
+
+=== "sudo"
+
+    ```console
+    sudo docker compose -f local.yml down
+    ```
 
 ## Local Encryption (`https`)
 
-
+!!! warning 
+    
+    This section of documentation is no longer usable and will be replaced due to errors in the official documentation (see [#2840](https://github.com/cookiecutter/cookiecutter-django/issues/2840) for example). Another solution will be added in the future.
 
 Note the example url's provided above are primarily `http` via ports `8000` (like `http://127.0.0.1:8000`). Web security---even when running work locally---has become a crucial element of even local development, and to work towards a production deploy local encryption is a very helpful process.
 
 [`django-cookie-cutter`](https://cookiecutter-django.readthedocs.io/en/latest/developing-locally-docker.html#developing-locally-with-https) suggests options for using [Fillipo Valsorda's](https://filippo.io/) [`mkcert`](https://github.com/FiloSottile/mkcert).
 
 To install `mkcert` follow the install [docs](https://github.com/FiloSottile/mkcert#installation)  and t. Once installed, follow the instructions to generate a local host certificate:
+
+=== "user"
 
 ```console
 mkcert -install
@@ -111,9 +126,17 @@ mv lwmdb-test.local+3-key.pem lwmdb-test.local.key
 
 Once generated and stored, rebuild:
 
-```console
-docker compose -f local.yml up --build
-```
+=== "user"
+
+    ```console
+    docker compose -f local.yml up --build
+    ```
+
+=== "sudo"
+
+    ```console
+    sudo docker compose -f local.yml up --build
+    ```
 
 !!! note 
 
@@ -146,7 +169,7 @@ This is a known issue currently being addressed.
 
 A local production deploy should be available without aditional modification. Deploying for exteral users is a more involved process and will require registering a domain name.
 
-To run in production, a `.envs/production` `ENV` file is required. This is not provided to help encryption keys are generated locally and uniquely. The keys set in `.envs/local` are all needed, as well as the follwing two:
+To run in production, a `.envs/production` `ENV` file is required. This is not provided to help ensure encryption keys are generated uniquely by users. Replacements for all the keys set in `.envs/local` are needed, as well as the follwing two:
 
 - `TRAEFIK_EMAIL="email.register.for.traefik.account@test.com"`
 - `HOST_URL="host.for.lwmdb.deploy.org"`
