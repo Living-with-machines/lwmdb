@@ -12,20 +12,20 @@ It is possible to run this code without Docker, but at present we are only maint
 
 Run the following command on your command line:
 
-```
-$ git clone git@github.com:Living-with-machines/lib_metadata_db.git
+```console
+git clone git@github.com:Living-with-machines/lib_metadata_db.git
 ```
 
 Follow by:
 
-```
-$ cd lib_metadata_db
+```console
+cd lib_metadata_db
 ```
 
 ### Running locally
 
 ```console
-$ docker compose -f local.yml up --env-file=.envs/local --build
+docker compose -f local.yml up --build
 ```
 
 Note: this uses the `.envs/local` file provided in the repo. This *must not* be used in production, it is simply for local development and to ease demonstrating what is required for `.envs/production`, which *must* be generated separately for deploying via `production.yml`.
@@ -57,7 +57,7 @@ Indicating it's up and running. You should then be able to go to `http://127.0.0
 To stop the app call the `down` command:
 
 ```console
-$ docker compose -f local.yml --env-file=.envs/local down
+docker compose -f local.yml down
 ```
 
 ### Importing data
@@ -69,17 +69,17 @@ If a previous version of the database is available as either `json` fixtures or 
 `json` `fixtures` need to be placed in a `fixtures` folder in your local checkout:
 
 ```console
-$ cd lib_metadata_db
-$ mkdir fixtures
-$ cp DataProvider-1.json  Ingest-1.json Item-1.json Newspaper-1.json Digitisation-1.json Issue-1.json Item-2.json fixtures/
+cd lib_metadata_db
+mkdir fixtures
+cp DataProvider-1.json  Ingest-1.json Item-1.json Newspaper-1.json Digitisation-1.json Issue-1.json Item-2.json fixtures/
 ```
 
 The files can then be imported via
 
 ```console
-$ docker compose -f local.yml exec django /app/manage.py loaddata fixtures/Newspaper-1.json
-$ docker compose -f local.yml exec django /app/manage.py loaddata fixtures/Issue-1.json
-$ docker compose -f local.yml exec django /app/manage.py loaddata fixtures/Item-2.json
+docker compose -f local.yml exec django /app/manage.py loaddata fixtures/Newspaper-1.json
+docker compose -f local.yml exec django /app/manage.py loaddata fixtures/Issue-1.json
+docker compose -f local.yml exec django /app/manage.py loaddata fixtures/Item-2.json
 ...
 ```
 
@@ -90,7 +90,7 @@ $ docker compose -f local.yml exec django /app/manage.py loaddata fixtures/Item-
 Importing from `json` can be very slow. If provided a `postgres` data file, it is possible to import that directly. First copy the database file(s) to a `backups` folder on the `postgres` instance (assuming you've run the `build` command)
 
 ```console
-docker compose -f local.yml cp backups/* $(docker compose -f local.yml ps -q postgres):/backups/
+docker cp backups $(docker compose -f local.yml ps -q postgres):/backups
 ```
 
 Next make sure the app is shut down, then start up with *only the `postgres`* container running:
@@ -117,7 +117,7 @@ docker compose -f local.yml exec postgres restore backup_2023_04_03T07_22_10.sql
 In order to run the Django framework inside a notebook, open another terminal window once you have it running via `docker` as described above and run
 
 ```console
-$ docker compose -f local.yml exec django /app/manage.py shell_plus --notebook
+docker compose -f local.yml exec django /app/manage.py shell_plus --notebook
 ```
 
 This should launch a normal Jupyter Notebook in your browser window where you can create any notebooks and access the database in different ways.
@@ -130,15 +130,15 @@ This should launch a normal Jupyter Notebook in your browser window where you ca
 
 In order to upgrade the current development version that you have, make sure that you have synchronised the repository to your local drive:
 
-**Step 1**: `$ git pull`
+**Step 1**: `git pull`
 
-**Step 2**: `$ docker compose -f local.yml --env-file=.envs/local up --build`
+**Step 2**: `docker compose -f local.yml up --build`
 
 ## Accessing full-text using `extract_fulltext` method
 
 We are developing a fulltext table for all articles across our available newspapers. Meanwhile, @thobson88 has developed an `.extract_fulltext()` method that can be used on any `Item` objects. Here is an example:
 
-```py
+```python
 from newspapers.models import Newspaper
 from newspapers.models import Item
 from pathlib import Path

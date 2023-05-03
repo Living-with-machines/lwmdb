@@ -17,8 +17,8 @@ Assuming a personal computer, `docker` [Desktop](https://www.docker.com/products
 Run the following command on your command line:
 
 ```
-$ git clone git@github.com:Living-with-machines/lib_metadata_db.git
-$ cd lib_metadata_db
+git clone git@github.com:Living-with-machines/lib_metadata_db.git
+cd lib_metadata_db
 ```
 
 The subsequent sections assume commands are run from within the `lib_metadata_db` folder.
@@ -26,13 +26,15 @@ The subsequent sections assume commands are run from within the `lib_metadata_db
 ### Local Build
 
 ```console
-$ docker compose -f local.yml up --env-file=.envs/local --build
+docker compose -f local.yml up --build
 ```
 
 
 !!! note 
+    
+    This section of documentation is no longer usable and will be replaceddue to errors in the official documentation (see [#2840](https://github.com/cookiecutter/cookiecutter-django/issues/2840) for example). Another solution will be added in the future.
 
-    This uses the `.envs/local` file provided in the repo. This *must not* be used in production, it is simply for local development and to ease demonstrating what is required for `.envs/production`, which *must* be generated separately for deploying via `production.yml`.
+This uses the `.envs/local` file provided in the repo. This *must not* be used in production, it is simply for local development and to ease demonstrating what is required for `.envs/production`, which *must* be generated separately for deploying via `production.yml`.
 
 It will take some time to download a set of `docker` images required to run locally, after which it should attempt to start the server in the `django` container. If successful, the console should print logs resembling
 
@@ -61,10 +63,12 @@ Indicating it's up and running. You should then be able to go to `http://127.0.0
 To stop the app call the `down` command:
 
 ```console
-$ docker compose -f local.yml down
+docker compose -f local.yml down
 ```
 
 ## Local Encryption (`https`)
+
+
 
 Note the example url's provided above are primarily `http` via ports `8000` (like `http://127.0.0.1:8000`). Web security---even when running work locally---has become a crucial element of even local development, and to work towards a production deploy local encryption is a very helpful process.
 
@@ -73,7 +77,7 @@ Note the example url's provided above are primarily `http` via ports `8000` (lik
 To install `mkcert` follow the install [docs](https://github.com/FiloSottile/mkcert#installation)  and t. Once installed, follow the instructions to generate a local host certificate:
 
 ```console
-$ mkcert -install
+mkcert -install
 Created a new local CA 💥
 Sudo password:
 The local CA is now installed in the system trust store! ⚡️
@@ -83,9 +87,9 @@ The local CA is now installed in the Firefox trust store (requires browser resta
 Once installed, create a `certs` local directory in the same folder as the `local.yml` file, and enter it to generate a local certificate files
 
 ```console
-$ mkdir certs
-$ cd certs
-$ mkcert lwmdb-test.local localhost 127.0.0.1 ::1
+mkdir certs
+cd certs
+mkcert lwmdb-test.local localhost 127.0.0.1 ::1
 
 Created a new certificate valid for the following names 📜
  - "lwmdb-test.local"
@@ -101,14 +105,14 @@ It will expire on 25 July 2025 🗓
 For the generated keys to work with `nginx-proxy`, they need to be renamed as follows:
 
 ```console
-$ mv lwmdb-test.local+3.pem lwmdb-test.local.crt
-$ mv lwmdb-test.local+3-key.pem lwmdb-test.local.key
+mv lwmdb-test.local+3.pem lwmdb-test.local.crt
+mv lwmdb-test.local+3-key.pem lwmdb-test.local.key
 ```
 
 Once generated and stored, rebuild:
 
 ```console
-$ docker compose -f local.yml up --env-file=.envs/local --build
+docker compose -f local.yml up --build
 ```
 
 !!! note 
@@ -121,7 +125,7 @@ $ docker compose -f local.yml up --env-file=.envs/local --build
 Once up, you can test the configuration with:
 
 ```console
-$ curl -H "Host: lwmdb-test.local" localhost
+curl -H "Host: lwmdb-test.local" localhost
 ```
 
 It may have configuration issues leading to a response like
