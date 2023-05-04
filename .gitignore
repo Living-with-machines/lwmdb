@@ -1,8 +1,5 @@
 *.sqlite3
 *cache*
-metadata/newspapers/fixtures/*.json
-metadata/mitchells/fixtures/*.json
-metadata/gazetteer/fixtures/*.json
 alto2txt
 .ipynb_checkpoints
 *.ipynb
@@ -14,7 +11,6 @@ reports
 mitchells_publication_for_linking.csv
 alto2txt2fixture-reports
 */fixtures/*.json
-lib_metadata_db
 scripts
 .DS_Store
 .vscode

@@ -1,8 +1,11 @@
 [tool.poetry]
-name = "metadata"
+name = "lwmdb"
 version = "0.1.0"
-description = "Metadata database management through Django for Living with Machines."
-authors = ["Kalle Westerling <kalle.westerling@bl.uk>"]
+description = "lwmdb database management through Django for Living with Machines."
+authors = [
+  "Kalle Westerling <kalle.westerling@bl.uk>",
+  "Dr Griffith Rees <grees@turing.ac.uk>",
+]
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -55,10 +58,10 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "metadata.test_settings"
+DJANGO_SETTINGS_MODULE = "config.test_settings"
 python_files = ["tests.py", "test_*.py"]
 addopts = """
---cov=metadata
+--cov=lwmdb
 --cov-report=term:skip-covered
 --pdbcls=IPython.terminal.debugger:TerminalPdb
 --doctest-modules
@@ -66,6 +69,7 @@ addopts = """
 --ignore=jupyterhub_config.py
 --ignore=notebooks
 --ignore=docs
+--ignore=lwmdb/contrib/sites
 """
 
 [tool.flake8]
@@ -86,7 +90,7 @@ profile = "black"
 all = true
 
 [tool.coverage.run]
-include = ["metadata/*"]
+include = ["config/*"]
 omit = ["*migrations*", "*tests*", "*.html"]
 plugins = ["django_coverage_plugin"]
 
@@ -128,7 +132,7 @@ plugins = [
 ]
 
 [tool.django-stubs]
-django_settings_module = "metadata.test_settings"
+django_settings_module = "config.test_settings"
 
 [[tool.mypy.overrides]]
 module = "*.migrations.*"
