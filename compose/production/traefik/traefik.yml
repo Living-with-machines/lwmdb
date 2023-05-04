@@ -31,7 +31,7 @@ certificatesResolvers:
 http:
   routers:
     web-secure-router:
-      # rule: "Host(`metadata.livingwithmachines.ac.uk`)"
+      # rule: "Host(`lwmdb.livingwithmachines.ac.uk`)"
       rule: "Host(`${HOST_URL}`)"
       entryPoints:
         - web-secure
@@ -43,7 +43,7 @@ http:
         certResolver: letsencrypt
 
     # flower-secure-router:
-    #   rule: "Host(`metadata.livingwithmachines.ac.uk`)"
+    #   rule: "Host(`lwmdb.livingwithmachines.ac.uk`)"
     #   entryPoints:
     #     - flower
     #   service: flower

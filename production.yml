@@ -1,8 +1,8 @@
 version: '3'
 
 volumes:
-  metadata_production_postgres_data: {}
-  metadata_production_postgres_data_backups: {}
+  lwmdb_production_postgres_data: {}
+  lwmdb_production_postgres_data_backups: {}
   # production_caddy: {}
 
 services:
@@ -10,8 +10,8 @@ services:
     build:
       context: .
       dockerfile: ./compose/production/django/Dockerfile
-    image: metadata_production_django
-    container_name: metadata_production_django
+    image: lwmdb_production_django
+    container_name: lwmdb_production_django
     depends_on:
       - postgres
       - redis
@@ -29,15 +29,15 @@ services:
     build:
       context: .
       dockerfile: ./compose/production/postgres/Dockerfile
-    image: metadata_production_postgres
-    container_name: metadata_production_postgres
+    image: lwmdb_production_postgres
+    container_name: lwmdb_production_postgres
     volumes:
-      - metadata_production_postgres_data:/var/lib/postgresql/data:Z
-      - metadata_production_postgres_data_backups:/backups:z
+      - lwmdb_production_postgres_data:/var/lib/postgresql/data:Z
+      - lwmdb_production_postgres_data_backups:/backups:z
     env_file:
       - ./.envs/production
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER}']
+      test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER}']
       interval: 5s
       timeout: 5s
       retries: 5
@@ -46,7 +46,7 @@ services:
   #   build:
   #     context: .
   #     dockerfile: ./compose/production/caddy/Dockerfile
-  #   image: metadata_production_caddy
+  #   image: lwmdb_production_caddy
   #   depends_on:
   #     - django
   #   volumes:
@@ -62,17 +62,17 @@ services:
 
   # celeryworker:
   #   <<: *django
-  #   image: metadata_production_celeryworker
+  #   image: lwmdb_production_celeryworker
   #   command: /start-celeryworker
 
   # celerybeat:
   #   <<: *django
-  #   image: metadata_production_celerybeat
+  #   image: lwmdb_production_celerybeat
   #   command: /start-celerybeat
 
   # flower:
   #   <<: *django
-  #   image: metadata_production_flower
+  #   image: lwmdb_production_flower
   #   ports:
   #     - '5555:5555'
   #   command: /start-flower

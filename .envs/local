@@ -2,12 +2,12 @@
 # ------------------------------------------------------------------------------
 POSTGRES_HOST=postgres
 POSTGRES_PORT=5432
-POSTGRES_DB=metadata
-POSTGRES_USER=metadata
+POSTGRES_DB=lwmdb
+POSTGRES_USER=lwmdb
 # To be replaced
 POSTGRES_PASSWORD=debug
 
-SECRET_KEY=django-insecure-d%2thq11vkpl%sb%y4ny*^3%nfnec8&%@zfx1l)9w!t61c9r5j
+SECRET_KEY=django-insecure-d%2thq11vkpl%sb%y4ny*^3anfnec8&%@zfx1l)9w!t61c9r5j
 # General
 # ------------------------------------------------------------------------------
 USE_DOCKER=yes

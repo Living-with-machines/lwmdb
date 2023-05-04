@@ -2,7 +2,7 @@ from typing import Any, Final
 
 from .settings import *  # noqa
 
-DEFAULT_ALLOWED_HOSTS: Final[list[str]] = ["metadata.livingwithmachines.ac.uk"]
+DEFAULT_ALLOWED_HOSTS: Final[list[str]] = ["lwmdb.livingwithmachines.ac.uk", "0.0.0.0"]
 DEFAULT_CONN_MAX_AGE: Final[int] = 60
 DEFAULT_SECURE_SSL_REDIRECT: Final[bool] = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#secure-hsts-include-subdomains
@@ -11,11 +11,11 @@ DEFAULT_SECURE_HSTS_INCLUDE_SUBDOMAINS: Final[bool] = True
 DEFAULT_SECURE_HSTS_PRELOAD: Final[bool] = True
 # https://docs.djangoproject.com/en/dev/ref/middleware/#x-content-type-options-nosniff
 DEFAULT_SECURE_CONTENT_TYPE_NOSNIFF: Final[bool] = True
-DEFAULT_FROM_EMAIL: Final[str] = "metadata <noreply@metadata.livingwithmachines.ac.uk>"
+DEFAULT_FROM_EMAIL: Final[str] = "lwmdb <noreply@lwmdb.livingwithmachines.ac.uk>"
 # https://docs.djangoproject.com/en/dev/ref/settings/#server-email
 DEFAULT_SERVER_EMAIL: Final[str] = DEFAULT_FROM_EMAIL
 # https://docs.djangoproject.com/en/dev/ref/settings/#email-subject-prefix
-DEFAULT_EMAIL_SUBJECT_PREFIX: Final[str] = "[metadata]"
+DEFAULT_EMAIL_SUBJECT_PREFIX: Final[str] = "[lwmdb]"
 
 default_config: Final[dict[str, Any]] = {
     "DJANGO_ALLOWED_HOSTS": DEFAULT_ALLOWED_HOSTS,
@@ -44,7 +44,7 @@ SECRET_KEY = config["SECRET_KEY"]
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 # ALLOWED_HOSTS = config["DJANGO_ALLOWED_HOSTS"]
 ALLOWED_HOSTS = config["DJANGO_ALLOWED_HOSTS"]
-# ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["metadata.livingwithmachines.ac.uk"])
+# ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["lwmdb.livingwithmachines.ac.uk"])
 
 # DATABASES
 # ------------------------------------------------------------------------------

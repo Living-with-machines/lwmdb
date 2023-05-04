@@ -18,3 +18,9 @@ def django_db_setup(django_db_setup, django_db_blocker):
         call_command(
             "loaddata",
         )
+
+
+@pytest.fixture(autouse=True)
+def media_storage(settings, tmpdir):
+    """Generate a temp path for testing media files."""
+    settings.MEDIA_ROOT = tmpdir.strpath
