@@ -1,4 +1,4 @@
-# Metadata database code
+# Living With Machines Database: `lmwdb`
 
 A package containing database access to the Living with Machines newspaper collection’s metadata.
 
@@ -13,13 +13,13 @@ It is possible to run this code without Docker, but at present we are only maint
 Run the following command on your command line:
 
 ```console
-git clone git@github.com:Living-with-machines/lib_metadata_db.git
+git clone git@github.com:Living-with-machines/lwmdb.git
 ```
 
 Follow by:
 
 ```console
-cd lib_metadata_db
+cd lwmdb
 ```
 
 ### Running locally
@@ -33,23 +33,23 @@ Note: this uses the `.envs/local` file provided in the repo. This *must not* be 
 It will take some time to download a set of `docker` images required to run locally, after which it should attempt to start the server in the `django` container. If successful, the console should print logs resembling
 
 ```console
-metadata_local_django    | WARNING: This is a development server. Do not use it in a production
+lwmdb_local_django    | WARNING: This is a development server. Do not use it in a production
 deployment. Use a production WSGI server instead.
-metadata_local_django    |  * Running on all addresses (0.0.0.0)
-metadata_local_django    |  * Running on http://127.0.0.1:8000
-metadata_local_django    |  * Running on http://172.20.0.4:8000
-metadata_local_django    | Press CTRL+C to quit
-metadata_local_django    |  * Restarting with stat
-metadata_local_django    | Performing system checks...
-metadata_local_django    |
-metadata_local_django    | System check identified no issues (0 silenced).
-metadata_local_django    |
-metadata_local_django    | Django version 4.1.7, using settings 'metadata.settings'
-metadata_local_django    | Development server is running at http://0.0.0.0:8000/
-metadata_local_django    | Using the Werkzeug debugger (http://werkzeug.pocoo.org/)
-metadata_local_django    | Quit the server with CONTROL-C.
-metadata_local_django    |  * Debugger is active!
-metadata_local_django    |  * Debugger PIN: 139-826-693
+lwmdb_local_django    |  * Running on all addresses (0.0.0.0)
+lwmdb_local_django    |  * Running on http://127.0.0.1:8000
+lwmdb_local_django    |  * Running on http://172.20.0.4:8000
+lwmdb_local_django    | Press CTRL+C to quit
+lwmdb_local_django    |  * Restarting with stat
+lwmdb_local_django    | Performing system checks...
+lwmdb_local_django    |
+lwmdb_local_django    | System check identified no issues (0 silenced).
+lwmdb_local_django    |
+lwmdb_local_django    | Django version 4.1.7, using settings 'lwmdb.settings'
+lwmdb_local_django    | Development server is running at http://0.0.0.0:8000/
+lwmdb_local_django    | Using the Werkzeug debugger (http://werkzeug.pocoo.org/)
+lwmdb_local_django    | Quit the server with CONTROL-C.
+lwmdb_local_django    |  * Debugger is active!
+lwmdb_local_django    |  * Debugger PIN: 139-826-693
 ```
 
 Indicating it's up and running. You should then be able to go to `http://127.0.0.1:8000` in your local browser and see a start page.
@@ -69,7 +69,7 @@ If a previous version of the database is available as either `json` fixtures or 
 `json` `fixtures` need to be placed in a `fixtures` folder in your local checkout:
 
 ```console
-cd lib_metadata_db
+cd lwmdb
 mkdir fixtures
 cp DataProvider-1.json  Ingest-1.json Item-1.json Newspaper-1.json Digitisation-1.json Issue-1.json Item-2.json fixtures/
 ```

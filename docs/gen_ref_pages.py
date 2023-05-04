@@ -26,7 +26,7 @@ EXCLUDE_PATHS: tuple[str, ...] = (
     "staticfiles",
     "backups",
     "fixture-files",
-    "metadata",
+    "confs",
     "tests",
 )
 IPYNB_PATH: str = ".ipynb_checkpoints"

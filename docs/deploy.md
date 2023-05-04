@@ -169,10 +169,48 @@ This is a known issue currently being addressed.
 
 A local production deploy should be available without aditional modification. Deploying for exteral users is a more involved process and will require registering a domain name.
 
-To run in production, a `.envs/production` `ENV` file is required. This is not provided to help ensure encryption keys are generated uniquely by users. Replacements for all the keys set in `.envs/local` are needed, as well as the follwing two:
+To run in production, a `.envs/production` `ENV` file is required. This is not provided to help ensure encryption keys are generated uniquely by users. These are specifically for 
+
+- `SECRET_KEY`
+- `POSTGRES_PASSWORD`
+
+as well as the follwing two:
 
 - `TRAEFIK_EMAIL="email.register.for.traefik.account@test.com"`
 - `HOST_URL="host.for.lwmdb.deploy.org"`
 
+## `traefik` Config
+
 A domain name (in this example `"host.for.lwmdb.deploy.org`) must be registered for `https` (encripyted) usage, and a `TLS` certificate is needed. See [`traefik` docs](https://doc.traefik.io/traefik/https/acme/) for details.
 
+## Generating password config
+
+There are numerous methods for generating keys. `python` provides an option via the `secrets` module:
+
+```python
+import secrets
+
+print(secrets.token_urlsafe())"
+```
+
+For convenience and minimising risks like screencapture, this can be run and piped to your local clipboard. Examples for different operating systems:
+
+=== "linux"
+
+    ```console
+    python -c "import secrets; print(secrets.token_urlsafe())" | xclip
+    ```
+
+=== "macOS"
+
+    ```console
+    python -c "import secrets; print(secrets.token_urlsafe())" | pbcopy
+    ```
+
+=== "windows"
+
+    ```console
+    python -c "import secrets; print(secrets.token_urlsafe())" | /dev/clipboard
+    ```
+
+If arranging this via a deploy service like `azure`, it is also possible to add keys/config within the local environment or via an `export` command (assuming a `bash` or `zsh` shell).
