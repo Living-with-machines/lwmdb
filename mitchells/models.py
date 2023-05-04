@@ -101,3 +101,6 @@ class Entry(PressDirectoriesModel):
 
     def __str__(self):
         return f"{self.title} ({self.year})"
+
+    class Meta:
+        verbose_name_plural = "entries"
