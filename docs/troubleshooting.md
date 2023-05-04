@@ -1,5 +1,41 @@
 # Troubleshooting: Common issues
 
+## Deploy using up very large harddrive space
+
+By default, a `docker` deploy copies *most* files from the folder the project is run from to each `docker` `container`. However, this can lead to very large `container` images if, for example, a recent database backup has been saved locally. To mitigate this, the `.dockerignore` file provided currently excludes file paths that match these patterns (as of 4 May 2023, see ticket [90](https://github.com/Living-with-machines/lib_metadata_db/issues/90
+) for the latest on this issue):
+
+```
+fixtures/*
+backups*
+*.tar
+*.sql.gz
+```
+
+It also has a line for a file to *include* (see the `.dockerfile` [docs](https://docs.docker.com/engine/reference/builder/#dockerignore-file) for syntax):
+
+```
+!fixture-files/*
+```
+
+
+If you've added another very large file that may have ended up taking up a lot of space on your deploys (and potentially a very long  deploy time) adding a lines to avoid those files in `.dockerignore` may help. For that to take effect, you may need to do a fresh build *without the cache*.
+
+
+=== "user"
+
+    ```console
+    docker compose -f local.yml build --no-cache
+    ```
+
+=== "sudo"
+
+    ```console
+    sudo docker compose -f local.yml build --no-cache
+    ```
+    ```
+
+
 ## `Error: ImproperlyConfigured: Requested setting INSTALLED_APPS, but settings are not configured.`
 
 **Problem:** I have received an error that looks like this:

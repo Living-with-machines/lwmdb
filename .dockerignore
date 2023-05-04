@@ -1,3 +1,5 @@
 fixtures/*
 !fixture-files/*
-backups/*
+backups*
+*.tar
+*.sql.gz
