@@ -24,3 +24,4 @@ _dev
 .ipython
 .envs/production
 certs/*
+staticfiles/*
