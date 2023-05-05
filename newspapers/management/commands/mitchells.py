@@ -74,6 +74,7 @@ class MitchellsFixture(Fixture):
         DB_COLS = [x for x in DB_COLS if not x == "place_circulation_raw"] + [
             "place_of_circulation_raw"
         ]
+        # mpd stands for mitchells press directory
 
         project_papers = (
             pd.read_csv(
