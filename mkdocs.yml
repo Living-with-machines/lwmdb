@@ -5,7 +5,9 @@ nav:
 - Home: index.md
 - Install: install.md
 - Jupyter: jupyter_notebook.md
-- Advanced: fulltext.md
+- Advanced:
+  - Fulltext: fulltext.md
+  - Import: raw_import.md
 - Deploy: deploy.md
 - Troubleshooting: troubleshooting.md
 - Issues: https://github.com/living-with-machines/lib_metadata_db/issues
