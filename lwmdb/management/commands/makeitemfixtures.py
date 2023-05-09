@@ -8,9 +8,8 @@ from django.db.models import Max
 from django.utils import timezone
 from tqdm import tqdm
 
+from newspapers.management.commands.items import item_cache
 from newspapers.models import DataProvider, Digitisation, Ingest, Issue, Item
-
-from .items import item_cache
 
 LOCAL_STORE: dict[str, dict] = {
     "software": {},

@@ -38,7 +38,7 @@ MOUNTPOINTS = {
 
 class Fixture(BaseCommand):
     def write_models(self, models):
-        lst = []
+        # lst = []
         df = None
 
         for x in models:

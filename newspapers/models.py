@@ -10,8 +10,7 @@ from django_pandas.managers import DataFrameManager
 
 from fulltext.models import Fulltext
 from gazetteer.models import Place
-
-from .utils import truncate_str, word_count
+from lwmdb.utils import truncate_str, word_count
 
 logger = getLogger(__name__)
 
