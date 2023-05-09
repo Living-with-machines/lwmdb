@@ -7,8 +7,7 @@ from django.utils import timezone
 from tqdm import tqdm
 
 from gazetteer.models import AdminCounty, HistoricCounty, Place
-
-from .fixtures import Fixture
+from lwmdb.management.commands.fixtures import Fixture
 
 CSV_FIXTURE_PATH: Path = Path("./fixture-files/UKDA-8613-csv/")
 JSON_FIXTURE_WRITE_PATH: Path = Path("./census/fixtures/Record.json")
