@@ -3,7 +3,9 @@ import json
 import numpy as np
 import pandas as pd
 
-from mitchells.models import (
+from lwmdb.management.commands.fixtures import AUTO_FILE_LOCATIONS, Fixture
+
+from ...models import (
     Entry,
     EntryPoliticalLeanings,
     EntryPrices,
@@ -11,8 +13,6 @@ from mitchells.models import (
     PoliticalLeaning,
     Price,
 )
-
-from .fixtures import AUTO_FILE_LOCATIONS, Fixture
 
 # TODO: We want to look closer into the SettingWithCopyWarning that this script generates
 # pd.options.mode.chained_assignment = None

@@ -3,9 +3,9 @@ import json
 import numpy as np
 import pandas as pd
 
-from gazetteer.models import AdminCounty, Country, HistoricCounty, Place
+from lwmdb.management.commands.fixtures import AUTO_FILE_LOCATIONS, Fixture
 
-from .fixtures import AUTO_FILE_LOCATIONS, Fixture
+from ...models import AdminCounty, Country, HistoricCounty, Place
 
 
 class GazetteerFixture(Fixture):

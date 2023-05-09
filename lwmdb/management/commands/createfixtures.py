@@ -1,11 +1,12 @@
 from django.core.management import BaseCommand
 
-from .census import CensusFixture
+from census.management.commands.census import CensusFixture
+from gazetteer.management.commands.gazetteer import GazetteerFixture
+from mitchells.management.commands.mitchells import MitchellsFixture
+from newspapers.management.commands.items import ItemFixture
+from newspapers.management.commands.newspapers import NewspapersFixture
+
 from .fixtures import Connector
-from .gazetteer import GazetteerFixture
-from .items import ItemFixture
-from .mitchells import MitchellsFixture
-from .newspapers import NewspapersFixture
 
 ALLOWED_APPS = [
     "gazetteer",
@@ -25,7 +26,11 @@ class Command(BaseCommand):
             "app",
             type=str,
             nargs="+",
-            help="Indicates the app(s) that you want to create fixtures for. You can use 'all' as shorthand for all allowed apps",
+            help=(
+                "Indicates the app(s) that you want to create "
+                "fixtures for. You can use 'all' as shorthand "
+                "for all allowed apps"
+            ),
         )
         parser.add_argument(
             "-f", "--force", action="store_true", help='Force "yes" on all questions'

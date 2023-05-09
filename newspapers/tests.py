@@ -7,15 +7,9 @@ import pytest
 from django.test import TestCase
 from pyfakefs.fake_filesystem_unittest import patchfs
 
-from newspapers.models import (
-    MAX_PRINT_SELF_STR_LENGTH,
-    DataProvider,
-    Issue,
-    Item,
-    Newspaper,
-    word_count,
-)
-from newspapers.utils import truncate_str
+from lwmdb.utils import truncate_str, word_count
+
+from .models import MAX_PRINT_SELF_STR_LENGTH, DataProvider, Issue, Item, Newspaper
 
 TEST_ITEM_CODE: Final[str] = "0003040-18940905-art0030"
 TEST_ITEM_TITLE: Final[str] = "SAD END OF A RAILWAY"
