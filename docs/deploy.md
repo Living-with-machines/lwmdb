@@ -16,7 +16,7 @@ Assuming a personal computer, `docker` [Desktop](https://www.docker.com/products
 
 Run the following command on your command line:
 
-```
+```console
 git clone git@github.com:Living-with-machines/lib_metadata_db.git
 cd lib_metadata_db
 ```
