@@ -10,13 +10,11 @@ from django_pandas.managers import DataFrameManager
 
 from fulltext.models import Fulltext
 from gazetteer.models import Place
+from lwmdb.utils import truncate_str, word_count
 
 logger = getLogger(__name__)
 
-
-def word_count(text: str) -> int:
-    """Assuming English sentence structure, count words in `text`."""
-    return len(text.split())
+MAX_PRINT_SELF_STR_LENGTH: Final[int] = 80
 
 
 class NewspapersModel(models.Model):
@@ -38,7 +36,7 @@ class DataProvider(NewspapersModel):
         unique_together = ("name", "collection")
 
     def __str__(self):
-        return str(self.name)
+        return truncate_str(self.name, max_length=MAX_PRINT_SELF_STR_LENGTH)
 
 
 class Digitisation(NewspapersModel):
@@ -67,7 +65,7 @@ class Ingest(NewspapersModel):
         unique_together = ("lwm_tool_name", "lwm_tool_version")
 
     def __str__(self):
-        return str(self.lwm_tool_version)
+        return truncate_str(self.lwm_tool_name, max_length=MAX_PRINT_SELF_STR_LENGTH)
 
 
 class Newspaper(NewspapersModel):
@@ -83,8 +81,11 @@ class Newspaper(NewspapersModel):
         related_query_name="newspaper",
     )
 
+    def __repr__(self):
+        return self.publication_code
+
     def __str__(self):
-        return str(self.publication_code)
+        return truncate_str(self.title, max_length=MAX_PRINT_SELF_STR_LENGTH)
 
 
 class Issue(NewspapersModel):
@@ -120,10 +121,10 @@ class Issue(NewspapersModel):
 
 class Item(NewspapersModel):
     # TODO #55: item_code should be unique? Currently, not unique, however so needs fixing in alto2txt2fixture
-    MAX_TITLE_CHAR_COUNT: Final[int] = 3000
+    MAX_TITLE_CHAR_COUNT: Final[int] = 100
 
     item_code = models.CharField(max_length=600, default=None)
-    title = models.CharField(max_length=MAX_TITLE_CHAR_COUNT, default=None)
+    title = models.TextField(max_length=MAX_TITLE_CHAR_COUNT, default=None)
     title_word_count = models.IntegerField(null=True)
     title_char_count = models.IntegerField(null=True)
     title_truncated = models.BooleanField(default=False)
@@ -174,27 +175,30 @@ class Item(NewspapersModel):
         return super(Item, self).save(*args, **kwargs)
 
     def __str__(self):
+        return truncate_str(self.title, max_length=MAX_PRINT_SELF_STR_LENGTH)
+
+    def __repr__(self):
         return str(self.item_code)
 
     def _sync_title_char_count(self, force: bool = False) -> None:
         title_text_char_count: int = len(self.title)
         if not self.title_char_count or force:
             logger.debug(
-                f"Setting `title_char_count` for {self} to {title_text_char_count}"
+                f"Setting `title_char_count` for {self.item_code} to {title_text_char_count}"
             )
             self.title_char_count = title_text_char_count
         else:
             if self.title_char_count != title_text_char_count:
                 if self.title_char_count < self.MAX_TITLE_CHAR_COUNT:
                     raise self.TitleLengthError(
-                        f"{self.title_char_count} characters does not equal {title_text_char_count}: the length of title of {self}"
+                        f"{self.title_char_count} characters does not equal {title_text_char_count}: the length of title of {self.item_code}"
                     )
 
     def _sync_title_word_count(self, force: bool = False) -> None:
         title_text_word_count: int = word_count(self.title)
         if not self.title_word_count or force:
             logger.debug(
-                f"Setting `title_word_count` for {self} to {title_text_word_count}"
+                f"Setting `title_word_count` for {self.item_code} to {title_text_word_count}"
             )
             self.title_word_count = title_text_word_count
         else:
@@ -207,9 +211,9 @@ class Item(NewspapersModel):
         """Run `_sync` methods, then trim title if long."""
         self._sync_title_char_count(force=force)
         self._sync_title_word_count(force=force)
-        if self.title_char_count > self.MAX_TITLE_CHAR_COUNT:
+        if self.title_char_count and self.title_char_count > self.MAX_TITLE_CHAR_COUNT:
             logger.debug(
-                f"Trimming title of {self} to {self.MAX_TITLE_CHAR_COUNT} chars."
+                f"Trimming title of {self.item_code} to {self.MAX_TITLE_CHAR_COUNT} chars."
             )
             self.title = self.title[: self.MAX_TITLE_CHAR_COUNT]
             self.title_truncated = True

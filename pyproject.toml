@@ -1,66 +1,75 @@
 [tool.poetry]
-name = "metadata"
+name = "lwmdb"
 version = "0.1.0"
-description = "Metadata database management through Django for Living with Machines."
-authors = ["Kalle Westerling <kalle.westerling@bl.uk>"]
+description = "lwmdb database management through Django for Living with Machines."
+authors = [
+  "Kalle Westerling <kalle.westerling@bl.uk>",
+  "Dr Griffith Rees <grees@turing.ac.uk>",
+]
 
 [tool.poetry.dependencies]
-python = "^3.10"
-django = "^4.1.7"
-seaborn = "^0.11.2"
-pandas = "^1.4.1"
-ipython = "^8.4.0"
+python = "^3.11"
+django = "^4.2.1"
+seaborn = "^0.12.2"
+pandas = "^2.0.1"
+ipython = "^8.13.1"
 jupyter = "^1.0.0"
 django-pandas = "^0.6.6"
-django-extensions = "^3.2.0"
-colorama = "^0.4.5"
-psycopg2-binary = "^2.9.4"
-uvicorn = "^0.18.3"
-python-dotenv = "^0.21.0"
-azure-storage-blob = "^12.13.0"
+django-extensions = "^3.2.1"
+colorama = "^0.4.6"
+uvicorn = "^0.22.0"
+python-dotenv = "^1.0.0"
+azure-storage-blob = "^12.16.0"
 GDAL = {version = "3.5.3", platform = "darwin"}
-psycopg2 = "^2.9.5"
-whitenoise = "^6.2.0"
-tqdm = "^4.64.1"
+whitenoise = "^6.4.0"
+tqdm = "^4.65.0"
+psycopg = {extras = ["binary"], version = "^3.1.9"}
+django-debug-toolbar = "^4.0.0"
+psutil = "5.9.4"
+gunicorn = "^20.1.0"
+django-anymail = "^9.2"
+pyopenssl = "^23.1.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest-cov = "^4.0.0"
-pytest-sugar = "^0.9.6"
-mypy = "^0.991"
-pyfakefs = "^4.5.1"
+pytest-sugar = "^0.9.7"
+pyfakefs = "^5.2.2"
 pytest-django = "^4.5.2"
-Werkzeug = "^2.2.3"
-django-debug-toolbar = "^3.8.1"
+Werkzeug = "^2.3.3"
 pyparsing = "^3.0.9"
 pydot = "^1.4.2"
-pre-commit = "^2.21.0"
+pre-commit = "^3.3.1"
 django-coverage-plugin = "^3.0.0"
-django-stubs = {extras = ["compatible-mypy"], version = "^1.14.0"}
+django-stubs = {extras = ["compatible-mypy"], version = "^4.2.0"}
 
 
 [tool.poetry.group.docs.dependencies]
-mkdocs-material = "^9.0.13"
-mkdocstrings = {extras = ["python"], version = "^0.20.0"}
+mkdocs-material = "^9.1.9"
 mkdocs-literate-nav = "^0.6.0"
-mkdocs-gen-files = "^0.4.0"
-markdown-exec = {extras = ["ansi"], version = "^1.3.0"}
+mkdocs-gen-files = "^0.5.0"
+markdown-exec = {extras = ["ansi"], version = "^1.6.0"}
 mkdocs-section-index = "^0.3.5"
+mkdocstrings-python = "^0.9.0"
+black = "^23.3.0"
+pygments = "^2.15.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "metadata.test_settings"
+DJANGO_SETTINGS_MODULE = "config.test_settings"
 python_files = ["tests.py", "test_*.py"]
 addopts = """
---cov=metadata
+--cov=lwmdb
 --cov-report=term:skip-covered
 --pdbcls=IPython.terminal.debugger:TerminalPdb
 --doctest-modules
 --ignore=compose
 --ignore=jupyterhub_config.py
 --ignore=notebooks
+--ignore=docs
+--ignore=lwmdb/contrib/sites
 """
 
 [tool.flake8]
@@ -81,8 +90,8 @@ profile = "black"
 all = true
 
 [tool.coverage.run]
-include = ["metadata/*"]
-omit = ["*migrations*", "*tests*"]
+include = ["config/*"]
+omit = ["*migrations*", "*tests*", "*.html"]
 plugins = ["django_coverage_plugin"]
 
 [tool.bandit]
@@ -109,7 +118,7 @@ add-ignore = [
 ]
 
 [tool.mypy]
-python_version = "3.10"
+python_version = "3.11"
 # check_untyped_defs = True
 ignore_missing_imports = true
 warn_unused_ignores = true
@@ -123,7 +132,7 @@ plugins = [
 ]
 
 [tool.django-stubs]
-django_settings_module = "metadata.test_settings"
+django_settings_module = "config.test_settings"
 
 [[tool.mypy.overrides]]
 module = "*.migrations.*"

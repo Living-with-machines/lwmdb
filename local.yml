@@ -1,118 +1,144 @@
 version: '3'
 
 volumes:
-  metadata_local_postgres_data: {}
-  metadata_local_postgres_data_backups: {}
-  #  metadata_local_jupyter_hub: {}
+  lwmdb_local_postgres_data: {}
+  lwmdb_local_postgres_data_backups: {}
+  #  lwmdb_local_jupyter_hub: {}
 
 services:
   django: &django
     build:
       context: .
       dockerfile: ./compose/local/django/Dockerfile
-    image: metadata_local_django
-    container_name: metadata_local_django
+    image: lwmdb_local_django
+    container_name: lwmdb_local_django
+    # expose:
+    #   - "8000"
     depends_on:
       - postgres
       - mailhog
-        # - redis
+      # - redis
     volumes:
       - .:/app:z
     env_file:
       - ./.envs/local
     ports:
-      - "8000:8000"
-      - "9090:9090"  # For Jupyter
+      - '8000:8000'
+      - '9090:9090'  # For Jupyter
     command: /start
 
   postgres:
     build:
       context: .
       dockerfile: ./compose/production/postgres/Dockerfile
-    image: metadata_production_postgres
-    container_name: metadata_local_postgres
+    image: lwmdb_production_postgres
+    container_name: lwmdb_local_postgres
     volumes:
-      - metadata_local_postgres_data:/var/lib/postgresql/data:Z
-      - metadata_local_postgres_data_backups:/backups:z
+      - lwmdb_local_postgres_data:/var/lib/postgresql/data:Z
+      - lwmdb_local_postgres_data_backups:/backups:z
     env_file:
       - ./.envs/local
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER}']
       interval: 5s
       timeout: 5s
       retries: 5
+
+  # nginx-proxy:
+  #   image: jwilder/nginx-proxy:alpine
+  #   container_name: nginx-proxy
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #     # - "5000:5000"
+  #     # - "5010:5010"
+  #   volumes:
+  #     - /var/run/docker.sock:/tmp/docker.sock:ro
+  #     - ./certs:/etc/nginx/certs
+  #   restart: always
+  #   depends_on:
+  #     - django
+
+  # Uncomment to test out nginx-proxy config
+  # whoami:
+  #   image: jwilder/whoami
+  #   expose:
+  #     - "8000"
+  #   environment:
+  #     - VIRTUAL_HOST=whoami.local
+  #     - VIRTUAL_PORT=8000
 
   # jupyterhub:
   #   build:
   #     context: .
   #     dockerfile: ./compose/production/jupyterhub/Dockerfile
   #   ports:
-  #     - "3000:3000"
-  #     - "0:0"
+  #     - '3000:3000'
+  #     - '0:0'
 
-  # docs:
-  #   image: metadata_local_docs
-  #   container_name: metadata_local_docs
-  #   platform: linux/x86_64
-  #   build:
-  #     context: .
-  #     dockerfile: ./compose/local/docs/Dockerfile
-  #   env_file:
-  #     - ./.envs/.local/.django
-  #   volumes:
-  #     - ./docs:/docs:z
-  #     - ./config:/app/config:z
-  #     - ./metadata:/app/metadata:z
-  #   ports:
-  #     - "9000:9000"
-  #   command: /start-docs
+  docs:
+    image: lwmdb_local_docs
+    container_name: lwmdb_local_docs
+    build:
+      context: .
+      dockerfile: ./compose/local/docs/Dockerfile
+    env_file:
+      - ./.envs/local
+    volumes:
+      - ./docs:/docs:z
+      - ./config:/app/config:z
+      - ./lwmdb:/app/lwmdb:z
+    ports:
+      - '9000:9000'
+    command: /start-docs
 
   mailhog:
     image: mailhog/mailhog:v1.0.0
-    container_name: metadata_local_mailhog
+    container_name: lwmdb_local_mailhog
     ports:
-      - "8025:8025"
+      - '8025:8025'
 
+  # Only used with celery/flower when local
   # redis:
-  # image: redis:6
-    # container_name: metadata_local_redis
+  #   image: redis:7
+  #   container_name: lwmdb_local_redis
 
-    # celeryworker:
-  # <<: *django
-    # image: metadata_local_celeryworker
-    # container_name: metadata_local_celeryworker
-    # depends_on:
-    # - redis
-      # - postgres
-      # - mailhog
-      # ports: []
-    # command: /start-celeryworker
+  # celeryworker:
+  #   <<: *django
+  #   image: lwmdb_local_celeryworker
+  #   container_name: lwmdb_local_celeryworker
+  #   depends_on:
+  #     - redis
+  #     - postgres
+  #     - mailhog
+  #   ports: []
+  #   command: /start-celeryworker
 
-    # celerybeat:
-  # <<: *django
-    # image: metadata_local_celerybeat
-    # container_name: metadata_local_celerybeat
-    # depends_on:
-    # - redis
-      # - postgres
-      # - mailhog
-      # ports: []
-    # command: /start-celerybeat
+  # celerybeat:
+  #   <<: *django
+  #   image: lwmdb_local_celerybeat
+  #   container_name: lwmdb_local_celerybeat
+  #   depends_on:
+  #     - redis
+  #     - postgres
+  #     - mailhog
+  #   ports: []
+  #   command: /start-celerybeat
 
-    # flower:
-  # <<: *django
-    # image: metadata_local_flower
-    # container_name: metadata_local_flower
-    # ports:
-#     - "5555:5555"
-#    command: /start-flower
+  # flower:
+  #   <<: *django
+  #   image: lwmdb_local_flower
+  #   container_name: lwmdb_local_flower
+  #   ports:
+  #    - '5555:5555'
+  #   command: /start-flower
 
   node:
     build:
       context: .
       dockerfile: ./compose/local/node/Dockerfile
-    image: metadata_local_node
-    container_name: metadata_local_node
+    image: lwmdb_local_node
+    container_name: lwmdb_local_node
     depends_on:
       - django
     volumes:
@@ -121,6 +147,6 @@ services:
       - /app/node_modules
     command: npm run dev
     ports:
-      - "3000:3000"
+      - '3000:3000'
         # Expose browsersync UI: https://www.browsersync.io/docs/options/#option-ui
-      - "3001:3001"
+      - '3001:3001'

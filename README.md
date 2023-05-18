@@ -1,4 +1,4 @@
-# Metadata database code
+# Living With Machines Database: `lmwdb`
 
 A package containing database access to the Living with Machines newspaper collection’s metadata.
 
@@ -13,92 +13,102 @@ It is possible to run this code without Docker, but at present we are only maint
 Run the following command on your command line:
 
 ```console
-$ git clone git@github.com:Living-with-machines/lib_metadata_db.git
+git clone git@github.com:Living-with-machines/lwmdb.git
 ```
 
 Follow by:
 
 ```console
-$ cd lib_metadata_db
+cd lwmdb
 ```
 
 ### Running locally
 
 ```console
-$ docker compose -f local.yml up --build
+docker compose -f local.yml up --build
 ```
 
-It will take some time to download a set of `docker` images required to run locally, after which it should attempt to start the server in the `django` container. If successful, the console should print
+Note: this uses the `.envs/local` file provided in the repo. This *must not* be used in production, it is simply for local development and to ease demonstrating what is required for `.envs/production`, which *must* be generated separately for deploying via `production.yml`.
+
+It will take some time to download a set of `docker` images required to run locally, after which it should attempt to start the server in the `django` container. If successful, the console should print logs resembling
 
 ```console
-metadata_local_django    | WARNING: This is a development server. Do not use it in a production
+lwmdb_local_django    | WARNING: This is a development server. Do not use it in a production
 deployment. Use a production WSGI server instead.
-metadata_local_django    |  * Running on all addresses (0.0.0.0)
-metadata_local_django    |  * Running on http://127.0.0.1:8000
-metadata_local_django    |  * Running on http://172.20.0.4:8000
-metadata_local_django    | Press CTRL+C to quit
-metadata_local_django    |  * Restarting with stat
-metadata_local_django    | Performing system checks...
-metadata_local_django    |
-metadata_local_django    | System check identified no issues (0 silenced).
-metadata_local_django    |
-metadata_local_django    | Django version 4.1.7, using settings 'metadata.settings'
-metadata_local_django    | Development server is running at http://0.0.0.0:8000/
-metadata_local_django    | Using the Werkzeug debugger (http://werkzeug.pocoo.org/)
-metadata_local_django    | Quit the server with CONTROL-C.
-metadata_local_django    |  * Debugger is active!
-metadata_local_django    |  * Debugger PIN: 139-826-693
+lwmdb_local_django    |  * Running on all addresses (0.0.0.0)
+lwmdb_local_django    |  * Running on http://127.0.0.1:8000
+lwmdb_local_django    |  * Running on http://172.20.0.4:8000
+lwmdb_local_django    | Press CTRL+C to quit
+lwmdb_local_django    |  * Restarting with stat
+lwmdb_local_django    | Performing system checks...
+lwmdb_local_django    |
+lwmdb_local_django    | System check identified no issues (0 silenced).
+lwmdb_local_django    |
+lwmdb_local_django    | Django version 4.2.1, using settings 'lwmdb.settings'
+lwmdb_local_django    | Development server is running at http://0.0.0.0:8000/
+lwmdb_local_django    | Using the Werkzeug debugger (http://werkzeug.pocoo.org/)
+lwmdb_local_django    | Quit the server with CONTROL-C.
+lwmdb_local_django    |  * Debugger is active!
+lwmdb_local_django    |  * Debugger PIN: 139-826-693
 ```
 
 Indicating it's up and running. You should then be able to go to `http://127.0.0.1:8000` in your local browser and see a start page.
 
-### Build issues
-
-The current configuration attempts to apply all database migrations in the `docker` build. If there's a failure like
+To stop the app call the `down` command:
 
 ```console
-metadata_local_django    | CommandError: Conflicting migrations detected; multiple leaf nodes in the migration graph: (0004_alter_item_title, 0005_alt
-er_item_title in newspapers).
-metadata_local_django    | To fix them run 'python manage.py makemigrations --merge'
-metadata_local_django exited with code 1
+docker compose -f local.yml down
 ```
 
-then, *assuming you don't have the database in a state that you need to keen* you can try building with
+### Importing data
+
+If a previous version of the database is available as either `json` fixtures or raw `sql` via a `pg_dump` (or similar) command.
+
+#### `json` import
+
+`json` `fixtures` need to be placed in a `fixtures` folder in your local checkout:
 
 ```console
-docker compose -f local.yml build --no-cache
+cd lwmdb
+mkdir fixtures
+cp DataProvider-1.json  Ingest-1.json Item-1.json Newspaper-1.json Digitisation-1.json Issue-1.json Item-2.json fixtures/
 ```
 
-This *should* reset the `postgresl` [`container`](https://docs.docker.com/engine/reference/commandline/container/). If you have database modifications that you would like to retain, please raise a pull request so we can try to accomodate. This will involve running that suggested command, but there could be risks to the state the database is in at that point.
-
-For completeness here is how that command could be run, but safest to avoid until *certain* this is best for you database:
+The files can then be imported via
 
 ```console
-docker compose -f local.yml exec django /app/manage.py makemigrations --merge
+docker compose -f local.yml exec django /app/manage.py loaddata fixtures/Newspaper-1.json
+docker compose -f local.yml exec django /app/manage.py loaddata fixtures/Issue-1.json
+docker compose -f local.yml exec django /app/manage.py loaddata fixtures/Item-2.json
+...
 ```
 
-### Add database fixtures
+> :warning: Note the import order is important, specifically: `Newspaper`, `Issue` and any other data `json` files *prior* to `Item` `json`.
 
-Now you need to access the **correct** and **most up-to-date** version of the database and place files in the `fixtures` folder. Currently these need to be requested. Feel free to report an [issue](https://github.com/Living-with-machines/lib_metadata_db/issues) indicating you need fixtures and we will help provide that if permission allows.
+#### Importing a `postgres` database
 
-Assuming data is available, you should be able to import the data provided by placing those files in a `fixtures` folder in your local checkout:
+Importing from `json` can be very slow. If provided a `postgres` data file, it is possible to import that directly. First copy the database file(s) to a `backups` folder on the `postgres` instance (assuming you've run the `build` command)
 
 ```console
-$ cd lib_metadata_db
-$ mkdir fixtures
-$ cp DataProvider-1.json  Ingest-1.json Item-1.json Newspaper-1.json Digitisation-1.json Issue-1.json Item-2.json fixtures/
+docker cp backups $(docker compose -f local.yml ps -q postgres):/backups
 ```
 
-The files can then be processed by loading each via
+Next make sure the app is shut down, then start up with *only the `postgres`* container running:
 
 ```console
-$ docker compose -f local.yml exec django /app/manage.py loaddata fixtures/Newspaper-1.json
-$ docker compose -f local.yml exec django /app/manage.py loaddata fixtures/Issue-1.json 
-$ docker compose -f local.yml exec django /app/manage.py loaddata fixtures/Item-1.json 
-$ docker compose -f local.yml exec django /app/manage.py loaddata fixtures/Item-2.json 
+docker compose -f local.yml down
+docker compose -f local.yml up postgres
 ```
 
-Once all of these are loaded, you should be able to interact with the database.
+Then run the `restore` command with the filename of the backup. By default backup filenames indicates when the backup was made and are compressed (using [`gzip`](https://en.wikipedia.org/wiki/Gzip) compression in the example below `backup_2023_04_03T07_22_10.sql.gz` ) :
+
+> :warning: There is a chance the default `docker` size allocated is not big enough for a full version of the dataset (especially if running on a desktop). If so, you may need to increase the allocated disk space. For example, see [`Docker Mac FAQs`](https://docs.docker.com/desktop/faqs/macfaqs/#where-does-docker-desktop-store-linux-containers-and-images) for instructions to increase available disk space.
+
+```console
+docker compose -f local.yml exec postgres restore backup_2023_04_03T07_22_10.sql.gz
+```
+
+> :warning: If the version of the database you are loading is *not* compatible with the current version of the python package, this can cause significant errors.
 
 ## Querying the database
 
@@ -107,7 +117,7 @@ Once all of these are loaded, you should be able to interact with the database.
 In order to run the Django framework inside a notebook, open another terminal window once you have it running via `docker` as described above and run
 
 ```console
-$ docker compose -f local.yml exec django /app/manage.py shell_plus --notebook
+docker compose -f local.yml exec django /app/manage.py shell_plus --notebook
 ```
 
 This should launch a normal Jupyter Notebook in your browser window where you can create any notebooks and access the database in different ways.
@@ -118,17 +128,17 @@ This should launch a normal Jupyter Notebook in your browser window where you ca
 
 ## Upgrade development version
 
-In order to upgrade the current development version that you have, make sure that you have synchronised the repository to your local drive, and that you have dropped the correct and most up-to-date `db.sqlite3` file into the same folder as the `manage.py` file. (See above, under ”Put the database into place“, for further explanation.)
+In order to upgrade the current development version that you have, make sure that you have synchronised the repository to your local drive:
 
-**Step 1**: `$ git pull`
+**Step 1**: `git pull`
 
-**Step 2**: `$ docker compose -f local.yml up --build`
+**Step 2**: `docker compose -f local.yml up --build`
 
 ## Accessing full-text using `extract_fulltext` method
 
 We are developing a fulltext table for all articles across our available newspapers. Meanwhile, @thobson88 has developed an `.extract_fulltext()` method that can be used on any `Item` objects. Here is an example:
 
-```py
+```python
 from newspapers.models import Newspaper
 from newspapers.models import Item
 from pathlib import Path
@@ -146,6 +156,15 @@ item.extract_fulltext()
 If you need help setting up a SAS token, see [instructions here](https://github.com/Living-with-machines/fulltext#sas-token-creation).
 
 _Please note, access via Blobfuse is planned but not yet implemented._
+
+## Running on a server
+
+To run in production, a `.envs/production` `ENV` file is required. This is not provided to help encryption keys are generated locally and uniquely. The keys set in `.envs/local` are all needed, as well as the follwing two:
+
+- TRAEFIK_EMAIL="email.register.for.traefik.account@test.com"
+- HOST_URL="host.for.lwmdb.deploy.org"
+
+A domain name (in this example `"host.for.lwmdb.deploy.org`) must be registered for `https` (encripyted) usage, and a `TLS` certificate is needed. See [`traefik` docs](https://doc.traefik.io/traefik/https/acme/) for details.
 
 ## Troubleshooting: Common issues
 

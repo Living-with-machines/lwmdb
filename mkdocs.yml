@@ -1,7 +1,15 @@
 site_name: 'lwmdb: Living with Machines Database'
+dev_addr: '127.0.0.1:9000'
 
 nav:
 - Home: index.md
+- Install: install.md
+- Jupyter: jupyter_notebook.md
+- Advanced:
+  - Fulltext: fulltext.md
+  - Import: raw_import.md
+- Deploy: deploy.md
+- Troubleshooting: troubleshooting.md
 - Issues: https://github.com/living-with-machines/lib_metadata_db/issues
 - Reference: reference/
 
@@ -14,6 +22,7 @@ theme:
   name: material
   features:
     - content.code.copy
+    - content.tabs.link
   palette:
     # Palette toggle for automatic mode
     - media: "(prefers-color-scheme)"
@@ -38,14 +47,13 @@ theme:
 plugins:
 - search:
     lang: en
-    min_search_length: 3
-- section-index
 - markdown-exec
 - gen-files:
     scripts:
     - docs/gen_ref_pages.py
 - literate-nav:
     nav_file: DOC_STRINGS.md
+- section-index
 - mkdocstrings:
     handlers:
       python:
@@ -63,3 +71,9 @@ markdown_extensions:
 - footnotes
 - pymdownx.arithmatex:
     generic: true
+- pymdownx.highlight:
+- pymdownx.inlinehilite
+- pymdownx.snippets
+- pymdownx.superfences
+- pymdownx.tabbed:
+    alternate_style: true
