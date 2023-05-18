@@ -7,6 +7,8 @@ set -o nounset
 
 python manage.py makemigrations
 python manage.py migrate
-python manage.py runserver_plus 0.0.0.0:8000
+# python manage.py runserver_plus 0.0.0.0:8000
 # python manage.py shell_plus --notebook
-# uvicorn metadata.asgi:application --host 0.0.0.0 --reload --reload-include '*.html' # use if serving async
+# # use if serving async
+exec uvicorn config.asgi:application --host 0.0.0.0 --reload --reload-include '*.html'
+# exec python manage.py runserver_plus 0.0.0.0:8000 --cert-file certs/lwmdb-test.local.crt

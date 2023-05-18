@@ -6,10 +6,10 @@ from pathlib import Path
 from django.db.utils import OperationalError
 from tqdm import tqdm
 
-from newspapers.models import DataProvider, Digitisation, Ingest, Issue, Item
+from lwmdb.management.commands.fixtures import DATA_PROVIDERS, MOUNTPOINTS
 
-from .fixtures import DATA_PROVIDERS
-from .newspapers import MOUNTPOINTS, REVERSE, NewspapersFixture
+from ...models import DataProvider, Digitisation, Ingest, Issue, Item
+from .newspapers import REVERSE, NewspapersFixture
 
 item_cache = "cache-item"
 

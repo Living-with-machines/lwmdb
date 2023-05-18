@@ -8,9 +8,8 @@ from django.db.utils import OperationalError
 from numpy import append, array
 from tqdm import tqdm
 
+from lwmdb.management.commands.fixtures import DATA_PROVIDERS, MOUNTPOINTS, Fixture
 from newspapers.models import DataProvider, Digitisation, Ingest, Issue, Newspaper
-
-from .fixtures import DATA_PROVIDERS, MOUNTPOINTS, Fixture
 
 # Reverse set to True means that largest files are processed first
 REVERSE = False

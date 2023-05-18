@@ -1,0 +1,78 @@
+version: '3'
+
+volumes:
+  lwmdb_production_postgres_data: {}
+  lwmdb_production_postgres_data_backups: {}
+  # production_caddy: {}
+
+services:
+  django: &django
+    build:
+      context: .
+      dockerfile: ./compose/production/django/Dockerfile
+    image: lwmdb_production_django
+    container_name: lwmdb_production_django
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - .:/app:z
+    env_file:
+      - ./.envs/production
+    ports:
+      - '8000:8000'
+      # - '9090:9090'  # For Jupyter
+      - '5000:5000'
+    command: /start
+
+  postgres:
+    build:
+      context: .
+      dockerfile: ./compose/production/postgres/Dockerfile
+    image: lwmdb_production_postgres
+    container_name: lwmdb_production_postgres
+    volumes:
+      - lwmdb_production_postgres_data:/var/lib/postgresql/data:Z
+      - lwmdb_production_postgres_data_backups:/backups:z
+    env_file:
+      - ./.envs/production
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER}']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # caddy:
+  #   build:
+  #     context: .
+  #     dockerfile: ./compose/production/caddy/Dockerfile
+  #   image: lwmdb_production_caddy
+  #   depends_on:
+  #     - django
+  #   volumes:
+  #     - production_caddy:/root/.caddy
+  #   env_file:
+  #     - ./.envs/.production/.caddy
+  #   ports:
+  #     - '0.0.0.0:80:80'
+  #     - '0.0.0.0:443:443'
+
+  redis:
+    image: redis:7
+
+  # celeryworker:
+  #   <<: *django
+  #   image: lwmdb_production_celeryworker
+  #   command: /start-celeryworker
+
+  # celerybeat:
+  #   <<: *django
+  #   image: lwmdb_production_celerybeat
+  #   command: /start-celerybeat
+
+  # flower:
+  #   <<: *django
+  #   image: lwmdb_production_flower
+  #   ports:
+  #     - '5555:5555'
+  #   command: /start-flower
