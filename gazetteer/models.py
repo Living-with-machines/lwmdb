@@ -19,6 +19,7 @@ class AdminCounty(GazetteerModel):
 
     class Meta:
         unique_together = ("wikidata_id", "label")
+        verbose_name_plural = "admin counties"
 
 
 class Country(GazetteerModel):
@@ -31,6 +32,7 @@ class Country(GazetteerModel):
 
     class Meta:
         unique_together = ("wikidata_id", "label")
+        verbose_name_plural = "counties"
 
 
 class HistoricCounty(GazetteerModel):
@@ -43,6 +45,7 @@ class HistoricCounty(GazetteerModel):
 
     class Meta:
         unique_together = ("wikidata_id", "label")
+        verbose_name_plural = "historic counties"
 
 
 class PlaceOfPublicationManager(models.Manager):

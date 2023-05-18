@@ -44,7 +44,7 @@ lwmdb_local_django    | Performing system checks...
 lwmdb_local_django    |
 lwmdb_local_django    | System check identified no issues (0 silenced).
 lwmdb_local_django    |
-lwmdb_local_django    | Django version 4.1.7, using settings 'lwmdb.settings'
+lwmdb_local_django    | Django version 4.2.1, using settings 'lwmdb.settings'
 lwmdb_local_django    | Development server is running at http://0.0.0.0:8000/
 lwmdb_local_django    | Using the Werkzeug debugger (http://werkzeug.pocoo.org/)
 lwmdb_local_django    | Quit the server with CONTROL-C.
