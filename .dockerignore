@@ -1,5 +1,6 @@
-fixtures/*
+*fixtures/*
 !fixture-files/*
-backups*
-*.tar
-*.sql.gz
+*backups*
+*.tar*
+*.sql.gz*
+*.orig*
