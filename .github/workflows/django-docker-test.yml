@@ -7,11 +7,11 @@ env:
 
 on:
   pull_request:
-    branches: [ "geodjango" ]
+    branches: [ "main", ]
     paths-ignore: [ "docs/**" ]
 
   push:
-    branches: [ "main", "geocensus" ]
+    branches: [ "main", "geocensus", "griff-rees/issue83", "production-deploy", "rename-lwmdb",]
     paths-ignore: [ "docs/**" ]
 
 concurrency:
@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: metadata/
+        working-directory: config/
     steps:
 
       - name: Checkout Code Repository
@@ -32,7 +32,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@main
         with:
-          python-version: "3.10"
+          python-version: "3.11"
           # cache: pip
           # cache-dependency-path: |
           #   requirements/base.txt
