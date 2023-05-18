@@ -8,7 +8,8 @@ nav:
 - Advanced:
   - Fulltext: fulltext.md
   - Import: raw_import.md
-- Deploy: deploy.md
+  - Deploy: deploy.md
+  - Management: management.md
 - Troubleshooting: troubleshooting.md
 - Issues: https://github.com/living-with-machines/lib_metadata_db/issues
 - Reference: reference/
