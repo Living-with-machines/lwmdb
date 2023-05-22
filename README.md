@@ -16,10 +16,19 @@ Run the following command on your command line:
 git clone git@github.com:Living-with-machines/lwmdb.git
 ```
 
-Follow by:
+Followed by:
 
 ```console
 cd lwmdb
+```
+
+### Local deploy of documentation
+
+Within the `lwmdb` folder, run:
+
+```console
+poetry install
+poetry run mkdocs serve
 ```
 
 ### Running locally
