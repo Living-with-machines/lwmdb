@@ -24,7 +24,7 @@ cd lwmdb
 
 ### Local deploy of documentation
 
-Within the `lwmdb` folder, run:
+If you have a local install of [`poetry`](https://python-poetry.org/docs/) you can run the documentation locally without using `docker`:
 
 ```console
 poetry install
