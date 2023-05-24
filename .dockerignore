@@ -3,3 +3,6 @@ fixtures/*
 backups*
 *.tar
 *.sql.gz
+*talks*
+*data-backups*
+*certs*
