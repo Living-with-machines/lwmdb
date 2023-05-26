@@ -16,10 +16,19 @@ Run the following command on your command line:
 git clone git@github.com:Living-with-machines/lwmdb.git
 ```
 
-Follow by:
+Followed by:
 
 ```console
 cd lwmdb
+```
+
+### Local deploy of documentation
+
+If you have a local install of [`poetry`](https://python-poetry.org/docs/) you can run the documentation locally without using `docker`:
+
+```console
+poetry install
+poetry run mkdocs serve
 ```
 
 ### Running locally
