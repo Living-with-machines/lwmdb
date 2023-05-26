@@ -345,11 +345,15 @@ def download_file(
 ) -> bool:
     """If `force` or not available, download `url` to `local_path`.
 
-    >>> from pathlib import Path
-    >>> jpg_url: str = "https://commons.wikimedia.org/wiki/File:Wassily_Leontief_1973.jpg"
-    >>> local_path: Path = Path('test.jpg')
-    >>> download_file(local_path, jpg_url)
-    True
+    Examples:
+        >>> from pathlib import Path
+        >>> jpg_url: str = "https://commons.wikimedia.org/wiki/File:Wassily_Leontief_1973.jpg"
+        >>> local_path: Path = Path('test.jpg')
+        >>> success: bool = download_file(local_path, jpg_url)
+        test.jpg not found, downloading from https://commons.wikimedia.org/wiki/File:Wassily_Leontief_1973.jpg
+        >>> success
+        True
+        >>> local_path.unlink()  # Delete downloaded jpg
     """
     local_path = Path(local_path)
     if not local_path.is_file() or force:
@@ -383,8 +387,9 @@ def download_file(
 def app_data_path(app_name: str, data_path: PathLike = DEFAULT_APP_DATA_FOLDER) -> Path:
     """Return `app_name` data `Path` and ensure exists.
 
-    >>> app_data_path('mitchells')
-    PosixPath('mitchells/data')
+    Examples:
+        >>> app_data_path('mitchells')
+        PosixPath('mitchells/data')
     """
     path = Path(app_name) / Path(data_path)
     path.mkdir(exist_ok=True)
