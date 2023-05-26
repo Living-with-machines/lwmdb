@@ -11,7 +11,7 @@ on:
     paths-ignore: [ "docs/**" ]
 
   push:
-    branches: [ "main", "geocensus", "griff-rees/issue83", "production-deploy", "fix-mitchells-import"]
+    branches: [ "main", "geocensus", "production-deploy", "fix-mitchells-import",]
     paths-ignore: [ "docs/**" ]
 
 concurrency:
