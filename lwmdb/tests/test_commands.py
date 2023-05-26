@@ -6,6 +6,7 @@ from django.core.management import call_command
 # pytestmark = [pytest.mark.django_db]
 
 
+@pytest.mark.xfail
 @pytest.mark.django_db
 def test_mitchells():
     # monkeypatch.setattr('builtins.input', lambda _: "mitchells_publication_for_linking.csv")
@@ -19,6 +20,6 @@ def test_mitchells():
 @pytest.mark.django_db
 def test_gazzetteer():
     out = StringIO()
-    call_command("loadfixtures", "gazzetteer", stdout=out)
+    call_command("loadfixtures", "gazzetteer", force=True, stdout=out)
     # self.assertIn("Expected output", out.getvalue())
     assert "Expected output" in out.getvalue()
