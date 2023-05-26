@@ -8,7 +8,7 @@ from lwmdb.management.commands.fixtures import AUTO_FILE_LOCATIONS, Fixture
 from ...models import AdminCounty, Country, HistoricCounty, Place
 
 
-class GazetteerFixture(Fixture):
+class Command(Fixture):
     app_name = "gazetteer"
     models = [AdminCounty, Country, HistoricCounty, Place]
 

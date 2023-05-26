@@ -13,7 +13,7 @@ CSV_FIXTURE_PATH: Path = Path("./fixture-files/UKDA-8613-csv/")
 JSON_FIXTURE_WRITE_PATH: Path = Path("./census/fixtures/Record.json")
 
 
-class CensusFixture(Fixture):
+class Command(Fixture):
     """Build census."""
 
     csv_fixture_path: Path = CSV_FIXTURE_PATH

@@ -1,9 +1,12 @@
 import re
 from datetime import datetime
 from glob import glob
-from logging import INFO, getLogger
+from logging import ERROR, INFO, getLogger
+from os import PathLike
 from pathlib import Path
+from shutil import copyfileobj
 from typing import Callable, Final, Sequence
+from urllib.request import urlopen
 
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
@@ -27,6 +30,9 @@ DIGITS_REGEX: Final[str] = r"(\d+)"
 # Note: importing these can cause a circular import, hence defining locally
 NEWSPAPER_MODEL_NAME: Final[str] = "Newspaper"
 ITEM_MODEL_NAME: Final[str] = "Item"
+
+DEFAULT_APP_DATA_FOLDER: Final[Path] = Path("data")
+DEFAULT_APP_FIXTURE_FOLDER: Final[Path] = Path(DEFAULT_FIXTURE_PATH)
 
 logger = getLogger(__name__)
 
@@ -332,3 +338,54 @@ def import_fixtures(
             django_command_instance=django_command_instance,
             style=success_style,
         )
+
+
+def download_file(
+    local_path: PathLike, url: str, force: bool = False, terminal_print: bool = True
+) -> bool:
+    """If `force` or not available, download `url` to `local_path`.
+
+    >>> from pathlib import Path
+    >>> jpg_url: str = "https://commons.wikimedia.org/wiki/File:Wassily_Leontief_1973.jpg"
+    >>> local_path: Path = Path('test.jpg')
+    >>> download_file(local_path, jpg_url)
+    True
+    """
+    local_path = Path(local_path)
+    if not local_path.is_file() or force:
+        if force:
+            log_and_django_terminal(
+                f"Overwriting {local_path} by downloading from {url}",
+                terminal_print=terminal_print,
+            )
+        else:
+            log_and_django_terminal(
+                f"{local_path} not found, downloading from {url}",
+                terminal_print=terminal_print,
+            )
+        with (
+            urlopen(url) as response,
+            open(str(local_path), "wb") as out_file,
+        ):
+            copyfileobj(response, out_file)
+        log_and_django_terminal(f"Saved to {local_path}")
+    if not local_path.stat().st_size > 0:
+        log_and_django_terminal(
+            f"{local_path} from {url} is empty",
+            terminal_print=terminal_print,
+            level=ERROR,
+        )
+        return False
+    else:
+        return True
+
+
+def app_data_path(app_name: str, data_path: PathLike = DEFAULT_APP_DATA_FOLDER) -> Path:
+    """Return `app_name` data `Path` and ensure exists.
+
+    >>> app_data_path('mitchells')
+    PosixPath('mitchells/data')
+    """
+    path = Path(app_name) / Path(data_path)
+    path.mkdir(exist_ok=True)
+    return path

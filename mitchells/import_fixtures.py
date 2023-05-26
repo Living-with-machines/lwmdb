@@ -1,11 +1,14 @@
 import json
+from pathlib import Path
+from typing import Final
 
 import numpy as np
 import pandas as pd
+from django.db.models import Model
 
 from lwmdb.management.commands.fixtures import AUTO_FILE_LOCATIONS, Fixture
 
-from ...models import (
+from .models import (
     Entry,
     EntryPoliticalLeanings,
     EntryPrices,
@@ -14,13 +17,82 @@ from ...models import (
     Price,
 )
 
+MITCHELS_PUB_FOR_LINK_KEY: str = "mitchells_publication_for_linking"
+MITCHELLS_LOCAL_LINK_CSV_URL: str = (
+    "https://bl.iro.bl.uk/downloads/da65047c-4d62-4ab7-946f-8e61e5f6f331?locale=en"
+)
+MITCHELLS_LOCAL_LINK_EXCEL_URL: str = (
+    "https://bl.iro.bl.uk/downloads/9d515cf9-c76d-484f-86ee-ddc642f32479?locale=en"
+)
+MITCHELLS_LOCAL_LINK_CSV_PATH: Path = Path(MITCHELS_PUB_FOR_LINK_KEY + ".csv")
+
+LOCAL_DATA_PATH: Path = Path("mitchells") / "data"
+
 # TODO: We want to look closer into the SettingWithCopyWarning that this script generates
 # pd.options.mode.chained_assignment = None
+DB_COLS: Final[list[str]] = [
+    "title",
+    "political_leaning_raw",
+    "price_raw",
+    "day_of_publication_raw",
+    "year",
+    "date_established_raw",
+    "place_circulation_raw",
+    "publication_district_raw",
+    "publication_county_raw",
+    "persons",
+    "organisations",
+    "place_of_publication_id",
+    "political_leaning_1",
+    "price_1",
+    "political_leaning_2",
+    "price_2",
+]
+
+PROJECT_PAPERS_COLS: Final[list[str]] = [
+    "NLP",
+    "Title",
+    "AcquiredYears",
+    "Editions",
+    "EditionTitles",
+    "City",
+    "Publisher",
+    "UnavailableYears",
+    "Collection",
+    "UK",
+    "Complete",
+    "Notes",
+    "County",
+    "HistoricCounty",
+    "First date held",
+    "Publication title",
+    "link_to_mpd",
+]
+
+SELECTED_DB_COLS: Final[list[str]] = [
+    "NLP",
+    "title",
+    "political_leaning_raw",
+    "price_raw",
+    "day_of_publication_raw",
+    "year",
+    "date_established_raw",
+    "publication_district_raw",
+    "publication_county_raw",
+    "persons",
+    "organisations",
+    "political_leaning_1",
+    "price_1",
+    "political_leaning_2",
+    "price_2",
+    "place_of_circulation_raw",
+    "place_of_publication_id",
+]
 
 
 class MitchellsFixture(Fixture):
-    app_name = "mitchells"
-    models = [
+    app_name: str = "mitchells"
+    models: list[Model] = [
         Issue,
         Entry,
         PoliticalLeaning,
@@ -28,36 +100,20 @@ class MitchellsFixture(Fixture):
         EntryPoliticalLeanings,
         EntryPrices,
     ]
+    db_cols: list[str] = DB_COLS
+    selected_db_cols: list[str] = SELECTED_DB_COLS
+    project_papers_cols: list[str] = PROJECT_PAPERS_COLS
 
-    def __init__(self, force=False):
-        self.force = force
+    def __init__(self, force: bool = False):
+        self.force: bool = force
         super(Fixture, self).__init__()
 
     def get_main_frame(self, mitchells_db, newspapers_overview, wikidata_to_pk):
-        DB_COLS = [
-            "title",
-            "political_leaning_raw",
-            "price_raw",
-            "day_of_publication_raw",
-            "year",
-            "date_established_raw",
-            "place_circulation_raw",
-            "publication_district_raw",
-            "publication_county_raw",
-            "persons",
-            "organisations",
-            "place_of_publication_id",
-            "political_leaning_1",
-            "price_1",
-            "political_leaning_2",
-            "price_2",
-        ]
-
         data = (
             pd.read_csv(
                 mitchells_db,
                 dtype={"id": str},
-                usecols=["id"] + DB_COLS,
+                usecols=["id"] + self.db_cols,
                 low_memory=False,
             )
             .rename(
@@ -71,7 +127,7 @@ class MitchellsFixture(Fixture):
         )
 
         # because we renamed above
-        DB_COLS = [x for x in DB_COLS if not x == "place_circulation_raw"] + [
+        self.db_cols = [x for x in self.db_cols if not x == "place_circulation_raw"] + [
             "place_of_circulation_raw"
         ]
         # mpd stands for mitchells press directory
@@ -80,25 +136,7 @@ class MitchellsFixture(Fixture):
             pd.read_csv(
                 newspapers_overview,
                 dtype={"NLP": str},
-                usecols=[
-                    "NLP",
-                    "Title",
-                    "AcquiredYears",
-                    "Editions",
-                    "EditionTitles",
-                    "City",
-                    "Publisher",
-                    "UnavailableYears",
-                    "Collection",
-                    "UK",
-                    "Complete",
-                    "Notes",
-                    "County",
-                    "HistoricCounty",
-                    "First date held",
-                    "Publication title",
-                    "link_to_mpd",
-                ],
+                usecols=self.project_papers_cols,
             )
             .rename({"link_to_mpd": "mpd_id"}, axis=1)
             .dropna(subset=["mpd_id"])
@@ -155,27 +193,8 @@ class MitchellsFixture(Fixture):
             mitchells_db, newspapers_overview, wikidata_to_pk
         )
 
-        selected_columns = [
-            "NLP",
-            "title",
-            "political_leaning_raw",
-            "price_raw",
-            "day_of_publication_raw",
-            "year",
-            "date_established_raw",
-            "publication_district_raw",
-            "publication_county_raw",
-            "persons",
-            "organisations",
-            "political_leaning_1",
-            "price_1",
-            "political_leaning_2",
-            "price_2",
-            "place_of_circulation_raw",
-            "place_of_publication_id",
-        ]
-        mitchells_entries = main_frame[selected_columns].drop_duplicates(
-            subset=[x for x in selected_columns if not "raw" in x]
+        mitchells_entries = main_frame[self.selected_db_cols].drop_duplicates(
+            subset=[x for x in self.selected_db_cols if not "raw" in x]
         )
         mitchells_entries["year"] = pd.to_datetime(mitchells_entries["year"]).dt.year
         mitchells_entries.replace(

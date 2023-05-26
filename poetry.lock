@@ -2948,6 +2948,22 @@ docs = ["sphinx", "sphinx-rtd-theme"]
 testing = ["Django", "django-configurations (>=2.0)"]
 
 [[package]]
+name = "pytest-remotedata"
+version = "0.4.0"
+description = "Pytest plugin for controlling remote data access."
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "pytest-remotedata-0.4.0.tar.gz", hash = "sha256:be21c558e34d7c11b0f6aeb50956c09520bffcd02b7fce9c6f8e8531a401a1c8"},
+    {file = "pytest_remotedata-0.4.0-py3-none-any.whl", hash = "sha256:48ebd360d24bc670cfeca43fff62c1866251af9cfe53f2662f225f74b3496357"},
+]
+
+[package.dependencies]
+packaging = "*"
+pytest = ">=4.6"
+
+[[package]]
 name = "pytest-sugar"
 version = "0.9.7"
 description = "pytest-sugar is a plugin for pytest that changes the default look and feel of pytest (e.g. progressbar, show tests that fail instantly)."
@@ -3915,4 +3931,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "17b77059c081d2d490bc82f0ed0785c5ffd93eeb1be2e43efb25601cb665932a"
+content-hash = "388e6edece333458fb832450f860022b083dacbc7f50f2558e291b96efa4305e"

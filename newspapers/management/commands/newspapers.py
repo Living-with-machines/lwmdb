@@ -12,16 +12,16 @@ from lwmdb.management.commands.fixtures import DATA_PROVIDERS, MOUNTPOINTS, Fixt
 from newspapers.models import DataProvider, Digitisation, Ingest, Issue, Newspaper
 
 # Reverse set to True means that largest files are processed first
-REVERSE = False
+REVERSE: bool = False
 
 # If set to true, there will be a success message posted after every successful insertion into the db
-WRITE_SUCCESS = False
+WRITE_SUCCESS: bool = False
 
 
 newspaper_cache = "cache-newspaper"
 
 
-class NewspapersFixture(Fixture):
+class Command(Fixture):
     app_name = "newspapers"
     models = [Newspaper, Issue, Digitisation, Ingest, DataProvider]
 
