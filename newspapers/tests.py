@@ -45,7 +45,7 @@ class ItemTestCase(TestCase):
             name="lwm", collection="newspapers", source_note=""
         )
 
-        item = Item.objects.create(
+        Item.objects.create(
             item_code=TEST_ITEM_CODE,
             title=TEST_ITEM_TITLE,
             input_filename="0003040_18940905_art0030.txt",

@@ -9,12 +9,13 @@ from tqdm import tqdm
 from lwmdb.management.commands.fixtures import DATA_PROVIDERS, MOUNTPOINTS
 
 from ...models import DataProvider, Digitisation, Ingest, Issue, Item
-from .newspapers import REVERSE, NewspapersFixture
+from .newspapers import REVERSE
+from .newspapers import Command as NewspapersFixture
 
 item_cache = "cache-item"
 
 
-class ItemFixture(NewspapersFixture):
+class Command(NewspapersFixture):
     models = [Item]
 
     def __init__(self, force=False):

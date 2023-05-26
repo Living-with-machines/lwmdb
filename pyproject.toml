@@ -41,6 +41,7 @@ pydot = "^1.4.2"
 pre-commit = "^3.3.1"
 django-coverage-plugin = "^3.0.0"
 django-stubs = {extras = ["compatible-mypy"], version = "^4.2.0"}
+pytest-remotedata = "^0.4.0"
 
 
 [tool.poetry.group.docs.dependencies]
@@ -70,7 +71,12 @@ addopts = """
 --ignore=notebooks
 --ignore=docs
 --ignore=lwmdb/contrib/sites
+-m "not slow"
+--durations=3
 """
+markers = [
+  "slow: marks tests as slow (deselect with '-m \"not slow\"')"
+]
 
 [tool.flake8]
 max-line-length = 88

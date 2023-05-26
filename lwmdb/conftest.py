@@ -1,7 +1,6 @@
 import pytest
 
 # from django.conf import settings
-from django.core.management import call_command
 from django.utils.translation import activate
 
 
@@ -11,13 +10,13 @@ def set_default_language():
     activate("en-gb")
 
 
-@pytest.fixture(scope="session")
-def django_db_setup(django_db_setup, django_db_blocker):
-    """Call the `loaddata` command to provide test fixtures."""
-    with django_db_blocker.unblock():
-        call_command(
-            "loaddata",
-        )
+# @pytest.fixture(scope="session")
+# def django_db_setup(django_db_setup, django_db_blocker):
+#     """Call the `loaddata` command per app to provide test fixtures."""
+#     with django_db_blocker.unblock():
+#         call_command(
+#             "loaddata",
+#         )
 
 
 @pytest.fixture(autouse=True)

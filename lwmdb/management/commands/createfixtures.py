@@ -1,10 +1,10 @@
 from django.core.management import BaseCommand
 
-from census.management.commands.census import CensusFixture
-from gazetteer.management.commands.gazetteer import GazetteerFixture
-from mitchells.management.commands.mitchells import MitchellsFixture
-from newspapers.management.commands.items import ItemFixture
-from newspapers.management.commands.newspapers import NewspapersFixture
+from census.management.commands.census import Command as CensusFixture
+from gazetteer.management.commands.gazetteer import Command as GazetteerFixture
+from mitchells.import_fixtures import MitchellsFixture
+from newspapers.management.commands.items import Command as ItemFixture
+from newspapers.management.commands.newspapers import Command as NewspapersFixture
 
 from .fixtures import Connector
 
