@@ -4,7 +4,7 @@ import pytest
 
 from mitchells.import_fixtures import MITCHELLS_LOCAL_LINK_CSV_URL
 
-from .utils import VALID_FALSE_STRS, VALID_TRUE_STRS, download_file, str_to_bool
+from ..utils import VALID_FALSE_STRS, VALID_TRUE_STRS, download_file, str_to_bool
 
 
 @pytest.mark.parametrize("val", VALID_TRUE_STRS)
