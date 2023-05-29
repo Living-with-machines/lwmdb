@@ -1882,6 +1882,18 @@ files = [
 mkdocs = ">=1.0.3"
 
 [[package]]
+name = "mkdocs-include-markdown-plugin"
+version = "4.0.4"
+description = "Mkdocs Markdown includer plugin."
+category = "dev"
+optional = false
+python-versions = "<3.12,>=3.7"
+files = [
+    {file = "mkdocs_include_markdown_plugin-4.0.4-py3-none-any.whl", hash = "sha256:792caa91c2c46fa174ad44caa786656ac3f475f2cef5ad33ad28a106f7bc4086"},
+    {file = "mkdocs_include_markdown_plugin-4.0.4.tar.gz", hash = "sha256:a5d569a653a610cbbe5b9c0ebb257ce7f94b453e93c3ae2c503b682e77465773"},
+]
+
+[[package]]
 name = "mkdocs-literate-nav"
 version = "0.6.0"
 description = "MkDocs plugin to specify the navigation in Markdown instead of YAML"
@@ -3931,5 +3943,5 @@ files = [
 
 [metadata]
 lock-version = "2.0"
-python-versions = "^3.11"
-content-hash = "374cfdd16dd124e1e5ba70f349e1be73bfcbf86b8e290c8172739828423f7a68"
+python-versions = ">=3.11,<3.12"
+content-hash = "9507bac251301ff6d390ac5a25ef5cd8775c00dc53d48c1268e7af076fecaa3c"
