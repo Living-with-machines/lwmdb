@@ -38,12 +38,13 @@ def test_mitchells_xlsx_path(mitchells_data_path) -> None:
     )
 
 
+# Example for Contributing docs
 def test_download_local_mitchells_excel(caplog, mitchells_data_path) -> None:
     """Test downloading `MITCHELLS_LOCAL_LINK_EXCEL_URL` fixture.
 
     Note:
-        The `assert LOG in caplog.messages` is designed to work whether it's
-        downloaded or not (easing caching).
+        `assert LOG in caplog.messages` is designed to work whether the file is
+        downloaded or not to ease caching and testing
     """
     caplog.set_level(INFO)
     success: bool = download_file(mitchells_data_path, MITCHELLS_LOCAL_LINK_EXCEL_URL)

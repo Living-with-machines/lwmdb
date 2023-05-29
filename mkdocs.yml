@@ -49,6 +49,7 @@ theme:
 plugins:
 - search:
     lang: en
+- include-markdown
 - markdown-exec
 - gen-files:
     scripts:
