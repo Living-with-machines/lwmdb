@@ -82,34 +82,30 @@ configfile: pyproject.toml
 plugins: pyfakefs-5.2.2, anyio-3.6.2, sugar-0.9.7, cov-4.0.0, django-4.5.2
 collected 33 items / 1 deselected / 32 selected
 
- gazetteer/tests.py ✓                                                         3% ▍
- lwmdb/tests/test_commands.py xx                                              9% ▉
- mitchells/tests.py x✓                                                      100% ██████████
- newspapers/tests.py ✓✓✓✓✓                                                   28% ██▊
- lwmdb/utils.py ✓✓✓✓✓✓✓✓✓                                                    56% █████▋
- lwmdb/tests/test_utils.py ✓✓✓✓✓✓✓✓✓✓✓✓✓                                     97% █████████▊
-------------------- coverage: platform linux, python 3.11.3-final-0 ----------------------
-Name                                                                   Stmts   Miss  Cover
-------------------------------------------------------------------------------------------
-lwmdb/contrib/sites/migrations/0001_initial.py                             6      6     0%
-lwmdb/contrib/sites/migrations/0002_alter_domain_unique.py                 5      5     0%
-lwmdb/contrib/sites/migrations/0003_set_site_domain_and_name.py           20     20     0%
-lwmdb/contrib/sites/migrations/0004_alter_options_ordering_domain.py       4      4     0%
-lwmdb/management/commands/connect.py                                      10      3    70%
-lwmdb/management/commands/createfixtures.py                               42     30    29%
-lwmdb/management/commands/fixtures.py                                    126     78    38%
-lwmdb/management/commands/load_json_fixtures.py                           20     11    45%
-lwmdb/management/commands/loadfixtures.py                                 27      8    70%
-lwmdb/management/commands/makeitemfixtures.py                             78     62    21%
-lwmdb/tests/test_commands.py                                              15      2    87%
-lwmdb/tests/test_utils.py                                                 25      7    72%
-lwmdb/utils.py                                                           120     48    60%
-------------------------------------------------------------------------------------------
-TOTAL                                                                    508    284    44%
+ gazetteer/tests.py ✓                                          3% ▍
+ lwmdb/tests/test_commands.py xx                               9% ▉
+ mitchells/tests.py x✓                                       100% ██████████
+ newspapers/tests.py ✓✓✓✓✓                                    28% ██▊
+ lwmdb/utils.py ✓✓✓✓✓✓✓✓✓                                     56% █████▋
+ lwmdb/tests/test_utils.py ✓✓✓✓✓✓✓✓✓✓✓✓✓                      97% █████████▊
+------------ coverage: platform linux, python 3.11.3-final-0 ---------------
+Name                                                     Stmts   Miss  Cover
+----------------------------------------------------------------------------
+lwmdb/management/commands/connect.py                        10      3    70%
+lwmdb/management/commands/createfixtures.py                 42     30    29%
+lwmdb/management/commands/fixtures.py                      126     78    38%
+lwmdb/management/commands/load_json_fixtures.py             20     11    45%
+lwmdb/management/commands/loadfixtures.py                   27      8    70%
+lwmdb/management/commands/makeitemfixtures.py               78     62    21%
+lwmdb/tests/test_commands.py                                15      2    87%
+lwmdb/tests/test_utils.py                                   25      7    72%
+lwmdb/utils.py                                             120     48    60%
+----------------------------------------------------------------------------
+TOTAL                                                      508    284    44%
 
 8 files skipped due to complete coverage.
 
-=================================== slowest 3 durations ===================================
+============================ slowest 3 durations ===========================
 3.85s setup    gazetteer/tests.py::TestGeoSpatial::test_create_place_and_distance
 1.06s call     lwmdb/tests/test_commands.py::test_mitchells
 0.14s call     lwmdb/utils.py::lwmdb.utils.download_file
@@ -157,7 +153,7 @@ In the previous example, 29 tests passed, 3 failed *as expected* (hence `xfailed
 E       AttributeError: 'Series' object has no attribute 'NLP'
 
 /usr/local/lib/python3.11/site-packages/pandas/core/generic.py:5989: AttributeError
------------------------- Captured stdout call -------------------------
+-------------------------- Captured stdout call ----------------------------
 Warning: Model mitchells.Issue is missing a fixture file and will not load.
 Warning: Model mitchells.Entry is missing a fixture file and will not load.
 Warning: Model mitchells.PoliticalLeaning is missing a fixture file and will not load.
@@ -173,11 +169,11 @@ and summaries at the end of the report
 
 ```console
 ...
-========================= slowest 3 durations =========================
+============================ slowest 3 durations ===========================
 3.87s setup    gazetteer/tests.py::TestGeoSpatial::test_create_place_and_distance
 1.07s call     lwmdb/tests/test_commands.py::test_mitchells
 0.15s call     lwmdb/utils.py::lwmdb.utils.download_file
-======================= short test summary info =======================
+========================== short test summary info =========================
 FAILED lwmdb/tests/test_commands.py::test_mitchells - AttributeError: 'Series' object
 has no attribute 'NLP'
 FAILED lwmdb/tests/test_commands.py::test_gazzetteer - SystemExit: App(s) not allowed: ['gazzetteer']
@@ -228,9 +224,9 @@ Adding the `--pdb` option generates an `ipython` shell at the point a test fails
 E       AttributeError: 'Series' object has no attribute 'NLP'
 
 /usr/local/lib/python3.11/site-packages/pandas/core/generic.py:5989: AttributeError
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> entering PDB >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> entering PDB >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
->>>>>>>>>>>>>>>>>>>>>>>> PDB post_mortem (IO-capturing turned off) >>>>>>>>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> PDB post_mortem (IO-capturing turned off) >>>>>>>>>>>>>>>>>
 > /usr/local/lib/python3.11/site-packages/pandas/core/generic.py(5989)__getattr__()
    5987         ):
    5988             return self[name]
