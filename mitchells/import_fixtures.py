@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from typing import Final
+from typing import Final, Type
 
 import numpy as np
 import pandas as pd
@@ -25,6 +25,7 @@ MITCHELLS_LOCAL_LINK_EXCEL_URL: str = (
     "https://bl.iro.bl.uk/downloads/9d515cf9-c76d-484f-86ee-ddc642f32479?locale=en"
 )
 MITCHELLS_LOCAL_LINK_CSV_PATH: Path = Path(MITCHELS_PUB_FOR_LINK_KEY + ".csv")
+MITCHELLS_LOCAL_LINK_EXCEL_PATH: Path = Path(MITCHELS_PUB_FOR_LINK_KEY + ".xlsx")
 
 LOCAL_DATA_PATH: Path = Path("mitchells") / "data"
 
@@ -92,7 +93,7 @@ SELECTED_DB_COLS: Final[list[str]] = [
 
 class MitchellsFixture(Fixture):
     app_name: str = "mitchells"
-    models: list[Model] = [
+    models: list[Type[Model]] = [
         Issue,
         Entry,
         PoliticalLeaning,

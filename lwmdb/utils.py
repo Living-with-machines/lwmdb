@@ -6,12 +6,14 @@ from os import PathLike
 from pathlib import Path
 from shutil import copyfileobj
 from typing import Callable, Final, Sequence
+from urllib.error import URLError
 from urllib.request import urlopen
 
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.db.models import QuerySet
 from tqdm import tqdm
+from validators.url import url as validate_url
 
 VALID_TRUE_STRS: Final[tuple[str, ...]] = ("y", "yes", "t", "true", "on", "1")
 VALID_FALSE_STRS: Final[tuple[str, ...]] = ("n", "no", "f", "false", "off", "0")
@@ -349,14 +351,21 @@ def download_file(
         >>> from pathlib import Path
         >>> jpg_url: str = "https://commons.wikimedia.org/wiki/File:Wassily_Leontief_1973.jpg"
         >>> local_path: Path = Path('test.jpg')
+        >>> local_path.unlink(missing_ok=True)  # Ensure png deleted
         >>> success: bool = download_file(local_path, jpg_url)
         test.jpg not found, downloading from https://commons.wikimedia.org/wiki/File:Wassily_Leontief_1973.jpg
+        https://commons.wikimedia.org/wiki/File:Wassily_Leontief_1973.jpg file available from test.jpg
         >>> success
         True
         >>> local_path.unlink()  # Delete downloaded jpg
     """
     local_path = Path(local_path)
-    if not local_path.is_file() or force:
+    if not validate_url(url):
+        log_and_django_terminal(
+            f"{url} is not a valid url", terminal_print=terminal_print, level=ERROR
+        )
+        return False
+    if not local_path.exists() or force:
         if force:
             log_and_django_terminal(
                 f"Overwriting {local_path} by downloading from {url}",
@@ -367,12 +376,33 @@ def download_file(
                 f"{local_path} not found, downloading from {url}",
                 terminal_print=terminal_print,
             )
-        with (
-            urlopen(url) as response,
-            open(str(local_path), "wb") as out_file,
-        ):
-            copyfileobj(response, out_file)
-        log_and_django_terminal(f"Saved to {local_path}")
+        try:
+            with (
+                urlopen(url) as response,
+                open(str(local_path), "wb") as out_file,
+            ):
+                copyfileobj(response, out_file)
+        except IsADirectoryError:
+            log_and_django_terminal(
+                f"{local_path} must be a file, not a directory",
+                terminal_print=terminal_print,
+                level=ERROR,
+            )
+            return False
+        except URLError:
+            log_and_django_terminal(
+                f"Download error (likely no internet connection): {url}",
+                terminal_print=terminal_print,
+                level=ERROR,
+            )
+            return False
+        else:
+            log_and_django_terminal(f"Saved to {local_path}")
+    if not local_path.is_file():
+        log_and_django_terminal(
+            f"{local_path} is not a file", terminal_print=terminal_print, level=ERROR
+        )
+        return False
     if not local_path.stat().st_size > 0:
         log_and_django_terminal(
             f"{local_path} from {url} is empty",
@@ -381,6 +411,10 @@ def download_file(
         )
         return False
     else:
+        log_and_django_terminal(
+            f"{url} file available from {local_path}",
+            terminal_print=terminal_print,
+        )
         return True
 
 

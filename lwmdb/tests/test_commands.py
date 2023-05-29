@@ -6,7 +6,7 @@ from django.core.management import call_command
 # pytestmark = [pytest.mark.django_db]
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="AttributeError: 'Series' object has no attribute 'NLP'")
 @pytest.mark.django_db
 def test_mitchells():
     # monkeypatch.setattr('builtins.input', lambda _: "mitchells_publication_for_linking.csv")
@@ -16,7 +16,7 @@ def test_mitchells():
     # self.assertIn("Expected output", out.getvalue())
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="SystemExit: App(s) not allowed: ['gazzetteer']")
 @pytest.mark.django_db
 def test_gazzetteer():
     out = StringIO()

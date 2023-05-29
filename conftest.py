@@ -1,7 +1,12 @@
+from pathlib import Path
+
 import pytest
 
 # from django.conf import settings
 from django.utils.translation import activate
+
+from lwmdb.utils import app_data_path
+from mitchells.import_fixtures import MITCHELLS_LOCAL_LINK_EXCEL_PATH
 
 
 @pytest.fixture(autouse=True)
@@ -23,3 +28,9 @@ def set_default_language():
 def media_storage(settings, tmpdir):
     """Generate a temp path for testing media files."""
     settings.MEDIA_ROOT = tmpdir.strpath
+
+
+@pytest.fixture(scope="session")
+def mitchells_data_path() -> Path:
+    """Return path to `mitchells` app data."""
+    return app_data_path("mitchells") / MITCHELLS_LOCAL_LINK_EXCEL_PATH
