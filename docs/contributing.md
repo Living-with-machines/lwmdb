@@ -1,6 +1,6 @@
 # Contributing
 
-Please see the `CODE_OF_CONDUCT.md` file for our policies on contributing. We broadly follow the [Turing Way Code of Conduct](https://the-turing-way.netlify.app/community-handbook/coc.html) to encourage a pleasant experience contributing and collaborating on this project.
+Please see our [Code of Conduct](code_of_conduct.md) for policies on contributing. We also broadly follow the [Turing Way Code of Conduct](https://the-turing-way.netlify.app/community-handbook/coc.html) to encourage a pleasant experience contributing and collaborating on this project.
 
 ## Documentation
 
@@ -374,7 +374,7 @@ assert caplog.messages == [
 
 ### Unexpected `lwmdb/static/css/project.css` changes
 
-At present running `docker compose` is likely to truncate the last line of `/lwmdb/static/css/project.css` which, can then appear as a local change in a `git` checkout:
+At present (see issue [#110](https://github.com/Living-with-machines/lwmdb/issues/110) for updates) running `docker compose` is likely to truncate the last line of `/lwmdb/static/css/project.css` which, can then appear as a local change in a `git` checkout:
 
 ```console
 Changes not staged for commit:
