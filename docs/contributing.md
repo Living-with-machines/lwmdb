@@ -368,3 +368,31 @@ assert caplog.messages == [
 !!! note
 
     To ease using `python` logging and `django` logging features we use our [`log_and_django_terminal`](reference/lwmdb/utils.md#lwmdb.utils.log_and_django_terminal) wrapper to ease managing logs that might also need to be printed at the terminal alongside commands.
+
+
+## Troubleshooting
+
+### Unexpected `lwmdb/static/css/project.css` changes
+
+At present running `docker compose` is likely to truncate the last line of `/lwmdb/static/css/project.css` which, can then appear as a local change in a `git` checkout:
+
+```console
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   lwmdb/static/css/project.css
+```
+
+This should be automatically fixed via [`pre-commit`](#pre-commit), and if necessary you can run `pre-commit` directly to clean that issue outside of a `git` commit. Given how frequently this may occur, it is safest to simply leave that until commiting a change.
+
+=== "shell"
+
+    ```console
+    pre-commit run --all-files
+    ```
+
+=== "poetry"
+
+    ```console
+    poetry run pre-commit run --all-files
+    ```
