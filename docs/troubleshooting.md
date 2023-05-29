@@ -2,8 +2,7 @@
 
 ## Deploy using up very large harddrive space
 
-By default, a `docker` deploy copies *most* files from the folder the project is run from to each `docker` `container`. However, this can lead to very large `container` images if, for example, a recent database backup has been saved locally. To mitigate this, the `.dockerignore` file provided currently excludes file paths that match these patterns (as of 4 May 2023, see ticket [90](https://github.com/Living-with-machines/lib_metadata_db/issues/90
-) for the latest on this issue):
+By default, a `docker` deploy copies *most* files from the folder the project is run from to each `docker` `container`. However, this can lead to very large `container` images if, for example, a recent database backup has been saved locally. To mitigate this, the `.dockerignore` file provided currently excludes file paths that match these patterns (as of 4 May 2023, see ticket [#90](https://github.com/Living-with-machines/lib_metadata_db/issues/90) for the latest on this issue):
 
 ```
 fixtures/*
