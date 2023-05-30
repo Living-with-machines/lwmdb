@@ -1,4 +1,5 @@
 import json
+from logging import WARNING
 from pathlib import Path
 
 import pandas as pd
@@ -9,6 +10,7 @@ from django.db.utils import OperationalError
 from django.utils import timezone
 
 from gazetteer.models import Place
+from lwmdb.utils import log_and_django_terminal
 from mitchells.models import Entry
 from newspapers.models import Newspaper
 
@@ -195,11 +197,14 @@ class Connector(Fixture):
 
         for _, row in df.iterrows():
             if not Newspaper.objects.filter(publication_code=row.NLP):
-                self.stdout.write(
-                    self.style.WARNING(
-                        f"NLP {row.NLP} not found in database => failed connection to mitchells.Publication {row.entry}."
-                    )
+                log_and_django_terminal(
+                    f"NLP {row.NLP} not found in database => failed connection to mitchells.Publication {row.entry}.",
+                    level=WARNING,
                 )
+                # self.stdout.write(
+                #     self.style.WARNING(
+                #     )
+                # )
                 continue
 
             entry = Entry.objects.get(pk=row.entry)
