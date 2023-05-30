@@ -1,10 +1,12 @@
 import re
+from dataclasses import dataclass
 from datetime import datetime
 from glob import glob
-from logging import ERROR, INFO, getLogger
+from logging import ERROR, INFO, WARNING, getLogger
 from os import PathLike
 from pathlib import Path
 from shutil import copyfileobj
+from types import ModuleType
 from typing import Callable, Final, Sequence
 from urllib.error import URLError
 from urllib.request import urlopen
@@ -12,6 +14,7 @@ from urllib.request import urlopen
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.db.models import QuerySet
+from pandas import DataFrame, Series
 from tqdm import tqdm
 from validators.url import url as validate_url
 
@@ -428,3 +431,194 @@ def app_data_path(app_name: str, data_path: PathLike = DEFAULT_APP_DATA_FOLDER) 
     path = Path(app_name) / Path(data_path)
     path.mkdir(exist_ok=True)
     return path
+
+
+def _short_text_trunc(text: str, trail_str: str = DEFAULT_TRUNCATION_CHARS) -> str:
+    """Return a `str` truncated to 15 characters followed by `trail_str`."""
+    return truncate_str(
+        text=text, trail_str=trail_str + path_or_str_suffix(text), max_length=15
+    )
+
+
+def path_or_str_suffix(
+    str_or_path: str | PathLike,
+    max_extension_len: int = 10,
+    force: bool = False,
+    split_str: str = ".",
+) -> str:
+    """Return suffix of `str_or_path`, else ''.
+
+    Examples:
+        >>> path_or_str_suffix('https://lwmd.livingwithmachines.ac.uk/file.bz2')
+        'bz2'
+
+        >>> path_or_str_suffix('https://lwmd.livingwithmachines.ac.uk/file')
+        ''
+
+        >>> from pathlib import Path
+        >>> path_or_str_suffix(Path('cat') / 'dog' / 'fish.csv')
+        'csv'
+        >>> path_or_str_suffix(Path('cat') / 'dog' / 'fish')
+        ''
+    """
+    suffix: str = ""
+    if isinstance(str_or_path, Path):
+        if str_or_path.suffix:
+            suffix = str_or_path.suffix[1:]  # Skip the `.` for consistency
+        else:
+            """"""
+    else:
+        split_str_or_path: list[str] = str(str_or_path).split(split_str)
+        if len(split_str_or_path) > 1:
+            suffix = split_str_or_path[-1]
+            if "/" in suffix:
+                log_and_django_terminal(
+                    f"Split via {split_str} of "
+                    f"{str_or_path} has a `/` `char`. "
+                    "Returning ''",
+                    level=ERROR,
+                )
+                return ""
+        else:
+            log_and_django_terminal(
+                f"Can't split via {split_str} in "
+                f"{_short_text_trunc(str(str_or_path))}",
+                level=ERROR,
+            )
+            return ""
+    if len(suffix) > max_extension_len:
+        if force:
+            log_and_django_terminal(f"Force return of suffix {suffix}", level=WARNING)
+            return suffix
+        else:
+            log_and_django_terminal(
+                f"suffix {_short_text_trunc(suffix)} too long "
+                f"(max={max_extension_len})",
+                level=ERROR,
+            )
+            return ""
+    else:
+        return suffix
+
+
+class DataSourceDownloadError(Exception):
+    ...
+
+
+@dataclass
+class DataSource:
+    """Class to manage storing/deleting data files.
+
+    Example:
+        >>> import census
+        >>> from pandas import read_csv
+
+        >>> rsd_1851: DataSource = DataSource(
+        ...     file_name="demographics_england_wales_2015.csv",
+        ...     app=census,
+        ...     url="https://reshare.ukdataservice.ac.uk/853547/4/1851_RSD_data.csv",
+        ...     read_func=read_csv,
+        ...     description="Demographic and socio-economic variables for Registration Sub-Districts (RSDs) in England and Wales, 1851",
+        ...     citation="https://dx.doi.org/10.5255/UKDA-SN-853547",
+        ...     license="http://creativecommons.org/licenses/by/4.0/",
+        ... )
+        >>> rsd_1851.delete()  # To ensure it passes tests and doesn't fail
+        >>> df = rsd_1851.read()
+        census/data/demographics_england_wales_2015.csv not found, downloading from https://reshare.ukdataservice.ac.uk/853547/4/1851_RSD_data.csv
+        https://reshare.ukdataservice.ac.uk/853547/4/1851_RSD_data.csv file available from census/data/demographics_england_wales_2015.csv
+        >>> df.columns[:5].tolist()
+        ['CEN_1851', 'REGCNTY', 'REGDIST', 'SUBDIST', 'POP_DENS']
+        >>> rsd_1851.delete()
+    """
+
+    file_name: PathLike | str
+    app: ModuleType
+    url: str
+    read_func: Callable[[PathLike], DataFrame | Series]
+    description: str | None = None
+    citation: str | None = None
+    license: str | None = None
+    _download_exception: DataSourceDownloadError | None = None
+    _str_truncation_length: int = 15
+
+    def __str__(self) -> str:
+        """Readable description of which `file_name` from which `app`."""
+        return (
+            f"'{_short_text_trunc(str(self.file_name))}' "
+            f"for `{self.app.__name__}` app data"
+        )
+
+    def __repr__(self) -> str:
+        """Detailed, truncated reprt of `file_name` for `app`."""
+        return (
+            f"{self.__class__.__name__}({self.app.__name__!r}, "
+            f"'{_short_text_trunc(str(self.file_name))}')"
+        )
+
+    @property
+    def url_suffix(self) -> str:
+        """Return suffix of `self.url` or None if not found."""
+        return path_or_str_suffix(self.url)
+
+    @property
+    def _trunc_url_str_suffix(self) -> str:
+        """Return DEFAULT_TRUNCATION_CHARS + `self.url_suffix`."""
+        return DEFAULT_TRUNCATION_CHARS + self.url_suffix
+
+    def _file_name_truncated(self) -> str:
+        """Return truncated `file_name` for logging."""
+        return truncate_str(
+            text=Path(self.file_name).suffix,
+            max_length=self._str_truncation_length,
+            trail_str=self._trunc_url_str_suffix,
+        )
+
+    @property
+    def local_path(self) -> Path:
+        """Return path to store `self.file_name`."""
+        return app_data_path(self.app.__name__) / self.file_name
+
+    @property
+    def is_empty(self) -> bool:
+        """Return if `Path` to store `self.file_name` has 0 file size."""
+        return self.local_path.stat().st_size == 0
+
+    @property
+    def is_file(self) -> bool:
+        """Return if `self.local_path` is a file."""
+        return self.local_path.is_file()
+
+    @property
+    def is_local(self) -> bool:
+        """Return if `self.url` is storred locally at `self.file_name`."""
+        return self.is_file and not self.is_empty
+
+    def download(self, force: bool = False) -> bool:
+        """Download `self.url` to save locally at `self.file_name`."""
+        if self.is_local and not force:
+            log_and_django_terminal(
+                f"{self} already downloaded " f"(add `force=True` to override)"
+            )
+            return True
+        else:
+            return download_file(self.local_path, self.url)
+
+    def delete(self) -> None:
+        """Delete local save of `self.url` at `self.file_name`.
+
+        Note:
+            No error raised if missing.
+        """
+        log_and_django_terminal(f"Deleting local copy of {self} at {self.local_path}")
+        self.local_path.unlink(missing_ok=True)
+
+    def read(self, force: bool = False) -> DataFrame | Series:
+        """Return data in `self.local_path` processed by `self.read_func`."""
+        if not self.is_local:
+            success: bool = self.download(force=force)
+            if not success:
+                self._download_exception = DataSourceDownloadError(
+                    f"Failed to access {self} data from {self.url}"
+                )
+                logger.error(str(self._download_exception))
+        return self.read_func(self.local_path)

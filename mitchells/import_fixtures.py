@@ -17,15 +17,15 @@ from .models import (
     Price,
 )
 
-MITCHELS_PUB_FOR_LINK_KEY: str = "mitchells_publication_for_linking"
-MITCHELLS_LOCAL_LINK_CSV_URL: str = (
+MITCHELLS_PUB_FOR_LINK_KEY: str = "mitchells_publication_for_linking"
+MITCHELLS_CSV_URL: str = (
     "https://bl.iro.bl.uk/downloads/da65047c-4d62-4ab7-946f-8e61e5f6f331?locale=en"
 )
-MITCHELLS_LOCAL_LINK_EXCEL_URL: str = (
+MITCHELLS_EXCEL_URL: str = (
     "https://bl.iro.bl.uk/downloads/9d515cf9-c76d-484f-86ee-ddc642f32479?locale=en"
 )
-MITCHELLS_LOCAL_LINK_CSV_PATH: Path = Path(MITCHELS_PUB_FOR_LINK_KEY + ".csv")
-MITCHELLS_LOCAL_LINK_EXCEL_PATH: Path = Path(MITCHELS_PUB_FOR_LINK_KEY + ".xlsx")
+MITCHELLS_CSV_PATH: Path = Path(MITCHELLS_PUB_FOR_LINK_KEY + ".csv")
+MITCHELLS_EXCEL_PATH: Path = Path(MITCHELLS_PUB_FOR_LINK_KEY + ".xlsx")
 
 LOCAL_DATA_PATH: Path = Path("mitchells") / "data"
 

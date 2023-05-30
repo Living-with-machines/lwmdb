@@ -6,7 +6,7 @@ import pytest
 from django.utils.translation import activate
 
 from lwmdb.utils import app_data_path
-from mitchells.import_fixtures import MITCHELLS_LOCAL_LINK_EXCEL_PATH
+from mitchells.import_fixtures import MITCHELLS_EXCEL_PATH
 
 
 @pytest.fixture(autouse=True)
@@ -33,4 +33,4 @@ def media_storage(settings, tmpdir):
 @pytest.fixture(scope="session")
 def mitchells_data_path() -> Path:
     """Return path to `mitchells` app data."""
-    return app_data_path("mitchells") / MITCHELLS_LOCAL_LINK_EXCEL_PATH
+    return app_data_path("mitchells") / MITCHELLS_EXCEL_PATH
