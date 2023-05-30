@@ -54,7 +54,7 @@ COPY pyproject.toml poetry.lock .
 # Project initialization:
 RUN poetry config virtualenvs.create false && poetry install
 
-ARG PYTHON_VERSION=3.11-slim-bullseye
+# ARG PYTHON_VERSION=3.11-slim-bullseye
 
 # # define an alias for the specfic python version used in this file.
 # FROM python:${PYTHON_VERSION} as python
