@@ -509,7 +509,7 @@ class DataSourceDownloadError(Exception):
 class DataSource:
     """Class to manage storing/deleting data files.
 
-    Example:
+    Examples:
         >>> import census
         >>> from pandas import read_csv
 
