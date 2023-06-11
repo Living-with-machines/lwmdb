@@ -4,7 +4,7 @@ Please see our [Code of Conduct](code_of_conduct.md) for policies on contributin
 
 ## Documentation
 
-While the documentation should also be available with each local built on port `9000`, it does not, at the time of this writing, currently auto update as changes are made. The easiest solution to this at present is to install the app locally via [`poetry`](https://python-poetry.org/docs/) and then run `mkdocs` on a a port *other* than `9000` *outside* `docker`:
+While the documentation should also be available with each local build on port `9000`, it does not, at the time of this writing, currently auto update as changes are made. The easiest solution to this at present is to install the app locally via [`poetry`](https://python-poetry.org/docs/) and then run `mkdocs` on a a port *other* than `9000` *outside* `docker`:
 
 ```console
 $ cd lwmdb
@@ -15,6 +15,10 @@ $ poetry run mkdocs serve --dev-addr=0.0.0.0:8080
 !!! note
 
     The `--with dev` and `--with docs` are not necessary at present, but they may be set as optional in the future, and if so those would be necessary for contributing to documentation.
+
+!!! warning
+
+    The [`schema`](advanced/schema.md) currently raises an error if run outside `docker compose -f local.yml` because the configuration assumes it's run locally within `docker`. See ticket [`#115`](https://github.com/Living-with-machines/lwmdb/issues/115) for updates.
 
 
 ## Local `docker` test runs

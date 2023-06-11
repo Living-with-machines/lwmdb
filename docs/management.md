@@ -67,14 +67,14 @@ Again assuming default configurations, to copy backup files out of the `postgres
 === "user"
 
     ```console
-    docker cp $(docker compose -f local.yml ps -q postgres):/backups ./backups
+    docker cp $(docker compose -f local.yml ps -q postgres):backups backups
     Successfully copied 28.5GB to /home/user/lwmdb/backups
     ```
 
 === "sudo"
 
     ```console
-    sudo docker cp $(sudo docker compose -f local.yml ps -q postgres):/backups ./backups
+    sudo docker cp $(sudo docker compose -f local.yml ps -q postgres):backups backups
     Successfully copied 28.5GB to /home/user/lwmdb/backups
     ```
 
@@ -85,13 +85,13 @@ To simply copy one backup (`backup_2023_05_17T12_38_40.sql.gz` in this case) dat
 === "user"
 
     ```console
-    docker cp $(docker compose -f local.yml ps -q postgres):/backups/backup_2023_05_17T12_38_40.sql.gz ./backups/
+    docker cp $(docker compose -f local.yml ps -q postgres):backups/backup_2023_05_17T12_38_40.sql.gz backups/
     ```
 
 === "sudo"
 
     ```console
-    sudo docker cp $(sudo docker compose -f local.yml ps -q postgres):/backups/backup_2023_05_17T12_38_40.sql.gz ./backups
+    sudo docker cp $(sudo docker compose -f local.yml ps -q postgres):backups/backup_2023_05_17T12_38_40.sql.gz backups/
     ```
 
 #### Database configuration

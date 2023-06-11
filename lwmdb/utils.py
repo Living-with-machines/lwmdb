@@ -82,8 +82,8 @@ def truncate_str(
     """If `len(text) > max_length` return `text` followed by `trail_str`.
 
     Examples:
-        >>> truncate_str('Standing on the shoulders of giants.', 15)
-        'Standing on the...'
+        >>> truncate_str('Standing in the shadows of love.', 15)
+        'Standing in the...'
     """
     return text[:max_length] + trail_str if len(text) > max_length else text
 

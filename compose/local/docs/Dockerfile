@@ -113,6 +113,7 @@ RUN poetry config virtualenvs.create false && poetry install
 # RUN pip install --no-cache /wheels/* \
 #   && rm -rf /wheels
 #
+EXPOSE 9000
 COPY ./compose/local/docs/start /start-docs
 RUN sed -i 's/\r$//g' /start-docs
 RUN chmod +x /start-docs
@@ -122,8 +123,10 @@ COPY . ${APP_HOME}
 # WORKDIR /docs
 WORKDIR /${APP_HOME}
 # Expose MkDocs development server port
-EXPOSE 9000
 
 # Start development server by default
 # ENTRYPOINT ["mkdocs"]
 # CMD ["serve", "--dev-addr=0.0.0.0:9000"]
+# copy application code to WORKDIR
+
+# ENTRYPOINT ["/entrypoint"]

@@ -28,6 +28,8 @@ class NewspapersModel(models.Model):
 
 
 class DataProvider(NewspapersModel):
+    """Source and collection information for data provider."""
+
     name = models.CharField(max_length=600, default=None)
     collection = models.CharField(max_length=600, default=None)
     source_note = models.CharField(max_length=255, default=None)
@@ -40,6 +42,8 @@ class DataProvider(NewspapersModel):
 
 
 class Digitisation(NewspapersModel):
+    """Means by which collection was digitised."""
+
     xml_flavour = models.CharField(max_length=255, default=None)
     software = models.CharField(max_length=600, default=None, null=True, blank=True)
     mets_namespace = models.CharField(
@@ -57,6 +61,8 @@ class Digitisation(NewspapersModel):
 
 
 class Ingest(NewspapersModel):
+    """Tool used for database ingest."""
+
     lwm_tool_name = models.CharField(max_length=600, default=None)
     lwm_tool_version = models.CharField(max_length=600, default=None)
     lwm_tool_source = models.CharField(max_length=255, default=None)
@@ -69,6 +75,8 @@ class Ingest(NewspapersModel):
 
 
 class Newspaper(NewspapersModel):
+    """Newspaper, including title and place."""
+
     # TODO #55: publication_code should be unique? Currently unique (but not tested with BNA)
     publication_code = models.CharField(max_length=600, default=None)
     title = models.CharField(max_length=255, default=None)
@@ -89,6 +97,8 @@ class Newspaper(NewspapersModel):
 
 
 class Issue(NewspapersModel):
+    """Newspaper Issue, including date and relevant source url."""
+
     # TODO #55: issue_code should be unique? Currently unique (but not tested with BNA)
     issue_code = models.CharField(max_length=600, default=None)
     issue_date = models.DateField()
@@ -120,6 +130,8 @@ class Issue(NewspapersModel):
 
 
 class Item(NewspapersModel):
+    """Printed element in a Newspaper issue including metadata."""
+
     # TODO #55: item_code should be unique? Currently, not unique, however so needs fixing in alto2txt2fixture
     MAX_TITLE_CHAR_COUNT: Final[int] = 100
 
