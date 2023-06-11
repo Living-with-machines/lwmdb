@@ -44,6 +44,7 @@ pre-commit = "^3.3.2"
 django-coverage-plugin = "^3.0.0"
 django-stubs = {extras = ["compatible-mypy"], version = "^4.2.1"}
 mkdocs-kroki-plugin = "^0.6.1"
+alto2txt2fixture = {git = "https://github.com/living-with-machines/alto2txt2fixture.git", rev = "fix-for-lwmdb"}
 
 
 [tool.poetry.group.docs.dependencies]
