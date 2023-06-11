@@ -10,14 +10,15 @@ nav:
   - Import: raw_import.md
   - Deploy: deploy.md
   - Management: management.md
+  - Schema: schema.md
 - Troubleshooting: troubleshooting.md
 - Contributing:
     - Development: contributing.md
     - Code of Conduct: code_of_conduct.md
-- Issues: https://github.com/living-with-machines/lib_metadata_db/issues
+- Issues: https://github.com/living-with-machines/lwmdb/issues
 - Reference: reference/
 
-repo_url: https://github.com/living-with-machines/lib_metadata_db/
+repo_url: https://github.com/living-with-machines/lwmdb/
 
 watch:
 - docs
@@ -60,6 +61,15 @@ plugins:
     nav_file: DOC_STRINGS.md
 - section-index
 - autorefs
+- kroki:
+    # Note: set up to work with a local.yml docker run
+    # and needs to be consistent with local.yml KROKI_LISTEN port
+    ServerURL: http://kroki:9100
+    FileTypes:
+      - svg
+      # - png
+    DownloadImages: true
+
 - mkdocstrings:
     handlers:
       python:
@@ -69,6 +79,7 @@ plugins:
           show_signature_annotations: true
 
 markdown_extensions:
+- smarty
 - admonition
 - pymdownx.details
 - abbr
@@ -77,9 +88,10 @@ markdown_extensions:
 - footnotes
 - pymdownx.arithmatex:
     generic: true
+- pymdownx.tabbed:
+    alternate_style: true
 - pymdownx.highlight:
 - pymdownx.inlinehilite
 - pymdownx.snippets
 - pymdownx.superfences
-- pymdownx.tabbed:
-    alternate_style: true
+- pymdownx.magiclink

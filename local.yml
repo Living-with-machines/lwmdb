@@ -44,6 +44,16 @@ services:
       timeout: 5s
       retries: 5
 
+  kroki:
+    image: yuzutech/kroki
+    container_name: lwmdb_kroki
+    environment:
+      - KROKI_MAX_URI_LENGTH=800000
+      - KROKI_LISTEN=0.0.0.0:9100
+    ports:
+      # - '8000:8000'
+      - '9100:9100'  # For local rendering
+
   # nginx-proxy:
   #   image: jwilder/nginx-proxy:alpine
   #   container_name: nginx-proxy
@@ -58,15 +68,6 @@ services:
   #   restart: always
   #   depends_on:
   #     - django
-
-  # Uncomment to test out nginx-proxy config
-  # whoami:
-  #   image: jwilder/whoami
-  #   expose:
-  #     - "8000"
-  #   environment:
-  #     - VIRTUAL_HOST=whoami.local
-  #     - VIRTUAL_PORT=8000
 
   # jupyterhub:
   #   build:

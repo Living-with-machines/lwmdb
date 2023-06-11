@@ -7,17 +7,10 @@ It is possible to run this code without Docker, but at present we are only maint
 
 ## Clone repository to local drive
 
-Run the following command on your command line:
+Run the following on a command line interface:
 
 ```console
 git clone git@github.com:Living-with-machines/lwmdb.git
-```
-
-Follow by:
-
-=== "user"
-
-```console
 cd lwmdb
 ```
 
@@ -122,7 +115,7 @@ Importing from `json` can be very slow. If provided a `postgres` data file, it i
 === "user"
 
     ```console
-    docker cp backups/. $(docker compose -f local.yml ps -q postgres):
+    docker cp backups/. $(docker compose -f local.yml ps -q postgres):backups
     ```
 
 === "sudo"
@@ -167,7 +160,7 @@ Next make sure the app is shut down, then start up with *only the `postgres`* co
     sudo docker compose -f local.yml up postgres
     ```
 
-Then run the `restore` command with the filename of the backup. By default backup filenames indicates when the backup was made and are compressed (using [`gzip`](https://en.wikipedia.org/wiki/Gzip) compression in the example below `backup_2023_04_03T07_22_10.sql.gz` ) :
+Then run the `restore` command with the filename of the backup. By default backup filenames indicates when the backup was made and are compressed (using [`gzip`](https://en.wikipedia.org/wiki/Gzip) compression in the example below `backup_2023_04_03T07_22_10.sql.gz`):
 
 !!! warning
 
@@ -187,7 +180,7 @@ Then run the `restore` command with the filename of the backup. By default backu
 
 !!! warning 
 
-    If the version of the database you are loading is *not* compatible with the current version of the python package, this can cause significant errors.
+    If the version of the database you are loading is *not* compatible with the current version of the python package, this can cause significant errors
 
 ## Upgrade development version
 
