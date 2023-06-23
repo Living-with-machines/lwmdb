@@ -46,7 +46,6 @@ django-stubs = {extras = ["compatible-mypy"], version = "^4.2.1"}
 mkdocs-kroki-plugin = "^0.6.1"
 alto2txt2fixture = {git = "https://github.com/living-with-machines/alto2txt2fixture.git", rev = "fix-for-lwmdb"}
 
-
 [tool.poetry.group.docs.dependencies]
 mkdocs-material = "^9.1.15"
 mkdocs-literate-nav = "^0.6.0"
@@ -80,7 +79,8 @@ addopts = """
 --durations=3
 """
 markers = [
-  "slow: marks tests as slow (deselect with '-m \"not slow\"')"
+  "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+  "cli: marks tests as using the command-line-interface",
 ]
 
 [tool.flake8]

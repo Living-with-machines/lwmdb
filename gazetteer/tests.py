@@ -1,5 +1,8 @@
+from io import StringIO
+
 import pytest
 from django.contrib.gis.geos import GeometryCollection, Point
+from django.core.management import call_command
 
 from .models import Place
 
@@ -21,8 +24,8 @@ def liverpool_point() -> Point:
 
 
 @pytest.mark.django_db
-class TestGeoSpatial:
-    """Test using geospatial functionality of `coordinates` `Point`."""
+class TestPlaceGeom:
+    """Test creating and geospatial features of the `Place` model."""
 
     def test_create_place_and_distance(self, manc_point, liverpool_point) -> None:
         """Test creating a Place with `coordinates` and calc distance.
@@ -40,8 +43,19 @@ class TestGeoSpatial:
             longitude=manc_point.y,
             geom=GeometryCollection(manc_point),
         )
+        assert test_manc.gemo is not None
         assert test_manc.geom.within(manc_point)
         assert Place.objects.count() == 0
         test_manc.save()
         assert Place.objects.count() == 1
         assert test_manc.geom.distance(liverpool_point) == manc_to_liverpool_2d_dist
+
+
+@pytest.mark.xfail(reason="SystemExit: App(s) not allowed: ['gazetteer']")
+@pytest.mark.django_db
+def test_gazetteer_admin_county_invalid_str_fixture_error():
+    """Test loading invalid gazetteer fixtures."""
+    out = StringIO()
+    call_command("loaddata", "gazetteer", force=True, stdout=out)
+    # self.assertIn("Expected output", out.getvalue())
+    assert "Expected output" in out.getvalue()
