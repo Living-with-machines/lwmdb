@@ -43,7 +43,7 @@ class TestPlaceGeom:
             longitude=manc_point.y,
             geom=GeometryCollection(manc_point),
         )
-        assert test_manc.gemo is not None
+        assert test_manc.geom is not None
         assert test_manc.geom.within(manc_point)
         assert Place.objects.count() == 0
         test_manc.save()
