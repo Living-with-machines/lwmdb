@@ -25,3 +25,4 @@ _dev
 .envs/production
 certs/*
 staticfiles/*
+fixture-files/*
