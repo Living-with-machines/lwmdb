@@ -9,7 +9,7 @@ authors = [
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.12"
-django = "^4.2.2"
+django = "^4.2.3"
 seaborn = "^0.12.2"
 pandas = "^2.0.2"
 ipython = "^8.14.0"
