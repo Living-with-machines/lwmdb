@@ -135,8 +135,8 @@ This should launch a normal Jupyter Notebook in your browser window where you ca
 
 *Note:* For some users we provide two `jupyter` `notebooks`:
 
-- `getting-started.ipynb` 
-- `explore-newspapers.ipynb` 
+- `getting-started.ipynb`
+- `explore-newspapers.ipynb`
 
 Both will give some overview of how one can access the database’s information and what one can do with it. They only scratch the surface of what is possible, of course, but will be a good entry point for someone who wants to orient themselves toward the database and Django database querying.
 
