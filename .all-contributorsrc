@@ -1,0 +1,27 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributors": [
+    {
+      "login": "npedrazzini",
+      "name": "Nilo Pedrazzini",
+      "avatar_url": "https://avatars.githubusercontent.com/u/35242366?v=4",
+      "profile": "http://npedrazzini.github.io",
+      "contributions": [
+        "code",
+        "ideas"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "skipCi": true,
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "projectName": "lwmdb",
+  "projectOwner": "Living-with-machines"
+}
