@@ -169,6 +169,7 @@ A domain name (in this example `"host.for.lwmdb.deploy.org`) must be registered 
   <tbody>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://christinalast.com"><img src="https://avatars.githubusercontent.com/u/36204574?v=4?s=100" width="100px;" alt="Christina Last"/><br /><sub><b>Christina Last</b></sub></a><br /><a href="https://github.com/Living-with-machines/lwmdb/commits?author=ChristinaLast" title="Code">💻</a> <a href="#ideas-ChristinaLast" title="Ideas, Planning, & Feedback">🤔</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://www.westerling.nu"><img src="https://avatars.githubusercontent.com/u/7298727?v=4?s=100" width="100px;" alt="Kalle Westerling"/><br /><sub><b>Kalle Westerling</b></sub></a><br /><a href="https://github.com/Living-with-machines/lwmdb/commits?author=kallewesterling" title="Code">💻</a> <a href="#ideas-kallewesterling" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/Living-with-machines/lwmdb/commits?author=kallewesterling" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>
