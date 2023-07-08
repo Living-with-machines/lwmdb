@@ -248,9 +248,9 @@ class Item(NewspapersModel):
     def download_dir(self):
         """Path to the download directory for full text data.
 
-        The DOWNLOAD_DIR class attribute contains the directory under which
-        full text data will be stored. Users can change it by typing:
-        Item.DOWNLOAD_DIR = "/path/to/wherever/"
+        The DOWNLOAD_DIR class attribute contains the directory under
+        which full text data will be stored. Users can change it by
+        typing: Item.DOWNLOAD_DIR = "/path/to/wherever/"
         """
         return Path(self.DOWNLOAD_DIR)
 
