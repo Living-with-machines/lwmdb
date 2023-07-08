@@ -8,6 +8,17 @@
   "commitConvention": "angular",
   "contributors": [
     {
+      "login": "kallewesterling",
+      "name": "Kalle Westerling",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7298727?v=4",
+      "profile": "http://www.westerling.nu",
+      "contributions": [
+        "code",
+        "ideas",
+        "doc"
+      ]
+    },
+    {
       "login": "griff-rees",
       "name": "griff-rees",
       "avatar_url": "https://avatars.githubusercontent.com/u/60181741?v=4",
@@ -16,8 +27,9 @@
         "code",
         "ideas",
         "mentoring",
-        "maintenance"
-      ]
+        "maintenance",
+	"doc"
+      ],
     }
   ],
   "contributorsPerLine": 7,
@@ -26,4 +38,3 @@
   "repoHost": "https://github.com",
   "projectName": "lwmdb",
   "projectOwner": "Living-with-machines"
-}
