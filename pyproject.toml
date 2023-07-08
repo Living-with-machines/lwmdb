@@ -11,7 +11,7 @@ authors = [
 python = ">=3.11,<3.12"
 django = "^4.2.3"
 seaborn = "^0.12.2"
-pandas = "^2.0.2"
+pandas = "^2.0.3"
 ipython = "^8.14.0"
 jupyter = "^1.0.0"
 django-pandas = "^0.6.6"
@@ -21,7 +21,7 @@ uvicorn = "^0.22.0"
 python-dotenv = "^1.0.0"
 azure-storage-blob = "^12.16.0"
 GDAL = {version = "3.5.3", platform = "darwin"}
-whitenoise = "^6.4.0"
+whitenoise = "^6.5.0"
 tqdm = "^4.65.0"
 psycopg = {extras = ["binary"], version = "^3.1.9"}
 django-debug-toolbar = "^4.1.0"
@@ -38,16 +38,16 @@ pytest-sugar = "^0.9.7"
 pyfakefs = "^5.2.2"
 pytest-django = "^4.5.2"
 Werkzeug = "^2.3.6"
-pyparsing = "^3.0.9"
+pyparsing = "^3.1.0"
 pydot = "^1.4.2"
-pre-commit = "^3.3.2"
+pre-commit = "^3.3.3"
 django-coverage-plugin = "^3.0.0"
-django-stubs = {extras = ["compatible-mypy"], version = "^4.2.1"}
+django-stubs = {extras = ["compatible-mypy"], version = "^4.2.3"}
 mkdocs-kroki-plugin = "^0.6.1"
-alto2txt2fixture = {git = "https://github.com/living-with-machines/alto2txt2fixture.git", rev = "fix-for-lwmdb"}
+alto2txt2fixture = {git = "https://github.com/living-with-machines/alto2txt2fixture.git"}
 
 [tool.poetry.group.docs.dependencies]
-mkdocs-material = "^9.1.15"
+mkdocs-material = "^9.1.18"
 mkdocs-literate-nav = "^0.6.0"
 mkdocs-gen-files = "^0.5.0"
 markdown-exec = {extras = ["ansi"], version = "^1.6.0"}
