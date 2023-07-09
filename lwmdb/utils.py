@@ -1,4 +1,5 @@
 import re
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from datetime import datetime
 from glob import glob
@@ -7,7 +8,7 @@ from os import PathLike
 from pathlib import Path
 from shutil import copyfileobj
 from types import ModuleType
-from typing import Callable, Final, Sequence
+from typing import Final
 from urllib.error import URLError
 from urllib.request import urlopen
 

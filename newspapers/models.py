@@ -184,7 +184,7 @@ class Item(NewspapersModel):
         # for consistency, we save all item_type in uppercase
         self.item_type = str(self.item_type).upper()
         self._sync_title_counts(force=sync_title_counts)
-        return super(Item, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
     def __str__(self):
         return truncate_str(self.title, max_length=MAX_PRINT_SELF_STR_LENGTH)

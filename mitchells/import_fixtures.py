@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from typing import Final, Type
+from typing import Final
 
 import numpy as np
 import pandas as pd
@@ -93,7 +93,7 @@ SELECTED_DB_COLS: Final[list[str]] = [
 
 class MitchellsFixture(Fixture):
     app_name: str = "mitchells"
-    models: list[Type[Model]] = [
+    models: list[type[Model]] = [
         Issue,
         Entry,
         PoliticalLeaning,

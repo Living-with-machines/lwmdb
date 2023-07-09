@@ -4,7 +4,7 @@ log:
 entryPoints:
   web:
     # http
-    address: ":80"
+    address: ':80'
     http:
       # https://docs.traefik.io/routing/entrypoints/#entrypoint
       redirections:
@@ -13,7 +13,7 @@ entryPoints:
 
   web-secure:
     # https
-    address: ":443"
+    address: ':443'
 
   # flower:
   #   address: ":5555"
@@ -22,7 +22,7 @@ certificatesResolvers:
   letsencrypt:
     # https://docs.traefik.io/master/https/acme/#lets-encrypt
     acme:
-      email: "${TRAEFIK_EMAIL}"
+      email: '${TRAEFIK_EMAIL}'
       storage: /etc/traefik/acme/acme.json
       # https://docs.traefik.io/master/https/acme/#httpchallenge
       httpChallenge:
@@ -32,7 +32,7 @@ http:
   routers:
     web-secure-router:
       # rule: "Host(`lwmdb.livingwithmachines.ac.uk`)"
-      rule: "Host(`${HOST_URL}`)"
+      rule: 'Host(`${HOST_URL}`)'
       entryPoints:
         - web-secure
       middlewares:
@@ -56,7 +56,7 @@ http:
       # https://docs.traefik.io/master/middlewares/headers/#hostsproxyheaders
       # https://docs.djangoproject.com/en/dev/ref/csrf/#ajax
       headers:
-        hostsProxyHeaders: ["X-CSRFToken"]
+        hostsProxyHeaders: ['X-CSRFToken']
 
   services:
     django:

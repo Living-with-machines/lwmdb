@@ -148,3 +148,9 @@ django_settings_module = "config.test_settings"
 [[tool.mypy.overrides]]
 module = "*.migrations.*"
 ignore_errors = true
+
+[tool.djlint]
+use_gitignore=true
+indent_size=2
+exclude="lwmdb/static/*"
+ignore="H031"

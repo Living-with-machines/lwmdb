@@ -7,12 +7,12 @@ env:
 
 on:
   pull_request:
-    branches: [ "main", ]
-    paths-ignore: [ "docs/**" ]
+    branches: ['main']
+    paths-ignore: ['docs/**']
 
   push:
-    branches: [ "main", "geocensus", "production-deploy", "fix-mitchells-import",]
-    paths-ignore: [ "docs/**" ]
+    branches: ['main', 'geocensus', 'production-deploy']
+    paths-ignore: ['docs/**']
 
 concurrency:
   group: ${{ github.head_ref || github.run_id }}
@@ -25,14 +25,13 @@ jobs:
       run:
         working-directory: config/
     steps:
-
       - name: Checkout Code Repository
         uses: actions/checkout@main
 
       - name: Set up Python
         uses: actions/setup-python@main
         with:
-          python-version: "3.11"
+          python-version: '3.11'
           # cache: pip
           # cache-dependency-path: |
           #   requirements/base.txt
@@ -52,22 +51,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout Code Repository
         uses: actions/checkout@main
 
       - name: Build the Stack
-        run:  docker compose -f local.yml build
+        run: docker compose -f local.yml build
 
       # This is currently automated in the build, consider removing
       - name: Run DB Migrations
-        run:  docker compose -f local.yml run --rm django python manage.py migrate
+        run: docker compose -f local.yml run --rm django python manage.py migrate
 
       - name: Run Django Quick Tests
-        run:  docker compose -f local.yml run django pytest
+        run: docker compose -f local.yml run django pytest
 
       - name: Run Django Slow Tests
-        run:  docker compose -f local.yml run django pytest -m slow
+        run: docker compose -f local.yml run django pytest -m slow
 
       - name: Tear down the Stack
-        run:  docker compose -f local.yml down
+        run: docker compose -f local.yml down

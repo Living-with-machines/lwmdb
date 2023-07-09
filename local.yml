@@ -24,7 +24,7 @@ services:
       - ./.envs/local
     ports:
       - '8000:8000'
-      - '9090:9090'  # For Jupyter
+      - '9090:9090' # For Jupyter
     command: /start
 
   postgres:
@@ -52,7 +52,7 @@ services:
       - KROKI_LISTEN=0.0.0.0:9100
     ports:
       # - '8000:8000'
-      - '9100:9100'  # For local rendering
+      - '9100:9100' # For local rendering
 
   # nginx-proxy:
   #   image: jwilder/nginx-proxy:alpine

@@ -1,6 +1,9 @@
 # Living With Machines Database: `lmwdb`
+
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 A package containing database access to the Living with Machines newspaper collection’s metadata.
@@ -9,7 +12,7 @@ A package containing database access to the Living with Machines newspaper colle
 
 ### Install Docker
 
-It is possible to run this code without Docker, but at present we are only maintaining it via Docker Containers so we *highly* recommend installing Docker to run and/or test this code locally. Instructions are available for most operating systems here: https://docs.docker.com/desktop/
+It is possible to run this code without Docker, but at present we are only maintaining it via Docker Containers so we _highly_ recommend installing Docker to run and/or test this code locally. Instructions are available for most operating systems here: https://docs.docker.com/desktop/
 
 ### Clone repository to local drive
 
@@ -40,7 +43,7 @@ poetry run mkdocs serve
 docker compose -f local.yml up --build
 ```
 
-Note: this uses the `.envs/local` file provided in the repo. This *must not* be used in production, it is simply for local development and to ease demonstrating what is required for `.envs/production`, which *must* be generated separately for deploying via `production.yml`.
+Note: this uses the `.envs/local` file provided in the repo. This _must not_ be used in production, it is simply for local development and to ease demonstrating what is required for `.envs/production`, which _must_ be generated separately for deploying via `production.yml`.
 
 It will take some time to download a set of `docker` images required to run locally, after which it should attempt to start the server in the `django` container. If successful, the console should print logs resembling
 
@@ -95,7 +98,7 @@ docker compose -f local.yml exec django /app/manage.py loaddata fixtures/Item-2.
 ...
 ```
 
-> :warning: Note the import order is important, specifically: `Newspaper`, `Issue` and any other data `json` files *prior* to `Item` `json`.
+> :warning: Note the import order is important, specifically: `Newspaper`, `Issue` and any other data `json` files _prior_ to `Item` `json`.
 
 #### Importing a `postgres` database
 
@@ -105,14 +108,14 @@ Importing from `json` can be very slow. If provided a `postgres` data file, it i
 docker cp backups $(docker compose -f local.yml ps -q postgres):/backups
 ```
 
-Next make sure the app is shut down, then start up with *only the `postgres`* container running:
+Next make sure the app is shut down, then start up with _only the `postgres`_ container running:
 
 ```console
 docker compose -f local.yml down
 docker compose -f local.yml up postgres
 ```
 
-Then run the `restore` command with the filename of the backup. By default backup filenames indicates when the backup was made and are compressed (using [`gzip`](https://en.wikipedia.org/wiki/Gzip) compression in the example below `backup_2023_04_03T07_22_10.sql.gz` ) :
+Then run the `restore` command with the filename of the backup. By default backup filenames indicates when the backup was made and are compressed (using [`gzip`](https://en.wikipedia.org/wiki/Gzip) compression in the example below `backup_2023_04_03T07_22_10.sql.gz` ):
 
 > :warning: There is a chance the default `docker` size allocated is not big enough for a full version of the dataset (especially if running on a desktop). If so, you may need to increase the allocated disk space. For example, see [`Docker Mac FAQs`](https://docs.docker.com/desktop/faqs/macfaqs/#where-does-docker-desktop-store-linux-containers-and-images) for instructions to increase available disk space.
 
@@ -120,7 +123,7 @@ Then run the `restore` command with the filename of the backup. By default backu
 docker compose -f local.yml exec postgres restore backup_2023_04_03T07_22_10.sql.gz
 ```
 
-> :warning: If the version of the database you are loading is *not* compatible with the current version of the python package, this can cause significant errors.
+> :warning: If the version of the database you are loading is _not_ compatible with the current version of the python package, this can cause significant errors.
 
 ## Querying the database
 
@@ -136,7 +139,7 @@ This should launch a normal Jupyter Notebook in your browser window where you ca
 
 **Important:** Before importing any models and working with the database data, you will want to run the `import django_initialiser` in a cell, which will set up all the dependencies needed.
 
-*Note:* For some users we provide two `jupyter` `notebooks`:
+_Note:_ For some users we provide two `jupyter` `notebooks`:
 
 - `getting-started.ipynb`
 - `explore-newspapers.ipynb`
@@ -153,7 +156,7 @@ In order to upgrade the current development version that you have, make sure tha
 
 ## Run on a server
 
-To run in production, an `.envs/production` `ENV` file must be created. This must befilled in with *new passwords for each key* rather than a copy of `.envs/local`. The same keys set in `.envs/local` are needed, as well as the follwing two:
+To run in production, an `.envs/production` `ENV` file must be created. This must befilled in with _new passwords for each key_ rather than a copy of `.envs/local`. The same keys set in `.envs/local` are needed, as well as the follwing two:
 
 - `TRAEFIK_EMAIL="email.register.for.traefik.account@test.com"`
 - `HOST_URL="host.for.lwmdb.deploy.org"`
@@ -180,8 +183,3 @@ A domain name (in this example `"host.for.lwmdb.deploy.org`) must be registered 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
-
-<!-- markdownlint-restore -->
-<!-- prettier-ignore-end -->
-
-<!-- ALL-CONTRIBUTORS-LIST:END -->
