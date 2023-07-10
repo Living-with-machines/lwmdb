@@ -25,6 +25,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
   binutils \
   libproj-dev \
   gdal-bin \
+  libgdal-dev \
   gcc \
   python3-dev \
   # for CI lint pre-commit checking
