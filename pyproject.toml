@@ -142,15 +142,25 @@ plugins = [
   # "mypy_drf_plugin.main",
 ]
 
-[tool.django-stubs]
-django_settings_module = "config.test_settings"
-
 [[tool.mypy.overrides]]
 module = "*.migrations.*"
 ignore_errors = true
 
+[tool.django-stubs]
+django_settings_module = "config.test_settings"
+
 [tool.djlint]
 use_gitignore=true
-indent_size=2
 exclude="lwmdb/static/*"
 ignore="H031"
+require_pragma=true
+format_css=true
+format_js=true
+indent=2
+ignore_blocks="comment"
+
+[tool.djlint.css]
+indent_size=2
+
+[too.djlint.js]
+indent_size=2
