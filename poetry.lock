@@ -20,7 +20,7 @@ types-pytz = "^2023.3.0.0"
 
 [package.source]
 type = "git"
-url = "https://github.com/living-with-machines/alto2txt2fixture.git"
+url = "https://github.com/living-with-machines/alto2txt2fixture"
 reference = "HEAD"
 resolved_reference = "e27a3880bf19bf046bdf039a91aec5f94237fb9c"
 
@@ -4050,4 +4050,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11,<3.12"
-content-hash = "014cf3f95a85a82b8abe6ffd3928474dd70ab247f85837564f01b77bd3511b42"
+content-hash = "f0aa34834a569ca630d946a7d28211ba6ad43bbe2052b0aa12e9870f3e03debf"
