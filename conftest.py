@@ -10,7 +10,7 @@ from mitchells.import_fixtures import MITCHELLS_EXCEL_PATH
 
 
 @pytest.fixture(autouse=True)
-def set_default_language():
+def set_default_language() -> None:
     """Ensure `en-gb` localisation is enforced for testing."""
     activate("en-gb")
 
@@ -25,7 +25,7 @@ def set_default_language():
 
 
 @pytest.fixture(autouse=True)
-def media_storage(settings, tmpdir):
+def media_storage(settings, tmpdir) -> None:
     """Generate a temp path for testing media files."""
     settings.MEDIA_ROOT = tmpdir.strpath
 
