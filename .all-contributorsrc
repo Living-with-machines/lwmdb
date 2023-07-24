@@ -39,7 +39,7 @@
       "contributions": [
         "code"
       ]
-    }, 
+    },
     {
       "login": "thobson88",
       "name": "Tim Hobson",
@@ -59,7 +59,7 @@
         "code",
         "ideas"
       ]
-    }, 
+    },
     {
       "login": "ChristinaLast",
       "name": "Christina Last",
@@ -68,8 +68,18 @@
       "contributions": [
         "code",
         "ideas"
-        ]
-      }
+      ]
+    },
+    {
+      "login": "andrewphilipsmith",
+      "name": "Andy Smith",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5346065?v=4",
+      "profile": "https://github.com/andrewphilipsmith",
+      "contributions": [
+        "code",
+        "ideas"
+      ]
+    }
   ],
   "contributorsPerLine": 7,
   "skipCi": true,
