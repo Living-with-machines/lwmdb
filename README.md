@@ -1,9 +1,7 @@
 # Living With Machines Database: `lmwdb`
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-
-[![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
-
+[![All Contributors](https://img.shields.io/badge/all_contributors-7-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/Living-with-machines/lwmdb/main.svg)](https://results.pre-commit.ci/latest/github/Living-with-machines/lwmdb/main)
@@ -176,9 +174,10 @@ A domain name (in this example `"host.for.lwmdb.deploy.org`) must be registered 
       <td align="center" valign="top" width="14.28%"><a href="http://www.westerling.nu"><img src="https://avatars.githubusercontent.com/u/7298727?v=4?s=100" width="100px;" alt="Kalle Westerling"/><br /><sub><b>Kalle Westerling</b></sub></a><br /><a href="https://github.com/Living-with-machines/lwmdb/commits?author=kallewesterling" title="Code">💻</a> <a href="#ideas-kallewesterling" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/Living-with-machines/lwmdb/commits?author=kallewesterling" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/griff-rees"><img src="https://avatars.githubusercontent.com/u/60181741?v=4?s=100" width="100px;" alt="griff-rees"/><br /><sub><b>griff-rees</b></sub></a><br /><a href="https://github.com/Living-with-machines/lwmdb/commits?author=griff-rees" title="Code">💻</a> <a href="#ideas-griff-rees" title="Ideas, Planning, & Feedback">🤔</a> <a href="#mentoring-griff-rees" title="Mentoring">🧑‍🏫</a> <a href="#maintenance-griff-rees" title="Maintenance">🚧</a> <a href="https://github.com/Living-with-machines/lwmdb/commits?author=griff-rees" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/AoifeHughes"><img src="https://avatars.githubusercontent.com/u/10923695?v=4?s=100" width="100px;" alt="Aoife Hughes"/><br /><sub><b>Aoife Hughes</b></sub></a><br /><a href="https://github.com/Living-with-machines/lwmdb/commits?author=AoifeHughes" title="Code">💻</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://christinalast.com"><img src="https://avatars.githubusercontent.com/u/36204574?v=4?s=100" width="100px;" alt="Christina Last"/><br /><sub><b>Christina Last</b></sub></a><br /><a href="https://github.com/Living-with-machines/lwmdb/commits?author=ChristinaLast" title="Code">💻</a> <a href="#ideas-ChristinaLast" title="Ideas, Planning, & Feedback">🤔</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/thobson88"><img src="https://avatars.githubusercontent.com/u/26117394?v=4?s=100" width="100px;" alt="Tim Hobson"/><br /><sub><b>Tim Hobson</b></sub></a><br /><a href="https://github.com/Living-with-machines/lwmdb/commits?author=thobson88" title="Code">💻</a> <a href="#ideas-thobson88" title="Ideas, Planning, & Feedback">🤔</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://npedrazzini.github.io"><img src="https://avatars.githubusercontent.com/u/35242366?v=4?s=100" width="100px;" alt="Nilo Pedrazzini"/><br /><sub><b>Nilo Pedrazzini</b></sub></a><br /><a href="https://github.com/Living-with-machines/lwmdb/commits?author=npedrazzini" title="Code">💻</a> <a href="#ideas-npedrazzini" title="Ideas, Planning, & Feedback">🤔</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://christinalast.com"><img src="https://avatars.githubusercontent.com/u/36204574?v=4?s=100" width="100px;" alt="Christina Last"/><br /><sub><b>Christina Last</b></sub></a><br /><a href="https://github.com/Living-with-machines/lwmdb/commits?author=ChristinaLast" title="Code">💻</a> <a href="#ideas-ChristinaLast" title="Ideas, Planning, & Feedback">🤔</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/andrewphilipsmith"><img src="https://avatars.githubusercontent.com/u/5346065?v=4?s=100" width="100px;" alt="Andy Smith"/><br /><sub><b>Andy Smith</b></sub></a><br /><a href="https://github.com/Living-with-machines/lwmdb/commits?author=andrewphilipsmith" title="Code">💻</a> <a href="#ideas-andrewphilipsmith" title="Ideas, Planning, & Feedback">🤔</a></td>
     </tr>
   </tbody>
 </table>
