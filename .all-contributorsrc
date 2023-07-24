@@ -108,8 +108,8 @@
         "code",
         "ideas"
       ]
-     },
-     {
+    },
+    {
       "login": "mcollardanuy",
       "name": "Mariona",
       "avatar_url": "https://avatars.githubusercontent.com/u/46483603?v=4",
@@ -124,6 +124,16 @@
       "name": "Kaspar Beelen",
       "avatar_url": "https://avatars.githubusercontent.com/u/11618160?v=4",
       "profile": "https://github.com/kasparvonbeelen",
+      "contributions": [
+        "code",
+        "ideas"
+      ]
+    },
+    {
+      "login": "DavidBeavan",
+      "name": "David Beavan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6524799?v=4",
+      "profile": "https://github.com/DavidBeavan",
       "contributions": [
         "code",
         "ideas"
