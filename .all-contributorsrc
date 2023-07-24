@@ -79,6 +79,24 @@
         "code",
         "ideas"
       ]
+     },
+      "login": "mcollardanuy",
+      "name": "Mariona",
+      "avatar_url": "https://avatars.githubusercontent.com/u/46483603?v=4",
+      "profile": "https://github.com/mcollardanuy",
+      "contributions": [
+        "code",
+        "ideas"
+      ]
+    },
+      "login": "kasparvonbeelen",
+      "name": "Kaspar Beelen",
+      "avatar_url": "https://avatars.githubusercontent.com/u/11618160?v=4",
+      "profile": "https://github.com/kasparvonbeelen",
+      "contributions": [
+        "code",
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 7,
