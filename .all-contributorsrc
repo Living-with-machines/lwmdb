@@ -71,6 +71,15 @@
       ]
     },
     {
+      "login": "kmcdono2",
+      "name": "Katie McDonough",
+      "avatar_url": "https://avatars.githubusercontent.com/u/20363927?v=4",
+      "profile": "https://www.turing.ac.uk/people/researchers/katherine-mcdonough",
+      "contributions": [
+        "code",
+        "ideas"
+      ]
+     },
       "login": "mcollardanuy",
       "name": "Mariona",
       "avatar_url": "https://avatars.githubusercontent.com/u/46483603?v=4",
@@ -79,7 +88,7 @@
         "code",
         "ideas"
       ]
-    }
+    },
       "login": "kasparvonbeelen",
       "name": "Kaspar Beelen",
       "avatar_url": "https://avatars.githubusercontent.com/u/11618160?v=4",
