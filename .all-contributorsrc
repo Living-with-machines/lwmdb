@@ -39,7 +39,37 @@
       "contributions": [
         "code"
       ]
-    }
+    }, 
+    {
+      "login": "thobson88",
+      "name": "Tim Hobson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/26117394?v=4",
+      "profile": "https://github.com/thobson88",
+      "contributions": [
+        "code",
+        "ideas"
+      ]
+    },
+    {
+      "login": "npedrazzini",
+      "name": "Nilo Pedrazzini",
+      "avatar_url": "https://avatars.githubusercontent.com/u/35242366?v=4",
+      "profile": "http://npedrazzini.github.io",
+      "contributions": [
+        "code",
+        "ideas"
+      ]
+    }, 
+    {
+      "login": "ChristinaLast",
+      "name": "Christina Last",
+      "avatar_url": "https://avatars.githubusercontent.com/u/36204574?v=4",
+      "profile": "https://christinalast.com",
+      "contributions": [
+        "code",
+        "ideas"
+        ]
+      }
   ],
   "contributorsPerLine": 7,
   "skipCi": true,
