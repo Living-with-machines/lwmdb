@@ -1,9 +1,7 @@
 # Living With Machines Database: `lmwdb`
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
-
+[![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/Living-with-machines/lwmdb/main.svg)](https://results.pre-commit.ci/latest/github/Living-with-machines/lwmdb/main)
@@ -174,7 +172,8 @@ A domain name (in this example `"host.for.lwmdb.deploy.org`) must be registered 
   <tbody>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="http://www.westerling.nu"><img src="https://avatars.githubusercontent.com/u/7298727?v=4?s=100" width="100px;" alt="Kalle Westerling"/><br /><sub><b>Kalle Westerling</b></sub></a><br /><a href="https://github.com/Living-with-machines/lwmdb/commits?author=kallewesterling" title="Code">💻</a> <a href="#ideas-kallewesterling" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/Living-with-machines/lwmdb/commits?author=kallewesterling" title="Documentation">📖</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/griff-rees"><img src="https://avatars.githubusercontent.com/u/60181741?v=4?s=100" width="100px;" alt="griff-rees"/><br /><sub><b>griff-rees</b></sub></a><br /><a href="https://github.com/Living-with-machines/lwmdb/commits?author=griff-rees" title="Code">💻</a> <a href="#ideas-griff-rees" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/Living-with-machines/lwmdb/commits?author=griff-rees" title="Documentation">📖</a><a href="#mentoring-griff-rees" title="Mentoring">🧑‍🏫</a> <a href="#maintenance-griff-rees" title="Maintenance">🚧</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/griff-rees"><img src="https://avatars.githubusercontent.com/u/60181741?v=4?s=100" width="100px;" alt="griff-rees"/><br /><sub><b>griff-rees</b></sub></a><br /><a href="https://github.com/Living-with-machines/lwmdb/commits?author=griff-rees" title="Code">💻</a> <a href="#ideas-griff-rees" title="Ideas, Planning, & Feedback">🤔</a> <a href="#mentoring-griff-rees" title="Mentoring">🧑‍🏫</a> <a href="#maintenance-griff-rees" title="Maintenance">🚧</a> <a href="https://github.com/Living-with-machines/lwmdb/commits?author=griff-rees" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/AoifeHughes"><img src="https://avatars.githubusercontent.com/u/10923695?v=4?s=100" width="100px;" alt="Aoife Hughes"/><br /><sub><b>Aoife Hughes</b></sub></a><br /><a href="https://github.com/Living-with-machines/lwmdb/commits?author=AoifeHughes" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
