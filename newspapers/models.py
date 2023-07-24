@@ -95,6 +95,15 @@ class Newspaper(NewspapersModel):
     def __str__(self):
         return truncate_str(self.title, max_length=MAX_PRINT_SELF_STR_LENGTH)
 
+    class Meta:
+        indexes = [
+            models.Index(
+                fields=[
+                    "publication_code",
+                ]
+            )
+        ]
+
 
 class Issue(NewspapersModel):
     """Newspaper Issue, including date and relevant source url."""
@@ -127,6 +136,15 @@ class Issue(NewspapersModel):
             print("Warning: No date available for issue so URL will likely not work.")
 
         return f"https://www.britishnewspaperarchive.co.uk/viewer/BL/{self.newspaper.publication_code}/{str(self.issue_date).replace('-', '')}/001/0001"
+
+    class Meta:
+        indexes = [
+            models.Index(
+                fields=[
+                    "issue_code",
+                ]
+            )
+        ]
 
 
 class Item(NewspapersModel):
@@ -179,6 +197,15 @@ class Item(NewspapersModel):
         related_query_name="item",
     )
     fulltext = models.OneToOneField(Fulltext, null=True, on_delete=models.SET_NULL)
+
+    class Meta:
+        indexes = [
+            models.Index(
+                fields=[
+                    "item_code",
+                ]
+            )
+        ]
 
     def save(self, sync_title_counts: bool = False, *args, **kwargs):
         # for consistency, we save all item_type in uppercase

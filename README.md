@@ -1,13 +1,12 @@
 # Living With Machines Database: `lmwdb`
 
-
-
-
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
 
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
+
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/Living-with-machines/lwmdb/main.svg)](https://results.pre-commit.ci/latest/github/Living-with-machines/lwmdb/main)
 
 A package containing database access to the Living with Machines newspaper collection’s metadata.
 
