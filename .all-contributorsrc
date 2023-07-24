@@ -28,7 +28,16 @@
         "ideas",
         "mentoring",
         "maintenance",
-	      "doc"
+        "doc"
+      ]
+    },
+    {
+      "login": "AoifeHughes",
+      "name": "Aoife Hughes",
+      "avatar_url": "https://avatars.githubusercontent.com/u/10923695?v=4",
+      "profile": "https://github.com/AoifeHughes",
+      "contributions": [
+        "code"
       ]
     }
   ],
