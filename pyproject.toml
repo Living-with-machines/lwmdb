@@ -9,7 +9,7 @@ authors = [
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.12"
-django = "^4.2.3"
+django = "^4.2.4"
 seaborn = "^0.12.2"
 pandas = "^2.0.3"
 ipython = "^8.14.0"
@@ -38,7 +38,7 @@ pytest-sugar = "^0.9.7"
 pyfakefs = "^5.2.3"
 pytest-django = "^4.5.2"
 Werkzeug = "^2.3.6"
-pyparsing = "^3.1.0"
+pyparsing = "^3.1.1"
 pydot = "^1.4.2"
 pre-commit = "^3.3.3"
 django-coverage-plugin = "^3.1.0"
@@ -47,7 +47,7 @@ mkdocs-kroki-plugin = "^0.6.1"
 alto2txt2fixture = {git = "https://github.com/living-with-machines/alto2txt2fixture"}
 
 [tool.poetry.group.docs.dependencies]
-mkdocs-material = "^9.1.19"
+mkdocs-material = "^9.1.21"
 mkdocs-literate-nav = "^0.6.0"
 mkdocs-gen-files = "^0.5.0"
 markdown-exec = {extras = ["ansi"], version = "^1.6.0"}
