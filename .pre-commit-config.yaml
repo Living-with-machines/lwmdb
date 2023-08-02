@@ -35,7 +35,7 @@ repos:
       - id: rst-inline-touching-normal
 
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: 'v3.0.0-alpha.9-for-vscode'
+    rev: 'v3.0.0'
     hooks:
       - id: prettier
         types_or: [yaml, markdown, json]
@@ -55,13 +55,13 @@ repos:
         args: ['--target-version', '4.2']
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.7.0
+    rev: v3.10.1
     hooks:
       - id: pyupgrade
         args: [--py311-plus]
 
   - repo: https://github.com/hadialqattan/pycln
-    rev: v2.1.5
+    rev: v2.2.0
     hooks:
       - id: pycln
         args: [--config=pyproject.toml]
@@ -72,12 +72,12 @@ repos:
       - id: isort
 
   - repo: https://github.com/psf/black
-    rev: 23.3.0
+    rev: 23.7.0
     hooks:
       - id: black
 
   - repo: https://github.com/pycqa/flake8
-    rev: 6.0.0
+    rev: 6.1.0
     hooks:
       - id: flake8
         additional_dependencies:
@@ -92,7 +92,7 @@ repos:
         args: [--config, ./pyproject.toml]
 
   - repo: https://github.com/PyCQA/docformatter
-    rev: v1.7.3
+    rev: v1.7.5
     hooks:
       - id: docformatter
         args: [--in-place, --config, ./pyproject.toml]
@@ -105,7 +105,7 @@ repos:
         additional_dependencies: ['bandit[toml]']
 
   - repo: https://github.com/Riverside-Healthcare/djLint
-    rev: v1.31.1
+    rev: v1.32.1
     hooks:
       - id: djlint-reformat-django
         args: ['--configuration', './pyproject.toml']
