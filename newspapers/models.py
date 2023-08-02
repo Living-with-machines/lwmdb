@@ -33,8 +33,12 @@ class DataProvider(NewspapersModel):
     name = models.CharField(max_length=600, default=None)
     collection = models.CharField(max_length=600, default=None)
     source_note = models.CharField(max_length=255, default=None)
-    # code = models.SlugField(max_length=100, default=None, null=True, blank=True, unique=False)
-    # legacy_code = models.SlugField(max_length=100, default=None, null=True, blank=True, unique=False)
+    code = models.SlugField(
+        max_length=100, default=None, null=True, blank=True, unique=True
+    )
+    legacy_code = models.SlugField(
+        max_length=100, default=None, null=True, blank=True, unique=True
+    )
 
     class Meta:
         unique_together = [("name", "collection")]
