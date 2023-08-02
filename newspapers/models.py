@@ -33,9 +33,11 @@ class DataProvider(NewspapersModel):
     name = models.CharField(max_length=600, default=None)
     collection = models.CharField(max_length=600, default=None)
     source_note = models.CharField(max_length=255, default=None)
+    code = models.SlugField(max_length=100, default=None)
+    legacy_code = models.SlugField(max_length=100, default=None)
 
     class Meta:
-        unique_together = ("name", "collection")
+        unique_together = [("name", "collection")]
 
     def __str__(self):
         return truncate_str(self.name, max_length=MAX_PRINT_SELF_STR_LENGTH)
@@ -135,7 +137,11 @@ class Issue(NewspapersModel):
         if not self.issue_date:
             print("Warning: No date available for issue so URL will likely not work.")
 
-        return f"https://www.britishnewspaperarchive.co.uk/viewer/BL/{self.newspaper.publication_code}/{str(self.issue_date).replace('-', '')}/001/0001"
+        return (
+            f"https://www.britishnewspaperarchive.co.uk/viewer/BL/"
+            f"{self.newspaper.publication_code}/"
+            f"{str(self.issue_date).replace('-', '')}/001/0001"
+        )
 
     class Meta:
         indexes = [
