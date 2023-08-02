@@ -8,7 +8,9 @@
 
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/Living-with-machines/lwmdb/main.svg)](https://results.pre-commit.ci/latest/github/Living-with-machines/lwmdb/main)
 
-A package containing database access to the Living with Machines newspaper collection’s metadata.
+A package containing database access to the [Living with Machines](https://livingwithmachines.ac.uk/) [newspaper collection](https://livingwithmachines.ac.uk/achievements/)’s metadata, designed to facilitate quicker and easier humanities research on heterogeneous and complex newspaper data.
+
+Background on the development of the database is available in [_Metadata Enrichment in the Living with Machines Project: User-focused Collaborative Database Development in a Digital Humanities Context_](https://zenodo.org/record/8107389) from the [Digital Humanities 2023 book of abstracts](https://zenodo.org/record/7961822).
 
 ## Installation
 
