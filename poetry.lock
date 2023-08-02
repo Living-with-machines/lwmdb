@@ -2871,6 +2871,34 @@ files = [
 pygments = "!=2.7.3"
 
 [[package]]
+name = "pygments-git"
+version = "1.6.0"
+description = "Pygments lexers for Git output and files."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "pygments_git-1.6.0-py3-none-any.whl", hash = "sha256:65021e4b9b04e11add17c425473d0de0942b66a8b8bbcb9a9f94d238fafd3fff"},
+    {file = "pygments_git-1.6.0.tar.gz", hash = "sha256:87f85dc5868befa4ecb4cff4491c6ff7f040cd665ce47b04440fa6234487973d"},
+]
+
+[package.dependencies]
+pygments = "*"
+
+[[package]]
+name = "pygments-pytest"
+version = "2.3.0"
+description = "A pygments lexer for pytest output."
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "pygments_pytest-2.3.0-py2.py3-none-any.whl", hash = "sha256:b8c4f9ce83b895148fcfb586fb2c09a4e27447c12c2bc68c391295bf5b524aa0"},
+    {file = "pygments_pytest-2.3.0.tar.gz", hash = "sha256:018d2b8c5afeb9e9d853d2540c0de9f5fd45563b061533713ded7a2558900850"},
+]
+
+[package.dependencies]
+pygments = "*"
+
+[[package]]
 name = "pymdown-extensions"
 version = "10.1"
 description = "Extension pack for Python Markdown."
@@ -4050,4 +4078,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11,<3.12"
-content-hash = "f0aa34834a569ca630d946a7d28211ba6ad43bbe2052b0aa12e9870f3e03debf"
+content-hash = "556e3c9aff1c7786f6e92d4f408a70a6612486c90a2979020a2744781464b459"

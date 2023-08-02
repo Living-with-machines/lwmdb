@@ -4,9 +4,10 @@ Please see our [Code of Conduct](code_of_conduct.md) for policies on contributin
 
 ## Documentation
 
-While the documentation should also be available with each local build on port `9000`, it does not, at the time of this writing, currently auto update as changes are made. The easiest solution to this at present is to install the app locally via [`poetry`](https://python-poetry.org/docs/) and then run `mkdocs` on a a port *other* than `9000` *outside* `docker`:
+If you would only like to contribute to documentation, the easiest way to deploy and see changes rendered with each edit is to run *outside* docker:
 
 ```console
+$ git clone https://github.com/living-with-machines/lwmdb
 $ cd lwmdb
 $ poetry install --with dev --with docs
 $ poetry run mkdocs serve --dev-addr=0.0.0.0:8080
@@ -14,12 +15,19 @@ $ poetry run mkdocs serve --dev-addr=0.0.0.0:8080
 
 !!! note
 
-    The `--with dev` and `--with docs` are not necessary at present, but they may be set as optional in the future, and if so those would be necessary for contributing to documentation.
+    The `--with dev` and `--with docs` options are currently included by default, but they may be set as optional in the future.
+
+Documentation should also be available on `https://localhost:9000` when running 
+
+```console
+docker compose -f local.yml up
+```
+
+but it does *not* auto update as local changes are made. Port `8080` is specified in the example above to avoid conflict with a local `docker compose` run (which defaults to `0.0.0.0:9000`).
 
 !!! warning
 
-    The [`schema`](advanced/schema.md) currently raises an error if run outside `docker compose -f local.yml` because the configuration assumes it's run locally within `docker`. See ticket [`#115`](https://github.com/Living-with-machines/lwmdb/issues/115) for updates.
-
+    The [`schema`](advanced/schema.md) currently raises an error. See ticket [`#115`](https://github.com/Living-with-machines/lwmdb/issues/115) for updates.
 
 ## Local `docker` test runs
 
@@ -78,7 +86,7 @@ To run tests, open another terminal to run `pytest` within the `django` `docker`
 
 These will print out a summary of test results like:
 
-```console
+```pytest
 Test session starts (platform: linux, Python 3.11.3, pytest 7.3.1, pytest-sugar 0.9.7)
 django: settings: config.test_settings (from ini)
 rootdir: /app
@@ -136,9 +144,8 @@ In the previous example, 29 tests passed, 3 failed *as expected* (hence `xfailed
     sudo docker compose -f local.yml exec django pytest --runxfail
     ```
 
-```console
+```pytest
 ...
-
     def __getattr__(self, name: str):
         """
         After regular attribute access, try looking up the name
@@ -171,7 +178,7 @@ Warning: Model mitchells.EntryPrices is missing a fixture file and will not load
 
 and summaries at the end of the report
 
-```console
+```pytest
 ...
 ============================ slowest 3 durations ===========================
 3.87s setup    gazetteer/tests.py::TestGeoSpatial::test_create_place_and_distance
@@ -209,7 +216,7 @@ Adding the `--pdb` option generates an `ipython` shell at the point a test fails
     ```
 
 
-```console
+```pytest
     def __getattr__(self, name: str):
         """
         After regular attribute access, try looking up the name
@@ -380,7 +387,8 @@ assert caplog.messages == [
 
 At present (see issue [#110](https://github.com/Living-with-machines/lwmdb/issues/110) for updates) running `docker compose` is likely to truncate the last line of `/lwmdb/static/css/project.css` which, can then appear as a local change in a `git` checkout:
 
-```console
+```git-console
+$ git status
 Changes not staged for commit:
   (use "git add <file>..." to update what will be committed)
   (use "git restore <file>..." to discard changes in working directory)

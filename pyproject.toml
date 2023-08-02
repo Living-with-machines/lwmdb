@@ -57,6 +57,11 @@ black = "^23.7.0"
 pygments = "^2.15.1"
 mkdocs-autorefs = "^0.4.1"
 mkdocs-include-markdown-plugin = "^4.0.4"
+pygments-pytest = "^2.3.0"
+
+
+[tool.poetry.group.doc.dependencies]
+pygments-git = "^1.6.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
