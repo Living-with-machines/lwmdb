@@ -93,6 +93,50 @@ authors:
     family-names: Hughes
     orcid: 'https://orcid.org/0000-0002-4572-5828'
     affiliation: The Alan Turing Institute
+  - given-names: Alan
+    family-names: Wilson
+    affiliation: The Alan Turing Institute
+  - given-names: Bowan
+    family-names: Zhang
+    orcid: 'https://orcid.org/0000-0002-5562-609X'
+    affiliation: The Alan Turing Institute and King's College London
+  - given-names: 'Giorgia '
+    family-names: Tolfo
+    affiliation: The British Library
+    orcid: 'https://orcid.org/0000-0002-2821-4049'
+  - given-names: Guy
+    family-names: Solomon
+    orcid: 'https://orcid.org/0000-0002-4394-1498'
+    affiliation: The Alan Turing Institute
+  - given-names: Joshua
+    orcid: 'https://orcid.org/0000-0002-4017-2777'
+    family-names: Rhodes
+  - given-names: Katherine
+    family-names: McDonough
+    affiliation: The Alan Turing Institute and Lancaster University
+    orcid: 'https://orcid.org/0000-0001-7506-1025'
+  - given-names: Léllé
+    family-names: Demertzi
+    affiliation: The Alan Turing Institute
+  - given-names: Lucy
+    family-names: Havens
+    affiliation: The University of Edinburgh
+  - given-names: Luke
+    family-names: Hare
+    affiliation: 'The Alan Turing Institute '
+  - given-names: Rosie
+    family-names: Wood
+    affiliation: The Alan Turing Institute
+  - given-names: Sarah
+    family-names: Gibson
+    orcid: 'https://orcid.org/0000-0003-0356-2765'
+    affiliation: The Alan Turing Institute
+  - given-names: 'Sherman '
+    family-names: Lo
+    affiliation: Queen Mary University of London
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.8208204
 repository-code: 'https://github.com/Living-with-machines/lwmdb'
 url: 'https://livingwithmachines.ac.uk/'
 license: MIT
