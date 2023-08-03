@@ -1,5 +1,6 @@
 # Living With Machines Database: `lmwdb`
 
+<!-- prettier-ignore-start -->
 [![DOI](https://zenodo.org/badge/460939495.svg)](https://zenodo.org/badge/latestdoi/460939495)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/Living-with-machines/lwmdb/main.svg)](https://results.pre-commit.ci/latest/github/Living-with-machines/lwmdb/main)
 
@@ -8,6 +9,7 @@
 [![All Contributors](https://img.shields.io/badge/all_contributors-13-orange.svg?style=flat-square)](#contributors-)
 
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
+<!-- prettier-ignore-end -->
 
 A package containing database access to the [Living with Machines](https://livingwithmachines.ac.uk/) [newspaper collection](https://livingwithmachines.ac.uk/achievements/)’s metadata, designed to facilitate quicker and easier humanities research on heterogeneous and complex newspaper data.
 
