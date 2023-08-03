@@ -1,6 +1,7 @@
 # Living With Machines Database: `lmwdb`
 
-[![DOI](https://zenodo.org/badge/460939495.svg)](https://zenodo.org/badge/latestdoi/460939495) [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/Living-with-machines/lwmdb/main.svg)](https://results.pre-commit.ci/latest/github/Living-with-machines/lwmdb/main)
+[![DOI](https://zenodo.org/badge/460939495.svg)](https://zenodo.org/badge/latestdoi/460939495)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/Living-with-machines/lwmdb/main.svg)](https://results.pre-commit.ci/latest/github/Living-with-machines/lwmdb/main)
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 
