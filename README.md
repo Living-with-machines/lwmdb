@@ -5,9 +5,7 @@
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/Living-with-machines/lwmdb/main.svg)](https://results.pre-commit.ci/latest/github/Living-with-machines/lwmdb/main)
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-
 [![All Contributors](https://img.shields.io/badge/all_contributors-13-orange.svg?style=flat-square)](#contributors-)
-
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 <!-- prettier-ignore-end -->
 
@@ -187,7 +185,7 @@ A domain name (in this example `"host.for.lwmdb.deploy.org`) must be registered 
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/claireaustin01"><img src="https://avatars.githubusercontent.com/u/45455829?v=4?s=100" width="100px;" alt="claireaustin01"/><br /><sub><b>claireaustin01</b></sub></a><br /><a href="#ideas-claireaustin01" title="Ideas, Planning, & Feedback">🤔</a></td>
     </tr>
     <tr>
-      <td align="center" valign="top" width="14.28%"><a href="http://openobjects.org.uk"><img src="https://avatars.githubusercontent.com/u/380763?v=4?s=100" width="100px;" alt="Mia"/><br /><sub><b>Mia</b></sub></a><br /><a href="https://github.com/Living-with-machines/lwmdb/commits?author=mialondon" title="Code">💻</a> <a href="#ideas-mialondon" title="Ideas, Planning, & Feedback">🤔</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://openobjects.org.uk"><img src="https://avatars.githubusercontent.com/u/380763?v=4?s=100" width="100px;" alt="Mia"/><br /><sub><b>Mia</b></sub></a><br /><a href="https://github.com/Living-with-machines/lwmdb/commits?author=mialondon" title="Code">💻</a> <a href="#ideas-mialondon" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/Living-with-machines/lwmdb/commits?author=mialondon" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/andrewphilipsmith"><img src="https://avatars.githubusercontent.com/u/5346065?v=4?s=100" width="100px;" alt="Andy Smith"/><br /><sub><b>Andy Smith</b></sub></a><br /><a href="https://github.com/Living-with-machines/lwmdb/commits?author=andrewphilipsmith" title="Code">💻</a> <a href="#ideas-andrewphilipsmith" title="Ideas, Planning, & Feedback">🤔</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://www.turing.ac.uk/people/researchers/katherine-mcdonough"><img src="https://avatars.githubusercontent.com/u/20363927?v=4?s=100" width="100px;" alt="Katie McDonough"/><br /><sub><b>Katie McDonough</b></sub></a><br /><a href="https://github.com/Living-with-machines/lwmdb/commits?author=kmcdono2" title="Code">💻</a> <a href="#ideas-kmcdono2" title="Ideas, Planning, & Feedback">🤔</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/mcollardanuy"><img src="https://avatars.githubusercontent.com/u/46483603?v=4?s=100" width="100px;" alt="Mariona"/><br /><sub><b>Mariona</b></sub></a><br /><a href="https://github.com/Living-with-machines/lwmdb/commits?author=mcollardanuy" title="Code">💻</a> <a href="#ideas-mcollardanuy" title="Ideas, Planning, & Feedback">🤔</a></td>
