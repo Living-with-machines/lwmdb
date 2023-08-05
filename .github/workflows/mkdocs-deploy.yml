@@ -1,7 +1,7 @@
 name: doc
 on:
   workflow_run:
-    workflows: [CI]
+    workflows: [linter, pytest]
     types:
       - completed
 
@@ -12,21 +12,33 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.x
+
       - name: Download coverage svg
         uses: actions/download-artifact@v3
         with:
           name: coverage-badge
           path: docs/assets/
-      - uses: actions/setup-python@v4
-        with:
-          python-version: 3.x
+
       - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
-      - uses: actions/cache@v3
+        name: Update cache_id
+
+      - name: Apply mkdocs cache
+        uses: actions/cache@v3
         with:
           key: mkdocs-material-${{ env.cache_id }}
           path: .cache
           restore-keys: |
             mkdocs-material-
-      - run: pip install poetry
-      - run: poetry install --with docs
-      - run: poetry run mkdocs gh-deploy --force
+
+      - name: Install doc dependencies via poetry
+        run: |
+          pip install poetry
+          poetry install --with docs
+
+      - name: Build docs with gh-deploy --force
+        run: |
+          poetry run mkdocs gh-deploy --force
