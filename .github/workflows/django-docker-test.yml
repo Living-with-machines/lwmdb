@@ -57,6 +57,14 @@ jobs:
       - name: Checkout Code Repository
         uses: actions/checkout@main
 
+      - name: exmple save
+        run: |
+          echo "action_state=yellow" >> "$GITHUB_ENV"
+
+      - name: example use
+        run: |
+          echo "${{ env.action_state }}"
+
       - name: Build the Stack
         run: docker compose -f local.yml build
 
@@ -67,14 +75,19 @@ jobs:
       - name: Run Django Quick Tests
         run: docker compose -f local.yml run django pytest
 
+      
+      
+
       # - name: Run Django Slow Tests
       #   run: docker compose -f local.yml run django pytest -m slow
 
       - name: Extract Django Instance Docker ID
         id: save_django_id
         run: |
-          django_docker_id=$(docker compose -f local.yml ps -q django)
-          echo "django_id=$django_docker_id" >> "$GITHUB_ENV"
+          echo "django_id=$(docker compose -f local.yml ps -q django)" >> "$GITHUB_ENV"
+          # 
+          # django_docker_id=$(docker compose -f local.yml ps -q django)
+          # echo "django_id=$django_docker_id" >> "$GITHUB_ENV"
 
       - name: Check saved id
         id: check_saved_django_id
