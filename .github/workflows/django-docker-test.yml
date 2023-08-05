@@ -77,7 +77,7 @@ jobs:
 
       - name: Print Example
         run: |
-          export cat=$(dog)
+          export cat=$("dog")
           echo $cat
 
       - name: Extract Django Instance Docker ID
@@ -85,7 +85,7 @@ jobs:
         run: |
           export DJANGO_ID=$(docker compose -f local.yml ps -q django)
           echo $DJANGO_ID
-          echo "django_id=$DJANGO_ID" >> $GITHUB_ENV
+          # echo "django_id=$DJANGO_ID" >> $GITHUB_ENV
           #
           # django_docker_id=$(docker compose -f local.yml ps -q django)
           # echo "django_id=$django_docker_id" >> "$GITHUB_ENV"
