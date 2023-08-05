@@ -85,7 +85,7 @@ jobs:
           #
           # django_docker_id=$(docker compose -f local.yml ps -q django)
           # echo "django_id=$django_docker_id" >> "$GITHUB_ENV"
-      
+
       - name: Echo docker command
         run: |
           echo docker compose -f local.yml ps -q django
