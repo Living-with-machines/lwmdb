@@ -71,11 +71,16 @@ jobs:
       # - name: Run Django Slow Tests
       #   run: docker compose -f local.yml run django pytest -m slow
 
+      - name: Print Django Instance Docker ID
+        run: |
+          echo "docker compose -f local.yml ps -q django"
+
       - name: Extract Django Instance Docker ID
         id: save_django_id
         run: |
+          echo "docker compose -f local.yml ps -q django"
           export DJANGO_ID=$(docker compose -f local.yml ps -q django)
-          echo DJANGO_ID
+          echo $DJANGO_ID
           echo "django_id=$DJANGO_ID" >> $GITHUB_ENV
           #
           # django_docker_id=$(docker compose -f local.yml ps -q django)
