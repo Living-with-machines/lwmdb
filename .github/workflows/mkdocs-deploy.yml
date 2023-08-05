@@ -1,7 +1,7 @@
-name: ci
+name: doc
 on:
   workflow_run:
-    workflows: [django-docker-test]
+    workflows: [CI]
     types:
       - completed
 

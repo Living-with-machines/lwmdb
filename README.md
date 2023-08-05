@@ -4,7 +4,7 @@
 [![DOI](https://zenodo.org/badge/460939495.svg)](https://zenodo.org/badge/latestdoi/460939495)
 ![mit-license](https://img.shields.io/github/license/living-with-machines/lwmdb)
 ![CI](https://github.com/living-with-machines/alto2txt2fixture/actions/workflows/django-docker-test.yml/badge.svg)
-![coverage](https://living-with-machines.github.io/lwmdb/img/coverage.svg)
+![coverage](https://living-with-machines.github.io/lwmdb/assets/coverage.svg)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/Living-with-machines/lwmdb/main.svg)](https://results.pre-commit.ci/latest/github/Living-with-machines/lwmdb/main)
 ![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)
 
