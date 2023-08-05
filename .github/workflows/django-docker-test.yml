@@ -72,7 +72,7 @@ jobs:
 
       - name: Copy test coverage results
         run: |
-          id_var=$(docker compose -f local.yml ps -q django) && echo $id_var &&  docker cp $id_var:app/docs/assets/coverage.svg .
+          docker cp ${{ docker compose -f local.yml ps -q django }}:app/docs/assets/coverage.svg .
       - name: Archive coverage svg
         uses: actions/upload-artifact@v3
         with:
