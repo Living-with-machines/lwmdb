@@ -57,41 +57,13 @@ jobs:
       - name: Checkout Code Repository
         uses: actions/checkout@main
 
-      - name: exmple save
-        run: |
-          echo "action_state=yellow" >> "$GITHUB_ENV"
-
-      - name: example use
-        run: |
-          echo "${{ env.action_state }}"
-
-      - name: Set the value in bash
-        id: step_one
-        run: |
-          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
-          echo "JSON_RESPONSE<<$EOF" >> "$GITHUB_ENV"
-          curl https://example.com >> "$GITHUB_ENV"
-          echo "$EOF" >> "$GITHUB_ENV"
-
-      - name: more example use
-        run: |
-          echo "${{ env.JSON_RESPONSE }}"
-
-      - name: Set the value in bash
-        run: |
-          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
-          echo "test_oef=$OEF" >> "$GITHUB_ENV"
-
-      - name: more example use
-        run: |
-          echo "${{ env.test_oef }}"
-
       - name: Build the Stack
         run: docker compose -f local.yml build
 
       # This is currently automated in the build, consider removing
       - name: Run DB Migrations
-        run: docker compose -f local.yml run --rm django python manage.py migrate
+        run: |
+          docker compose -f local.yml run --rm django python manage.py migrate
 
       - name: Run Django Quick Tests
         run: docker compose -f local.yml run django pytest
@@ -102,14 +74,15 @@ jobs:
       - name: Extract Django Instance Docker ID
         id: save_django_id
         run: |
-          echo "django_id=$(docker compose -f local.yml ps -q django)" >> "$GITHUB_ENV"
+          export DJANGO_ID=$(docker compose -f local.yml ps -q django)
+          echo "django_id=$DJANGO_ID" >> $GITHUB_ENV
           #
           # django_docker_id=$(docker compose -f local.yml ps -q django)
           # echo "django_id=$django_docker_id" >> "$GITHUB_ENV"
 
-      - name: Echo docker command
-        run: |
-          echo docker compose -f local.yml ps -q django
+      # - name: Echo docker command
+      #   run: |
+      #     echo docker compose -f local.yml ps -q django
 
       - name: Check saved id
         id: check_saved_django_id
@@ -118,6 +91,7 @@ jobs:
       - name: Copy test coverage results
         run: |
           docker cp ${{ env.django_id }}:app/docs/assets/coverage.svg .
+
       - name: Archive coverage svg
         uses: actions/upload-artifact@v3
         with:
