@@ -1,0 +1,114 @@
+name: CI
+
+# Enable Buildkit and let compose use it to speed up image building
+env:
+  DOCKER_BUILDKIT: 1
+  COMPOSE_DOCKER_CLI_BUILD: 1
+
+on:
+  pull_request:
+    branches: ['main']
+    paths-ignore: ['docs/**']
+
+  push:
+    branches: ['main', 'geocensus', 'production-deploy']
+    paths-ignore: ['docs/**']
+
+concurrency:
+  group: ${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  linter:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: config/
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@main
+
+      - name: Set up Python
+        uses: actions/setup-python@main
+        with:
+          python-version: '3.11'
+
+      - name: Run pre-commit
+        uses: pre-commit/action@main
+
+      - name: Update pre-commit
+        uses: pre-commit-ci/lite-action@v1.0.1
+        if: always()
+
+  # With no caching at all the entire ci process takes 4m 30s to complete!
+  pytest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@main
+
+      - name: Build, Test and Save Test Coverage
+        run: |
+          docker compose -f local.yml build
+          docker compose -f local.yml up --detach
+          docker compose -f local.yml run django pytest -p no:sugar
+          export DJANGO_ID=$(docker compose -f local.yml ps -q django)
+          echo "django_id=$DJANGO_ID" >> $GITHUB_ENV
+          # echo "django_id=$DJANGO_ID"
+
+      # - name: Check accessing saved django_id
+      #   run: |
+      #     echo ${{ env.django_id }}
+
+      - name: Copy test coverage results
+        run: |
+          docker cp ${{ env.django_id }}:app/docs/assets/coverage.svg docs/assets/
+
+      - name: Archive coverage svg
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-badge
+          path: docs/assets/coverage.svg
+
+      - name: Tear down the Stack
+        run: docker compose -f local.yml down
+
+  docs:
+    needs: [linter, pytest]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.x
+
+      - name: Download coverage svg
+        uses: actions/download-artifact@v3
+        with:
+          name: coverage-badge
+          path: docs/assets/
+
+      - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
+        name: Update cache_id
+
+      - name: Apply mkdocs cache
+        uses: actions/cache@v3
+        with:
+          key: mkdocs-material-${{ env.cache_id }}
+          path: .cache
+          restore-keys: |
+            mkdocs-material-
+
+      - name: Install doc dependencies via poetry
+        run: |
+          pip install poetry
+          poetry install --with docs
+
+      - name: Build docs with gh-deploy --force
+        run: |
+          poetry run mkdocs gh-deploy --force

@@ -1,12 +1,15 @@
 from pathlib import Path
 
 import pytest
+from coverage_badge.__main__ import main as gen_cov_badge
 
 # from django.conf import settings
 from django.utils.translation import activate
 
 from lwmdb.utils import app_data_path
 from mitchells.import_fixtures import MITCHELLS_EXCEL_PATH
+
+BADGE_PATH: Path = Path("docs") / "assets" / "coverage.svg"
 
 
 @pytest.fixture(autouse=True)
@@ -34,3 +37,10 @@ def media_storage(settings, tmpdir) -> None:
 def mitchells_data_path() -> Path:
     """Return path to `mitchells` app data."""
     return app_data_path("mitchells") / MITCHELLS_EXCEL_PATH
+
+
+def pytest_sessionfinish(session, exitstatus):
+    """Generate badges for docs after tests finish."""
+    if exitstatus == 0:
+        BADGE_PATH.parent.mkdir(parents=True, exist_ok=True)
+        gen_cov_badge(["-o", f"{BADGE_PATH}", "-f"])
