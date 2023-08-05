@@ -18,6 +18,9 @@ concurrency:
   group: ${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
+permissions:
+  contents: write
+
 jobs:
   linter:
     runs-on: ubuntu-latest
@@ -73,3 +76,39 @@ jobs:
 
       - name: Tear down the Stack
         run: docker compose -f local.yml down
+
+  docs:
+    needs: [linter, pytest]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.x
+
+      - name: Download coverage svg
+        uses: actions/download-artifact@v3
+        with:
+          name: coverage-badge
+          path: docs/assets/
+
+      - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
+        name: Update cache_id
+
+      - name: Apply mkdocs cache
+        uses: actions/cache@v3
+        with:
+          key: mkdocs-material-${{ env.cache_id }}
+          path: .cache
+          restore-keys: |
+            mkdocs-material-
+
+      - name: Install doc dependencies via poetry
+        run: |
+          pip install poetry
+          poetry install --with docs
+
+      - name: Build docs with gh-deploy --force
+        run: |
+          poetry run mkdocs gh-deploy --force
