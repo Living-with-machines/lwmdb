@@ -64,7 +64,29 @@ jobs:
       - name: example use
         run: |
           echo "${{ env.action_state }}"
+          
+      - name: Set the value in bash
+        id: step_one
+        run: |
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "JSON_RESPONSE<<$EOF" >> "$GITHUB_ENV"
+          curl https://example.com >> "$GITHUB_ENV"
+          echo "$EOF" >> "$GITHUB_ENV"
+          
+      - name: more example use
+        run: |
+          echo "${{ env.JSON_RESPONSE }}"
 
+          
+      - name: Set the value in bash
+        run: |
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "test_oef=$OEF" >> "$GITHUB_ENV"
+          
+      - name: more example use
+        run: |
+          echo "${{ env.test_oef }}"
+          
       - name: Build the Stack
         run: docker compose -f local.yml build
 
