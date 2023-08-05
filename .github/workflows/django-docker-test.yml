@@ -71,7 +71,7 @@ jobs:
         run: docker compose -f local.yml run django pytest -m slow
 
       - name: Extract Django Instance Docker ID
-        run:  |
+        run: |
           echo "django_id=$(docker compose -f local.yml ps -q django)" >> "GITHUB_ENV"
 
       - name: Check saved id
