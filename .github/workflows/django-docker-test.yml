@@ -32,19 +32,10 @@ jobs:
         uses: actions/setup-python@main
         with:
           python-version: '3.11'
-          # cache: pip
-          # cache-dependency-path: |
-          #   requirements/base.txt
-          #   requirements/local.txt
-
-          # - name: Install and configure Poetry
-          #   uses: snok/install-poetry@v1
-
-          # - name: Install package environment to run pre-commit config
-          #   run: poetry install --no-interaction --no-root
 
       - name: Run pre-commit
         uses: pre-commit/action@main
+
       - name: Update pre-commit
         uses: pre-commit-ci/lite-action@v1.0.1
         if: always()
@@ -57,56 +48,28 @@ jobs:
       - name: Checkout Code Repository
         uses: actions/checkout@main
 
-      - name: Build the Stack
-        run: docker compose -f local.yml build
-
-      # This is currently automated in the build, consider removing
-      - name: Run DB Migrations
+      - name: Build, Test and Save Test Coverage
         run: |
-          docker compose -f local.yml run --rm django python manage.py migrate
-
-      - name: Run Django Quick Tests
-        run: docker compose -f local.yml run django pytest
-
-      # - name: Run Django Slow Tests
-      #   run: docker compose -f local.yml run django pytest -m slow
-
-      # - name: Print Django Instance Docker ID
-      #   run: |
-      #     docker compose -f local.yml ps -q django
-
-      - name: Print Example
-        run: |
-          export cat=$("dog")
-          echo $cat
-
-      - name: Extract Django Instance Docker ID
-        id: save_django_id
-        run: |
+          docker compose -f local.yml build
+          docker compose -f local.yml up --detach
+          docker compose -f local.yml run django pytest -p no:sugar
           export DJANGO_ID=$(docker compose -f local.yml ps -q django)
-          echo $DJANGO_ID
-          # echo "django_id=$DJANGO_ID" >> $GITHUB_ENV
-          #
-          # django_docker_id=$(docker compose -f local.yml ps -q django)
-          # echo "django_id=$django_docker_id" >> "$GITHUB_ENV"
+          echo "django_id=$DJANGO_ID" >> $GITHUB_ENV
+          # echo "django_id=$DJANGO_ID"
 
-      # - name: Echo docker command
+      # - name: Check accessing saved django_id
       #   run: |
-      #     echo docker compose -f local.yml ps -q django
-
-      - name: Check saved id
-        id: check_saved_django_id
-        run: echo "${{ env.django_id }}"
+      #     echo ${{ env.django_id }}
 
       - name: Copy test coverage results
         run: |
-          docker cp ${{ env.django_id }}:app/docs/assets/coverage.svg .
+          docker cp ${{ env.django_id }}:app/docs/assets/coverage.svg docs/assets/
 
       - name: Archive coverage svg
         uses: actions/upload-artifact@v3
         with:
           name: coverage-badge
-          path: app/docs/assets/coverage.svg
+          path: docs/assets/coverage.svg
 
       - name: Tear down the Stack
         run: docker compose -f local.yml down

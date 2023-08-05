@@ -46,6 +46,7 @@ django-stubs = {extras = ["compatible-mypy"], version = "^4.2.3"}
 mkdocs-kroki-plugin = "^0.6.1"
 alto2txt2fixture = {git = "https://github.com/living-with-machines/alto2txt2fixture"}
 coverage-badge = "^1.1.0"
+pytest-xdist = "^3.3.1"
 
 [tool.poetry.group.docs.dependencies]
 mkdocs-material = "^9.1.21"
@@ -59,7 +60,6 @@ pygments = "^2.15.1"
 mkdocs-autorefs = "^0.4.1"
 mkdocs-include-markdown-plugin = "^4.0.4"
 pygments-pytest = "^2.3.0"
-
 
 [tool.poetry.group.doc.dependencies]
 pygments-git = "^1.6.0"
@@ -82,6 +82,7 @@ addopts = """
 --ignore=docs
 --ignore=lwmdb/contrib/sites
 --durations=3
+-n auto
 """
 markers = [
   "slow: marks tests as slow (deselect with '-m \"not slow\"')",
