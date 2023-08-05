@@ -74,7 +74,7 @@ jobs:
         id: save_django_id
         run: |
           django_docker_id=$(docker compose -f local.yml ps -q django)
-          echo "django_id=$django_docker_id" >> "GITHUB_ENV"
+          echo "django_id=$django_docker_id" >> "$GITHUB_ENV"
 
       - name: Check saved id
         id: check_saved_django_id
