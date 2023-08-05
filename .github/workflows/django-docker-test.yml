@@ -72,10 +72,10 @@ jobs:
 
       - name: Extract Django Instance Docker ID
         run: echo "django_id=docker compose -f local.yml ps -q django" >> "GITHUB_ENV"
-      
+
       - name: Check saved id
         run: echo "${{ env.django_id }}"
-        
+
       - name: Copy test coverage results
         run: |
           docker cp ${{ env.django_id }}:app/docs/assets/coverage.svg .
