@@ -70,5 +70,14 @@ jobs:
       - name: Run Django Slow Tests
         run: docker compose -f local.yml run django pytest -m slow
 
+      - name: Copy test results
+        run: docker cp $(docker compose -f local.yml ps -q django):app/docs/assets/coverage.svg docs/assets/
+
+      - name: Archive coverage svg
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-badge
+          path: docs/assets/coverage.svg
+
       - name: Tear down the Stack
         run: docker compose -f local.yml down
