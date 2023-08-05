@@ -1,8 +1,10 @@
 name: ci
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: [django-docker-test]
+    types:
+      - completed
+
 permissions:
   contents: write
 jobs:

@@ -71,7 +71,8 @@ jobs:
         run: docker compose -f local.yml run django pytest -m slow
 
       - name: Copy test results
-        run: docker cp $(docker compose -f local.yml ps -q django):app/docs/assets/coverage.svg docs/assets/
+        run: |
+          docker cp $(docker compose -f local.yml ps -q django):app/docs/assets/coverage.svg docs/assets/
 
       - name: Archive coverage svg
         uses: actions/upload-artifact@v3
