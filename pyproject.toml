@@ -107,7 +107,6 @@ profile = "black"
 all = true
 
 [tool.coverage.run]
-include = ["config/*"]
 omit = ["*migrations*", "*tests*", "*.html"]
 plugins = ["django_coverage_plugin"]
 
