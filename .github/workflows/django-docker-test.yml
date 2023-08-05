@@ -73,7 +73,7 @@ jobs:
 
       - name: Print Django Instance Docker ID
         run: |
-          echo "docker compose -f local.yml ps -q django"
+          docker compose -f local.yml ps -q django
 
       - name: Extract Django Instance Docker ID
         id: save_django_id
