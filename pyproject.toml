@@ -81,7 +81,6 @@ addopts = """
 --ignore=notebooks
 --ignore=docs
 --ignore=lwmdb/contrib/sites
--m "not slow"
 --durations=3
 """
 markers = [
