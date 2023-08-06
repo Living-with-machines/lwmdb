@@ -3,10 +3,11 @@
 <!-- prettier-ignore-start -->
 [![DOI](https://zenodo.org/badge/460939495.svg)](https://zenodo.org/badge/latestdoi/460939495)
 ![mit-license](https://img.shields.io/github/license/living-with-machines/lwmdb)
-![CI](https://github.com/living-with-machines/lwmdb/actions/workflows/ci.yml/badge.svg)
+[![CI](https://github.com/living-with-machines/lwmdb/actions/workflows/ci.yml/badge.svg)](https://github.com/living-with-machines/lwmdb/actions)
 ![coverage](https://living-with-machines.github.io/lwmdb/assets/coverage.svg)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/Living-with-machines/lwmdb/main.svg)](https://results.pre-commit.ci/latest/github/Living-with-machines/lwmdb/main)
-![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://black.readthedocs.io/en/stable/)
+[![docs](https://github.com/living-with-machines/lwmdb/actions/workflows/ci.yml/badge.svg?branch=gh-pages)](https://living-with-machines.github.io/lwmdb/)
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-13-orange.svg?style=flat-square)](#contributors-)
