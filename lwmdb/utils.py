@@ -313,7 +313,7 @@ def get_fixture_paths(
 
     Example:
         ```pycon
-        >>> get_fixture_paths('lwmdb/tests/')  # doctest: +NORMALIZE_WHITESPACE
+        >>> sorted(get_fixture_paths('lwmdb/tests/'))  # doctest: +NORMALIZE_WHITESPACE
         ['lwmdb/tests/initial-test-dataprovider.json',
          'lwmdb/tests/update-test-dataprovider.json']
         >>> (
