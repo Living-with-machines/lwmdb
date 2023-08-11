@@ -1,4 +1,6 @@
+import json
 import re
+from collections import defaultdict
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from datetime import datetime
@@ -7,17 +9,21 @@ from logging import ERROR, INFO, WARNING, getLogger
 from os import PathLike
 from pathlib import Path
 from shutil import copyfileobj
+from tempfile import NamedTemporaryFile
 from types import ModuleType
-from typing import Final
+from typing import Any, Final, TypedDict
 from urllib.error import URLError
 from urllib.request import urlopen
 
+from django.apps import apps
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
-from django.db.models import QuerySet
+from django.db.models import Model, QuerySet
 from pandas import DataFrame, Series
 from tqdm import tqdm
 from validators.url import url as validate_url
+
+logger = getLogger(__name__)
 
 VALID_TRUE_STRS: Final[tuple[str, ...]] = ("y", "yes", "t", "true", "on", "1")
 VALID_FALSE_STRS: Final[tuple[str, ...]] = ("n", "no", "f", "false", "off", "0")
@@ -40,7 +46,13 @@ ITEM_MODEL_NAME: Final[str] = "Item"
 DEFAULT_APP_DATA_FOLDER: Final[Path] = Path("data")
 DEFAULT_APP_FIXTURE_FOLDER: Final[Path] = Path(DEFAULT_FIXTURE_PATH)
 
-logger = getLogger(__name__)
+
+class JSONFixtureType(TypedDict):
+    """A type to check `JSON` fixture structure."""
+
+    pk: str
+    model: str
+    fields: dict[str, Any]
 
 
 def str_to_bool(
@@ -48,11 +60,40 @@ def str_to_bool(
     true_strs: Sequence[str] = VALID_TRUE_STRS,
     false_strs: Sequence[str] = VALID_FALSE_STRS,
 ) -> bool:
-    """Convert values of `true_strs` to True and `false_strs` to False.
+    """Convert values of `true_strs` to `True` and `false_strs` to `False`.
 
-    See
-    https://docs.python.org/3/distutils/apiref.html#distutils.util.strtobool
-    which is due to depricate, hence equivalent below.
+    Note:
+        See
+        https://docs.python.org/3/distutils/apiref.html#distutils.util.strtobool
+        which is due to depricate, hence equivalent below.
+
+    Args:
+        var: `str` to convert into a `bool`
+        true_strs: a `Sequence` of `str` values treated as `True`
+        false_strs: a `Sequence` of `str` values treated as `False`
+
+    Returns:
+        `True` if `val` in `true_strs`, `False` if `val` in `false_str`.
+
+    Raises:
+        ValueError: if `val`, lowercased, is not a `str` in the `true_strs`
+        or `false_strs`.
+
+    Example:
+        ```pycon
+        >>> str_to_bool('true')
+        True
+        >>> str_to_bool('FaLSe')
+        False
+        >>> str_to_bool('Truely')
+        Traceback (most recent call last):
+        ...
+        ValueError: `Truely` dose not match `True` values:
+        ('y', 'yes', 't', 'true', 'on', '1')
+        or `False` values:
+        ('n', 'no', 'f', 'false', 'off', '0')
+
+        ```
     """
     if val.lower() in true_strs:
         return True
@@ -60,17 +101,28 @@ def str_to_bool(
         return False
     else:
         raise ValueError(
-            f"{val} dose not match True values: {true_strs} "
-            f"or False values {false_strs}"
+            f"`{val}` dose not match `True` values:"
+            f"\n{true_strs}\n"
+            f"or `False` values:"
+            f"\n{false_strs}"
         )
 
 
 def word_count(text: str) -> int:
     """Assuming English sentence structure, count words in `text`.
 
-    Examples:
+    Args:
+        text: text to count words from
+
+    Returns:
+        Count of words `text`.
+
+    Example:
+        ```pycon
         >>> word_count("A big brown dog, left-leaning, loomed! Another joined.")
         8
+
+        ```
     """
     return len(text.split())
 
@@ -82,9 +134,21 @@ def truncate_str(
 ) -> str:
     """If `len(text) > max_length` return `text` followed by `trail_str`.
 
-    Examples:
+    Args:
+        text: `str` to truncate
+        max_length: maximum length of `text` to allow, anything belond truncated
+        trail_str: what is appended to the end of `text` if truncated
+
+    Returns:
+        `text` truncated to `max_length` (if longer than `max_length`),
+        appended with `tail_str`
+
+    Example:
+        ```pycon
         >>> truncate_str('Standing in the shadows of love.', 15)
         'Standing in the...'
+
+        ```
     """
     return text[:max_length] + trail_str if len(text) > max_length else text
 
@@ -92,11 +156,20 @@ def truncate_str(
 def text2int(text: str) -> int | str:
     """If `text` is a sequence of digits convert `text` to `int`.
 
-    Examples:
+    Args:
+        text: `str` to convert to `int` if possible
+
+    Returns:
+        `int` if `text` is a number, else the original `text`
+
+    Example:
+        ```pycon
         >>> text2int('cat')
         'cat'
         >>> text2int('10')
         10
+
+        ```
     """
     return int(text) if text.isdigit() else text
 
@@ -110,10 +183,20 @@ def natural_keys(
 
     Designed for application to a list of fixture filenames with integers
 
-    Examples:
-        >>> example = ["fixture/Item-1.json", "fixture/Item-2.json", "fixture/Item-10.json"]
+    Args:
+        text: `str` instance to process as a key
+        split_regex: a regular expression to split keys, default extracts digits
+        func:
+            function to call on the results of `split_regex`, the results are
+            can be used with `sorted` for ordering.
+
+    Example:
+        ```pycon
+        >>> example = ["fixture/Item-1.json", "fixture/Item-10.json", "fixture/Item-2.json"]
         >>> sorted(example, key=natural_keys)
         ['fixture/Item-1.json', 'fixture/Item-2.json', 'fixture/Item-10.json']
+
+        ```
 
     Inspiration:
         http://nedbatchelder.com/blog/200712/human_sorting.html
@@ -128,10 +211,13 @@ def filter_starts_with(
 ) -> list[str]:
     """Filter and sort `fixture_paths` that begin with `starts_with_str`.
 
-    Examples:
+    Example:
+        ```pycon
         >>> paths = ['path/Newspaper-11.json', 'path/Issue-11.json', 'path/News-1.json']
         >>> filter_starts_with(fixture_paths=paths, starts_with_str="News")
         ['path/News-1.json', 'path/Newspaper-11.json']
+
+        ```
     """
     return sorted(
         (
@@ -151,10 +237,13 @@ def filter_exclude_starts_with(
 ) -> list[str]:
     """Exclude sort `fixture_paths` starting with `starts_str1`, `starts_str1`.
 
-    Examples:
+    Example:
+        ```pycon
         >>> filter_exclude_starts_with(['path/Newspaper-11.json', 'path/Issue-11.json',
         ...                             'path/Item-1.json', 'cat'])
         ['cat', 'path/Issue-11.json']
+
+        ```
     """
     return sorted(
         (
@@ -170,15 +259,29 @@ def filter_exclude_starts_with(
 def sort_all_fixture_paths(
     unsorted_fixture_paths: Sequence[str], key_func: Callable = natural_keys
 ) -> list[str]:
-    """Sort fixture paths to correct order for importing.
+    """Sort fixture paths for `Newspaper.models` with order compatibility.
 
-    Examples:
+    Certain models within the `newspapers` `app` require a specific order to correctly
+    import fixtures. This is written for potential generic application but primarily ment
+    for `fixtures` including `newspapers` tables.
+
+    Args:
+        unsorted_fixture_paths: `Sequence` of `str` `fixture` paths to sort
+        key_fun: function to call to order `unsorted_fixture_paths`
+
+    Returns:
+        `list` of sorted paths `str` via `key_func`
+
+    Example:
+        ```pycon
         >>> paths = [
         ...     'path/Item-1.json', 'path/Newspaper-11.json',
         ...     'path/Issue-11.json', 'cat'
         ... ]
         >>> sort_all_fixture_paths(paths)
         ['path/Newspaper-11.json', 'cat', 'path/Issue-11.json', 'path/Item-1.json']
+
+        ```
     """
     newspaper_fixture_paths: list[str] = filter_starts_with(
         unsorted_fixture_paths, NEWSPAPER_MODEL_NAME, key_func
@@ -199,7 +302,28 @@ def get_fixture_paths(
     folder_path: Path | str = DEFAULT_FIXTURE_PATH,
     format_extension: str = JSON_FORMAT_EXTENSION,
 ) -> list[str]:
-    """Return paths matching `folder_path` ending with `format_extension`."""
+    """Return paths matching `folder_path` ending with `format_extension`.
+
+    Args:
+        folder_path: folder to search for `fixtures` in
+        format_extension: filename fromat extension suffix for filtering results
+
+    Returns:
+        `list` of file path `str` with `format_extension` suffix
+
+    Example:
+        ```pycon
+        >>> sorted(get_fixture_paths('lwmdb/tests/'))  # doctest: +NORMALIZE_WHITESPACE
+        ['lwmdb/tests/initial-test-dataprovider.json',
+         'lwmdb/tests/update-test-dataprovider.json']
+        >>> (
+        ...     get_fixture_paths('lwmdb/tests/') ==
+        ...     get_fixture_paths(Path('lwmdb') / 'tests')
+        ... )
+        True
+
+        ```
+    """
     return glob(f"{folder_path}/*{format_extension}")
 
 
@@ -214,7 +338,24 @@ def log_and_django_terminal(
 ) -> None:
     """Log and add Django formatted print to terminal if available.
 
-    See: https://code.djangoproject.com/ticket/21429
+    Note:
+        See: https://code.djangoproject.com/ticket/21429
+
+    Args:
+        messsage: `str` to log and potential print to terminal
+        terminal_print: whether to print  to terminal as well
+        level: what `logger` level to create
+        django_command_instance:
+            `BaseCommand` or subclass instance to manage `terminal interaction`
+        style:
+            function to call on `message` prior to sending to
+            `django_command_instance` if provided. No effect
+            without `django_command_instance`
+        args: any positional arguments to send to `logger.log` call
+        kwargs: keyword arguments  to pass to `logger.log` call
+
+    Returns:
+        None
     """
     logger.log(level, message, *arg, **kwargs)
     if terminal_print:
@@ -235,7 +376,19 @@ def callable_on_chunks(
     terminal_print: bool = False,
     **kwargs,
 ) -> None:
-    """Apply `method_name` to `qs`, filter by `start_index` and `end_index`."""
+    """Apply `method_name` to `qs`, filter by `start_index` and `end_index`.
+
+    Args:
+        qs: `django` `QerySet` instance to apply `method_name` total
+        method_name: `Callable` `method` of `qs` `class` to apply to `qs`
+        start_index: `int` of `qs` start point to apply `method_name` from
+        end_index: `int` of `qs` end point to apply `method_name` to
+        chunk_size: `int` for how many instance to batch process at a time
+        terminal_print: whether to print logs to terminal
+
+    Returns:
+        None
+    """
     model_name: str = qs.model.__name__
     log_and_django_terminal(
         f"Running `{method_name}` method on `{model_name}` QuerySet.",
@@ -351,8 +504,8 @@ def download_file(
 ) -> bool:
     """If `force` or not available, download `url` to `local_path`.
 
-    Examples:
-        >>> from pathlib import Path
+    Example:
+        ```pycon
         >>> jpg_url: str = "https://commons.wikimedia.org/wiki/File:Wassily_Leontief_1973.jpg"
         >>> local_path: Path = Path('test.jpg')
         >>> local_path.unlink(missing_ok=True)  # Ensure png deleted
@@ -362,6 +515,8 @@ def download_file(
         >>> success
         True
         >>> local_path.unlink()  # Delete downloaded jpg
+
+        ```
     """
     local_path = Path(local_path)
     if not validate_url(url):
@@ -425,9 +580,12 @@ def download_file(
 def app_data_path(app_name: str, data_path: PathLike = DEFAULT_APP_DATA_FOLDER) -> Path:
     """Return `app_name` data `Path` and ensure exists.
 
-    Examples:
+    Example:
+        ```pycon
         >>> app_data_path('mitchells')
         PosixPath('mitchells/data')
+
+        ```
     """
     path = Path(app_name) / Path(data_path)
     path.mkdir(exist_ok=True)
@@ -449,18 +607,20 @@ def path_or_str_suffix(
 ) -> str:
     """Return suffix of `str_or_path`, else ''.
 
-    Examples:
+    Example:
+        ```pycon
         >>> path_or_str_suffix('https://lwmd.livingwithmachines.ac.uk/file.bz2')
         'bz2'
 
         >>> path_or_str_suffix('https://lwmd.livingwithmachines.ac.uk/file')
         ''
 
-        >>> from pathlib import Path
         >>> path_or_str_suffix(Path('cat') / 'dog' / 'fish.csv')
         'csv'
         >>> path_or_str_suffix(Path('cat') / 'dog' / 'fish')
         ''
+
+        ```
     """
     suffix: str = ""
     if isinstance(str_or_path, Path):
@@ -510,7 +670,8 @@ class DataSourceDownloadError(Exception):
 class DataSource:
     """Class to manage storing/deleting data files.
 
-    Examples:
+    Example:
+        ```pycon
         >>> import census
         >>> from pandas import read_csv
 
@@ -530,6 +691,8 @@ class DataSource:
         >>> df.columns[:5].tolist()
         ['CEN_1851', 'REGCNTY', 'REGDIST', 'SUBDIST', 'POP_DENS']
         >>> rsd_1851.delete()
+
+        ```
     """
 
     file_name: PathLike | str
@@ -623,3 +786,92 @@ class DataSource:
                 )
                 logger.error(str(self._download_exception))
         return self.read_func(self.local_path)
+
+
+class ModelUpdateDict(TypedDict):
+    instances: list[Model]
+    fields: set[str]
+
+
+def bulk_fixture_update(
+    fixture_path: PathLike,
+    create_new_records: bool = False,
+    batch_size: int = 1000,
+) -> None:
+    """Modify existing records with fixture.
+
+    Args:
+        fixture_path:
+            `Path` of fixture to update from
+        create_new_records:
+            Whether to add new records as well as updated fixtures
+        batch_size:
+            Size for batch record updates (not applied to new records)
+
+    Example:
+        ```pycon
+        >>> getfixture("db")
+        >>> getfixture("old_data_provider")
+        Installed 4 object(s) from 1 fixture(s)
+        >>> updated_fixture_path = getfixture("updated_data_provider_path")
+        >>> from newspapers.models import DataProvider
+        >>> for provider in DataProvider.objects.all():
+        ...     print(provider)
+        bna
+        hmd
+        jisc
+        lwm
+        >>> bulk_fixture_update(fixture_path=updated_fixture_path)
+        >>> for provider in DataProvider.objects.all():
+        ...     print(provider)
+        FindMyPast
+        Heritage Made Digital
+        Joint Information Systems Committee
+        Living with Machines
+        >>> bulk_fixture_update(fixture_path=updated_fixture_path,
+        ...                     create_new_records=True)
+        Installed 1 object(s) from 1 fixture(s)
+        >>> for provider in DataProvider.objects.all():
+        ...     print(provider)
+        FindMyPast
+        Heritage Made Digital
+        Joint Information Systems Committee
+        Living with Machines
+        Example New Provider
+
+        ```
+    """
+    records_to_update: defaultdict[type[Model], ModelUpdateDict] = defaultdict(
+        lambda: ModelUpdateDict(instances=[], fields=set()),
+    )
+    records_to_create: list[JSONFixtureType] = []
+    with open(fixture_path) as fixture:
+        record_dict: JSONFixtureType
+        for record_dict in json.loads(fixture.read()):
+            model_type: Model = apps.get_model(record_dict["model"])
+            model_instance: Model | None = model_type.objects.filter(
+                pk=record_dict["pk"]
+            ).first()
+            if model_instance:
+                for field, value in record_dict["fields"].items():
+                    setattr(model_instance, field, value)
+                    records_to_update[model_type]["fields"].add(field)
+                records_to_update[model_type]["instances"].append(model_instance)
+            else:
+                records_to_create.append(record_dict)
+    updated_records: dict[type[Model], list[Model]] = {}
+    model: Model
+    updates_dict: ModelUpdateDict
+    for model, updates_dict in records_to_update.items():
+        log_and_django_terminal(
+            f"Bulk updating {len(updates_dict['instances'])} {model} instances\n"
+            f"Fields to update: {updates_dict['fields']}",
+        )
+        updated_records[model] = model.objects.bulk_update(
+            updates_dict["instances"], updates_dict["fields"], batch_size=batch_size
+        )
+    if create_new_records:
+        with NamedTemporaryFile(mode="w", suffix=".json") as new_fixtures_tempfile:
+            json.dump(records_to_create, fp=new_fixtures_tempfile)
+            new_fixtures_tempfile.flush()
+            call_command("loaddata", new_fixtures_tempfile.name)
