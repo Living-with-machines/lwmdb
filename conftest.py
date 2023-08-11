@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pytest
 from coverage_badge.__main__ import main as gen_cov_badge
+from django.core.management import call_command
 
 # from django.conf import settings
 from django.utils.translation import activate
@@ -44,3 +45,22 @@ def pytest_sessionfinish(session, exitstatus):
     if exitstatus == 0:
         BADGE_PATH.parent.mkdir(parents=True, exist_ok=True)
         gen_cov_badge(["-o", f"{BADGE_PATH}", "-f"])
+
+
+@pytest.fixture
+def old_data_provider_fixture_path() -> Path:
+    """Load old example `newspaper.DataProvider` fixture."""
+    return Path("lwmdb/tests/initial-test-dataprovider.json")
+
+
+@pytest.fixture
+def updated_data_provider_path() -> Path:
+    """Load old example `newspaper.DataProvider` fixture."""
+    return Path("lwmdb/tests/update-test-dataprovider.json")
+
+
+@pytest.fixture
+@pytest.mark.django_db
+def old_data_provider(old_data_provider_fixture_path: Path) -> None:
+    """Load old example `newspaper.DataProvider` fixture."""
+    call_command("loaddata", old_data_provider_fixture_path)

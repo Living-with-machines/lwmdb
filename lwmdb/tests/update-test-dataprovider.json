@@ -1,0 +1,66 @@
+[
+  {
+    "pk": 1,
+    "model": "newspapers.dataprovider",
+    "fields": {
+      "name": "FindMyPast",
+      "code": "fmp",
+      "legacy_code": "bna",
+      "collection": "newspapers",
+      "source_note": "FindMyPast-funded digitised newspapers provided by the British Newspaper Archive",
+      "created_at": "2023-08-04 23:57:44.395416+00:00",
+      "updated_at": "2023-08-04 23:57:44.395416+00:00"
+    }
+  },
+  {
+    "pk": 2,
+    "model": "newspapers.dataprovider",
+    "fields": {
+      "name": "Heritage Made Digital",
+      "code": "bl-hmd",
+      "legacy_code": "hmd",
+      "collection": "newspapers",
+      "source_note": "British Library-funded digitised newspapers provided by the British Newspaper Archive",
+      "created_at": "2023-08-04 23:57:44.395416+00:00",
+      "updated_at": "2023-08-04 23:57:44.395416+00:00"
+    }
+  },
+  {
+    "pk": 3,
+    "model": "newspapers.dataprovider",
+    "fields": {
+      "name": "Joint Information Systems Committee",
+      "code": "jisc",
+      "legacy_code": "jisc",
+      "collection": "newspapers",
+      "source_note": "JISC-funded digitised newspapers provided by the British Newspaper Archive",
+      "created_at": "2023-08-04 23:57:44.395416+00:00",
+      "updated_at": "2023-08-04 23:57:44.395416+00:00"
+    }
+  },
+  {
+    "pk": 4,
+    "model": "newspapers.dataprovider",
+    "fields": {
+      "name": "Living with Machines",
+      "code": "bl_lwm",
+      "legacy_code": "lwm",
+      "collection": "newspapers",
+      "source_note": "Living with Machines-funded digitised newspapers provided by the British Newspaper Archive",
+      "created_at": "2023-08-04 23:57:44.395416+00:00",
+      "updated_at": "2023-08-04 23:57:44.395416+00:00"
+    }
+  },
+  {
+    "pk": 5,
+    "model": "newspapers.dataprovider",
+    "fields": {
+      "name": "Example New Provider",
+      "code": "new",
+      "collection": "newspapers",
+      "source_note": "Example for testing",
+      "created_at": "2023-08-04 23:57:44.395416+00:00",
+      "updated_at": "2023-08-04 23:57:44.395416+00:00"
+    }
+  }
+]

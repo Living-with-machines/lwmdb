@@ -17,6 +17,11 @@ from ..utils import (
     str_to_bool,
 )
 
+# >>> call_command("loaddata",
+# ...              "lwmdb/tests/initial_test_dataprovider.json")
+# >>> for dp in DataProvider.objects.all():
+# ...     print(dp)
+
 
 @pytest.mark.parametrize("val", VALID_TRUE_STRS)
 def test_str_to_bool_true(val) -> None:
