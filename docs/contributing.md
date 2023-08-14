@@ -381,6 +381,128 @@ assert caplog.messages == [
     To ease using `python` logging and `django` logging features we use our [`log_and_django_terminal`](reference/lwmdb/utils.md#lwmdb.utils.log_and_django_terminal) wrapper to ease managing logs that might also need to be printed at the terminal alongside commands.
 
 
+## Crediting Contributions
+
+We use `allcontributors` to help mmanage attributing contributions to both this code base and to portions of the datasets we release for use with `lwmdb`.
+
+### [All Contributors][allcontributors.org]
+
+All Contributors is a service for managing credit to a `git` repository. `.all-contributorsrc` is a `json` file in the root directory of the `alnm` repository. It includes basic display configuration for what's printed in `README.md` and the intro to this documentation. 
+
+The `json` structure follows this [`format`](https://allcontributors.org/docs/en/specification). This has the following format:
+
+```json
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributors": [
+    {
+      "login": "github-user-name",
+      "name": "Person Name",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1234567?v=4",
+      "profile": "http://www.a-website.org",
+      "contributions": [
+        "code",
+        "ideas",
+        "doc"
+      ]
+    },
+    {
+      "login": "another-github-user-name",
+      "name": "Another Name",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7654321?v=4",
+      "contributions": [
+        "code",
+        "ideas",
+        "doc",
+        "maintenance"
+      ]
+    },
+  ],
+  "contributorsPerLine": 7,
+  "skipCi": true,
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "projectName": "lwmdb",
+  "projectOwner": "Living-with-machines"
+}
+```
+
+This provides helps credit contributions and formatting for rendering a contributors grid of profiles in markdown. 
+
+The `contribution` component covers at least these categories for `lwmdb`. 
+
+- `code`
+- `ideas`
+- `mentoring`
+- `maintenance`
+- `doc`
+
+At present we aren't considered other code contribtuiontypes. For more detailed examples provided by `allcontributors` by default, see the [`emoji-key` table](https://allcontributors.org/docs/en/emoji-key#table). 
+
+#### Adding credit, including types, via GitHub comments
+
+A `github` user with at least [`moderator`](https://docs.github.com/en/organizations/managing-peoples-access-to-your-organization-with-roles/managing-moderators-in-your-organization) permission should be able to post to an `lwmdb` `github` ticket in the following form:
+
+```markdown
+@all-contributors
+please add @github-user for code, ideas, planning.
+please add @github-other-user for code, ideas, planning.
+```
+
+which should cause the [`all-contributors bot`](https://github.com/all-contributors/app) to indicated success:
+
+```markdown
+@AoifeHughes
+
+I've put up a pull request to add @github-user! 🎉
+I've put up a pull request to add @github-other-user! 🎉
+```
+
+or indicate errors
+
+```markdown
+This project's configuration file has malformed JSON: .all-contributorsrc. Error:: Unexpected token : in JSON at position 2060
+```
+
+
+### CITATION.CFF
+
+We also maintain a [`Citation File Format (CFF)`](`cff-version`) for citeable, academic credit for contributions via our [`zenodo`](10.5281/zenodo.8208203) registration. This helps automate the process of releasing citation Digital Object Identifyer (DOI) codes, alongside version releases of `lwmdb`.
+
+`CFF` supports Open Researcher and Contributor ID (`orcid`)[https://en.wikipedia.org/wiki/ORCID], which eases automating academic credit for evolving contribtuions to academic work. In this case we endeavour to harmonise contributions recorded via `allcontributors` with input from collaborators across [Living with Machines](https://livingwithmachines.ac.uk/) who have contributed to `lwmdb`.
+
+For reference a simplified example based on `cff-version 1.2.0`:
+
+```yaml
+cff-version: 1.2.0
+title: Living With Machines Database
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Person
+    family-names: Name
+    orcid: 'https://orcid.org/0000-0000-0000-0000'
+    affiliation: A UNI
+  - given-names: Another
+    family-names: Name
+    orcid: 'https://orcid.org/0000-0000-0000-0001'
+    affiliation: UNI A
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.8208204
+repository-code: 'https://github.com/Living-with-machines/lwmdb'
+url: 'https://livingwithmachines.ac.uk/'
+license: MIT
+```
+
 ## Troubleshooting
 
 ### Unexpected `lwmdb/static/css/project.css` changes
