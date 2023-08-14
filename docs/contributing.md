@@ -383,13 +383,14 @@ assert caplog.messages == [
 
 ## Crediting Contributions
 
-We use `allcontributors` to help mmanage attributing contributions to both this code base and to portions of the datasets we release for use with `lwmdb`.
+We use [All Contributors](https://allcontributors.org) in our semi-automated file citation file [`.all-contributorsrc`](https://github.com/Living-with-machines/lwmdb/blob/main/.all-contributorsrc) and [Citation File Format](https://citation-file-format.github.io/) via [`CITATION.cff`](https://github.com/Living-with-machines/lwmdb/blob/main/CITATION.cff) to help manage attributing contributions to both this code base and datasets we release for use with `lwmdb`. We endeavour to harmonise contributions from collaborators across [Living with Machines](https://livingwithmachines.ac.uk/) whose copious, interdisciplinary collaboration led to `lwmdb`.
 
-### [All Contributors][allcontributors.org]
 
-All Contributors is a service for managing credit to a `git` repository. `.all-contributorsrc` is a `json` file in the root directory of the `alnm` repository. It includes basic display configuration for what's printed in `README.md` and the intro to this documentation. 
+### All Contributors
 
-The `json` structure follows this [`format`](https://allcontributors.org/docs/en/specification). This has the following format:
+All Contributors is a service for managing credit for contributions to a `git` repository. `.all-contributorsrc` is a `json` file in the root directory of the `alnm` repository. It also specifies design for what's rendered in `README.md` and intro [contributors](/#contributors) section of this documentation. 
+
+The `json` structure follows the All Contributors [`specification`](https://allcontributors.org/docs/en/specification). Below is an example of this format
 
 ```json
 {
@@ -433,9 +434,7 @@ The `json` structure follows this [`format`](https://allcontributors.org/docs/en
 }
 ```
 
-This provides helps credit contributions and formatting for rendering a contributors grid of profiles in markdown. 
-
-The `contribution` component covers at least these categories for `lwmdb`. 
+The `contribution` component per user indicates type of contributionat present we consider these: 
 
 - `code`
 - `ideas`
@@ -443,11 +442,11 @@ The `contribution` component covers at least these categories for `lwmdb`.
 - `maintenance`
 - `doc`
 
-At present we aren't considered other code contribtuiontypes. For more detailed examples provided by `allcontributors` by default, see the [`emoji-key` table](https://allcontributors.org/docs/en/emoji-key#table). 
+At present we aren't crediting other types of contribution but may expand in the future. For more other contribtuion types provided by `allcontributors` by default, see the [`emoji-key` table](https://allcontributors.org/docs/en/emoji-key#table). 
 
 #### Adding credit, including types, via GitHub comments
 
-A `github` user with at least [`moderator`](https://docs.github.com/en/organizations/managing-peoples-access-to-your-organization-with-roles/managing-moderators-in-your-organization) permission should be able to post to an `lwmdb` `github` ticket in the following form:
+For All Contributors `git` accounts with at least [`moderator`](https://docs.github.com/en/organizations/managing-peoples-access-to-your-organization-with-roles/managing-moderators-in-your-organization) status with our `GitHub` [repository](https://github.com/living-with-machines/lwmdb/) should have permission to modify credit by posting in the following form on an `lwmdb` `github` ticket:
 
 ```markdown
 @all-contributors
@@ -455,28 +454,26 @@ please add @github-user for code, ideas, planning.
 please add @github-other-user for code, ideas, planning.
 ```
 
-which should cause the [`all-contributors bot`](https://github.com/all-contributors/app) to indicated success:
+This should cause the [`all-contributors bot`](https://github.com/all-contributors/app) to indicated success:
 
 ```markdown
-@AoifeHughes
+@ModUserWhoPosted
 
 I've put up a pull request to add @github-user! 🎉
 I've put up a pull request to add @github-other-user! 🎉
 ```
 
-or indicate errors
+or report errors:
 
 ```markdown
 This project's configuration file has malformed JSON: .all-contributorsrc. Error:: Unexpected token : in JSON at position 2060
 ```
 
-
 ### CITATION.CFF
 
-We also maintain a [`Citation File Format (CFF)`](`cff-version`) for citeable, academic credit for contributions via our [`zenodo`](10.5281/zenodo.8208203) registration. This helps automate the process of releasing citation Digital Object Identifyer (DOI) codes, alongside version releases of `lwmdb`.
+We also maintain a [`Citation File Format (CFF)`](`cff-version`) file for citeable, academic credit for contributions via our [`zenodo`](10.5281/zenodo.8208203) registration. This helps automate the process of releasing academically citeable [Digital Object Identifyer (DOI)](https://en.wikipedia.org/wiki/Digital_object_identifier) for releases of `lwmdb`.
 
-`CFF` supports Open Researcher and Contributor ID (`orcid`)[https://en.wikipedia.org/wiki/ORCID], which eases automating academic credit for evolving contribtuions to academic work. In this case we endeavour to harmonise contributions recorded via `allcontributors` with input from collaborators across [Living with Machines](https://livingwithmachines.ac.uk/) who have contributed to `lwmdb`.
-
+`CFF` supports [Open Researcher and Contributor IDs (`orcid`)](https://en.wikipedia.org/wiki/ORCID), which eases automating academic credit for evolving contribtuions to academic work, even as individuals change academic positions. 
 For reference a simplified example based on `cff-version 1.2.0`:
 
 ```yaml
