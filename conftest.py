@@ -9,6 +9,7 @@ from django.utils.translation import activate
 
 from lwmdb.utils import app_data_path
 from mitchells.import_fixtures import MITCHELLS_EXCEL_PATH
+from newspapers.models import DataProvider
 
 BADGE_PATH: Path = Path("docs") / "assets" / "coverage.svg"
 
@@ -64,3 +65,17 @@ def updated_data_provider_path() -> Path:
 def old_data_provider(old_data_provider_fixture_path: Path) -> None:
     """Load old example `newspaper.DataProvider` fixture."""
     call_command("loaddata", old_data_provider_fixture_path)
+
+
+@pytest.fixture
+@pytest.mark.django_db
+def current_data_providers(updated_data_provider_path: Path) -> None:
+    """Load old example `newspaper.DataProvider` fixture."""
+    call_command("loaddata", updated_data_provider_path)
+
+
+@pytest.fixture
+@pytest.mark.django_db
+def lwm_data_provider(current_data_providers) -> DataProvider:
+    """Return the `lwm-bl` `DataPRovider` instance."""
+    return DataProvider.objects.get(code="bl_lwm")

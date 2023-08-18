@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Final
 
 import pytest
+from django.conf import settings
 from django.test import TestCase
 from pyfakefs.fake_filesystem_unittest import patchfs
 
@@ -104,11 +105,11 @@ class ItemTestCase(TestCase):
         new_title = TEST_ITEM_TITLE + title_extension
         test_item.title = new_title
         with pytest.raises(Item.TitleLengthError):
-            test_item.save()
+            test_item.save(sync_title_counts=False)
         correct_char_count: int = len(new_title)
         correct_word_count: int = word_count(new_title)
         with self.assertLogs(level=DEBUG) as logs:
-            test_item.save(sync_title_counts=True)
+            test_item.save()
         assert test_item.title == new_title[: test_item.MAX_TITLE_CHAR_COUNT]
         assert test_item.title_char_count == correct_char_count
         assert test_item.title_word_count == correct_word_count
@@ -127,6 +128,8 @@ class ItemTestCase(TestCase):
 
     def test_sync_title_length_too_long(self):
         """Test managing title length beyond max characters."""
+        if not Item.MAX_TITLE_CHAR_COUNT:
+            Item.MAX_TITLE_CHAR_COUNT = settings.DEFAULT_MAX_NEWSPAPER_TITLE_CHAR_COUNT
         max_title_char_count: int = Item.MAX_TITLE_CHAR_COUNT
         title_extension: str = " TOO LONG" * int(
             max_title_char_count / 4
@@ -136,11 +139,11 @@ class ItemTestCase(TestCase):
         new_title = TEST_ITEM_TITLE + title_extension
         test_item.title = new_title
         with pytest.raises(Item.TitleLengthError):
-            test_item.save()
+            test_item.save(sync_title_counts=False)
         correct_char_count: int = len(new_title)
         correct_word_count: int = word_count(new_title)
         with self.assertLogs(level=DEBUG) as logs:
-            test_item.save(sync_title_counts=True)
+            test_item.save()
         assert test_item.title == new_title[:max_title_char_count]
         assert test_item.title_char_count == correct_char_count
         assert test_item.title_word_count == correct_word_count
@@ -163,3 +166,34 @@ class ItemTestCase(TestCase):
         assert str(test_item) == truncate_str(
             test_item.title, MAX_PRINT_SELF_STR_LENGTH
         )
+
+    def test_sync_title_length_max_title_none(self):
+        """Test unbound title length `MAX_TITLE_CHAR_COUNT = None`."""
+        title_extension: str = " LINE"
+        Item.MAX_TITLE_CHAR_COUNT = None
+        test_item = Item.objects.get(item_code=TEST_ITEM_CODE)
+        assert test_item.title == TEST_ITEM_TITLE
+        new_title = TEST_ITEM_TITLE + title_extension
+        test_item.title = new_title
+        with pytest.raises(Item.TitleLengthError):
+            test_item.save(sync_title_counts=False)
+        test_item.save(sync_title_counts=True)
+        correct_char_count: int = len(new_title)
+        correct_word_count: int = word_count(new_title)
+        with self.assertLogs(level=DEBUG) as logs:
+            test_item.save()
+        assert test_item.title == new_title
+        assert test_item.title_char_count == correct_char_count
+        assert test_item.title_word_count == correct_word_count
+        correct_logs: list[str] = [
+            (
+                f"{MODULE_LOG_PREFIX}Setting `title_char_count` for "
+                f"{TEST_ITEM_CODE} to {correct_char_count}"
+            ),
+            (
+                f"{MODULE_LOG_PREFIX}Setting `title_word_count` for "
+                f"{TEST_ITEM_CODE} to {correct_word_count}"
+            ),
+        ]
+        assert logs.output == correct_logs
+        assert test_item.title_truncated is False

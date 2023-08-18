@@ -5,6 +5,7 @@ from typing import Final
 from zipfile import ZipFile
 
 from azure.storage.blob import BlobClient
+from django.conf import settings
 from django.db import models
 from django_pandas.managers import DataFrameManager
 
@@ -81,9 +82,41 @@ class Ingest(NewspapersModel):
 
 
 class Newspaper(NewspapersModel):
-    """Newspaper, including title and place."""
+    """Newspaper, including title and place.
 
-    # TODO #55: publication_code should be unique? Currently unique (but not tested with BNA)
+    Attributes:
+        publication_code:
+            a code to uniquely identify each newspaper derived from
+        title:
+            Newspaper title (assumed to be constant over time)
+        location:
+            Name of location an instance is associated with
+        place_of_publication:
+            A `Place` `gazetteer` record an instance is associated with.
+
+    Example:
+        ```pycon
+        >>> getfixture("db")
+        >>> new_tredegar = Newspaper(publication_code="0003548",
+        ...                          title=("New Tredegar, "
+        ...                                 "Bargoed & Caerphilly Journal"),
+        ...                          location="Bedwellty, Gwent, Wales",)
+        >>> new_tredegar
+        0003548
+        >>> str(new_tredegar)
+        'New Tredegar, Bargoed & Caerphilly Journal'
+        >>> new_tredegar.place_of_publication
+        >>> Newspaper.objects.count()
+        0
+        >>> new_tredegar.save()
+        >>> Newspaper.objects.count()
+        1
+
+        ```
+    """
+
+    # TODO #55: publication_code should be unique? Currently unique (
+    #                           but not tested with BNA)
     publication_code = models.CharField(max_length=600, default=None)
     title = models.CharField(max_length=255, default=None)
     location = models.CharField(max_length=255, default=None, blank=True, null=True)
@@ -112,7 +145,68 @@ class Newspaper(NewspapersModel):
 
 
 class Issue(NewspapersModel):
-    """Newspaper Issue, including date and relevant source url."""
+    """Newspaper Issue, including date and relevant source url.
+
+    Attributes:
+        issue_code:
+            A `str` of form:
+
+            ```
+            {newspaper.publication_code}-{issue.issue_date.strftime('%Y%m%d')}
+            ```
+
+            For example: if
+
+            * `newspaper.publication_code` is `0000347`
+            * `issue_date` is `datetime.date(1904, 7, 7)`
+
+            then the `issue_code` is
+
+            ```
+            0003548-19040707
+            ```
+
+            These codes are designed to uniquely identify each issue, at
+            least with respect to each related `Newspaper`.
+
+            !!! note
+
+                See tickets [#55](https://github.com/Living-with-machines/lwmdb/issues/55)
+                and [#93](https://github.com/Living-with-machines/lwmdb/issues/55)
+                for updates on ensuring uniqueness.
+        issue_date:
+            Date of issue publication.
+        input_sub_path:
+            A `str` to convert into a path for related source OCR files.
+            See [`Item.text_path`][Item.text_path]
+        newspaper:
+            `Newspaper` record each `Issue` is from.
+
+    Example:
+        ```pycon
+        >>> getfixture("db")
+        >>> from datetime import date
+        >>> new_tredegar = Newspaper(publication_code="0003548",
+        ...                          title=("New Tredegar, "
+        ...                                 "Bargoed & Caerphilly Journal"),
+        ...                          location="Bedwellty, Gwent, Wales",)
+        >>> issue = Issue(issue_code="0003548-19040707",
+        ...               issue_date=date(1904, 7, 7),
+        ...               newspaper=new_tredegar,
+        ...               input_sub_path='0003548/1904/0707')
+        >>> print(issue)
+        0003548-19040707
+        >>> issue.issue_date
+        datetime.date(1904, 7, 7)
+        >>> new_tredegar.save()
+        >>> Issue.objects.count()
+        0
+        >>> issue.save()
+        >>> Issue.objects.count()
+        1
+
+        ```
+    """
 
     # TODO #55: issue_code should be unique? Currently unique (but not tested with BNA)
     issue_code = models.CharField(max_length=600, default=None)
@@ -158,16 +252,148 @@ class Issue(NewspapersModel):
 
 
 class Item(NewspapersModel):
-    """Printed element in a Newspaper issue including metadata."""
+    """Printed element in a Newspaper issue including metadata.
+
+    Attributes:
+        MAX_TITLE_CHAR_COUNT:
+            Maximum length for `Item` title field. The default set by
+            `settings.MAX_NEWSPAPER_TITLE_CHAR_COUNT`, which can be
+            customised in `.env`. This can also be `None`, in which
+            case there is no maximum enforced beyond `postgres`
+            [spec](https://www.postgresql.org/docs/current/datatype-character.html).
+
+            !!! note
+
+                This is not stored in SQL, only within the class.
+
+        item_code:
+            A unique code for each `Item` of the form:
+            ```
+            {newspaper.publication_code}-{issue.issue_code}-{item.item_code}
+            ```
+
+            For example:
+                - the 37th `Item` in
+                - `Issue` on 7 July 1904 from
+                - _New Tredegar_ (`publication_code` `0003548`)
+
+            will have an `item_code`:
+                ```
+                0003548-19040707-art0037`
+                ```
+
+            !!! note
+
+                The `art` prefix on the last portion of the `item_code` may vary
+                by newspaper collection
+
+        title:
+            Item title. If `truncation` is applied and the original title
+            is longer than `MAX_NEWSPAPER_TITLE_CHAR_COUNT`, this is the
+            title up to the truncation point, followed by
+            [`lwmdb.utils.DEFFAULT_TRUNCATION_CHARS`][lwmdb.utils.DEFFAULT_TRUNCATION_CHARS]
+
+        title_word_count:
+            Number of words in the title, prior to any truncation, assuming
+            English sentence structure.
+
+        title_char_count:
+            Number of characters in the title prior to any truncation.
+
+        title_truncated:
+            Whether the `title` field has been truncated. If `None`,
+            then the title length has not had truncation process applied.
+
+        item_type:
+            What time of item. By default all capps. Known types
+            include ARTICLE and ADVERT.
+            Todo: This needs fleshing out.
+
+        word_count:
+            Word count of `Fulltext` body text
+            (assuming English sentence structure).
+
+        word_char_count:
+            The number of characters in the `Fulltext` body text.
+
+        ocr_quality_sd:
+            Standard deviation of Optical Character Recognition quality scores.
+
+        ocr_quality_mean:
+            Mean of Optical Character Recognition quality scores.
+
+        input_filename:
+            Filename of `Fulltext`.
+
+        issue:
+            Related `Newspaper` `Issue` record.
+
+        data_provider:
+            Related record of newspaper data provider in `DataProvider.
+
+        digitisation:
+            Related record of means collection was digitised in `Digitisation`.
+
+        ingest:
+            Related tool used for database ingest, including version in `Ingest`.
+
+        fulltext:
+            Related record of `item` plain text in `fulltext.Fulltext`.
+
+    Example:
+        ```pycon
+        >>> getfixture("db")
+        >>> lwm_data_provider = getfixture('lwm_data_provider')
+        Installed 5 object(s) from 1 fixture(s)
+        >>> new_tredegar = Newspaper(
+        ...     publication_code="0003548",
+        ...     title=("New Tredegar, "
+        ...            "Bargoed & Caerphilly Journal"),
+        ...     location="Bedwellty, Gwent, Wales",)
+        >>> issue = Issue(issue_code="0003548-19040707",
+        ...     issue_date="1904-7-7",
+        ...     input_sub_path='0003548/1904/0707',
+        ...     newspaper=new_tredegar,)
+        >>> item = Item(
+        ...     item_code="0003548-19040707-art0037",
+        ...     title='MEETING AT CAERPHILLY.',
+        ...     item_type="ARTICLE",
+        ...     ocr_quality_mean=0.8526,
+        ...     ocr_quality_sd=0.2192,
+        ...     input_filename='0003548_19040707_art0037.txt',
+        ...     issue=issue,
+        ...     word_count=1261,
+        ...     data_provider=lwm_data_provider)
+        >>> item
+        0003548-19040707-art0037
+        >>> str(item)
+        'MEETING AT CAERPHILLY.'
+        >>> item.word_count
+        1261
+        >>> item.title_word_count
+        >>> item.title_char_count
+        >>> item.title_truncated
+        >>> new_tredegar.save()
+        >>> issue.save()
+        >>> item.save()  # This calls `item._sync_title_counts()`
+        >>> item.title_word_count
+        3
+        >>> item.title_char_count
+        22
+        >>> item.title_truncated
+        False
+
+        ```
+    """
 
     # TODO #55: item_code should be unique? Currently, not unique, however so needs fixing in alto2txt2fixture
-    MAX_TITLE_CHAR_COUNT: Final[int] = 100
+    MAX_TITLE_CHAR_COUNT: int | None = settings.MAX_NEWSPAPER_TITLE_CHAR_COUNT
 
     item_code = models.CharField(max_length=600, default=None)
     title = models.TextField(max_length=MAX_TITLE_CHAR_COUNT, default=None)
     title_word_count = models.IntegerField(null=True)
     title_char_count = models.IntegerField(null=True)
-    title_truncated = models.BooleanField(default=False)
+    title_truncated = models.BooleanField(default=None, null=True, blank=True)
     item_type = models.CharField(max_length=600, default=None, blank=True, null=True)
     word_count = models.IntegerField(null=True, db_index=True)
     word_char_count = models.IntegerField(null=True)
@@ -217,7 +443,7 @@ class Item(NewspapersModel):
             )
         ]
 
-    def save(self, sync_title_counts: bool = False, *args, **kwargs):
+    def save(self, sync_title_counts: bool = True, *args, **kwargs):
         # for consistency, we save all item_type in uppercase
         self.item_type = str(self.item_type).upper()
         self._sync_title_counts(force=sync_title_counts)
@@ -233,14 +459,20 @@ class Item(NewspapersModel):
         title_text_char_count: int = len(self.title)
         if not self.title_char_count or force:
             logger.debug(
-                f"Setting `title_char_count` for {self.item_code} to {title_text_char_count}"
+                f"Setting `title_char_count` for {self.item_code} "
+                f"to {title_text_char_count}"
             )
             self.title_char_count = title_text_char_count
         else:
             if self.title_char_count != title_text_char_count:
-                if self.title_char_count < self.MAX_TITLE_CHAR_COUNT:
+                if (
+                    self.MAX_TITLE_CHAR_COUNT
+                    and self.title_char_count < self.MAX_TITLE_CHAR_COUNT
+                ):
                     raise self.TitleLengthError(
-                        f"{self.title_char_count} characters does not equal {title_text_char_count}: the length of title of {self.item_code}"
+                        f"{self.title_char_count} characters does not "
+                        f"equal {title_text_char_count}: the length of "
+                        f"title of {self.item_code}"
                     )
 
     def _sync_title_word_count(self, force: bool = False) -> None:
@@ -260,12 +492,18 @@ class Item(NewspapersModel):
         """Run `_sync` methods, then trim title if long."""
         self._sync_title_char_count(force=force)
         self._sync_title_word_count(force=force)
-        if self.title_char_count and self.title_char_count > self.MAX_TITLE_CHAR_COUNT:
+        if (
+            self.MAX_TITLE_CHAR_COUNT
+            and self.title_char_count
+            and self.title_char_count > self.MAX_TITLE_CHAR_COUNT
+        ):
             logger.debug(
                 f"Trimming title of {self.item_code} to {self.MAX_TITLE_CHAR_COUNT} chars."
             )
             self.title = self.title[: self.MAX_TITLE_CHAR_COUNT]
             self.title_truncated = True
+        else:
+            self.title_truncated = False
 
     HOME_DIR = Path.home()
     DOWNLOAD_DIR = HOME_DIR / "metadata-db/"
@@ -285,9 +523,9 @@ class Item(NewspapersModel):
     def download_dir(self):
         """Path to the download directory for full text data.
 
-        The DOWNLOAD_DIR class attribute contains the directory under
+        The `DOWNLOAD_DIR` attribute contains the directory under
         which full text data will be stored. Users can change it by
-        typing: Item.DOWNLOAD_DIR = "/path/to/wherever/"
+        setting `Item.DOWNLOAD_DIR = "/path/to/wherever/"`
         """
         return Path(self.DOWNLOAD_DIR)
 
@@ -316,7 +554,7 @@ class Item(NewspapersModel):
         """Return a path relative to the full text file for this Item.
 
         This is generated from the zip archive (once downloaded and
-        extracted) from the DOWNLOAD_DIR and the filename.
+        extracted) from the `DOWNLOAD_DIR` and the filename.
         """
         return Path(self.issue.input_sub_path) / self.input_filename
 

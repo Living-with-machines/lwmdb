@@ -45,6 +45,7 @@ def test_path_or_str_suffix_path_csv() -> None:
     assert path_or_str_suffix(Path("cat") / "dog" / "fish.csv") == "csv"
 
 
+@pytest.mark.download
 @pytest.mark.slow
 def test_download_large_csv(caplog, tmp_path) -> None:
     caplog.set_level(INFO)
@@ -60,6 +61,7 @@ def test_download_large_csv(caplog, tmp_path) -> None:
     assert caplog.messages == [CORRECT_LOG_0, CORRECT_LOG_1, CORRECT_LOG_2]
 
 
+@pytest.mark.download
 @pytest.mark.slow
 def test_download_xlsx(caplog, tmp_path) -> None:
     """Test new download of `MITCHELLS_EXCEL_URL` to `tmp_path`."""
@@ -131,6 +133,7 @@ class TestDataSource:
         """Test `repr` of a `DataSource`."""
         assert repr(rsd_1851) == "DataSource('census', 'demographics_en...csv')"
 
+    @pytest.mark.download
     def test_download(self, rsd_1851) -> None:
         """Test downloading without."""
         file: DataFrame = rsd_1851.read()

@@ -15,6 +15,14 @@ from dotenv import dotenv_values
 
 config = dotenv_values(".envs/local")
 
+DEFAULT_MAX_NEWSPAPER_TITLE_CHAR_COUNT: Final[int] = 100
+
+MAX_NEWSPAPER_TITLE_CHAR_COUNT: int | None = (
+    config["MAX_NEWSPAPER_TITLE_CHAR_COUNT"]
+    if "MAX_ITEM_TITLE_LENGTH" in config
+    else DEFAULT_MAX_NEWSPAPER_TITLE_CHAR_COUNT
+)
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 # ROOT_DIR = Path(__file__).resolve(strict=True).parent.parent.parent

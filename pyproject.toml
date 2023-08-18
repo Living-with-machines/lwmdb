@@ -85,8 +85,9 @@ addopts = """
 -n auto
 """
 markers = [
-  "slow: marks tests as slow (deselect with '-m \"not slow\"')",
-  "cli: marks tests as using the command-line-interface",
+  "slow: slow tests (deselect with '-m \"not slow\"')",
+  "cli: use the command-line-interface",
+  "download: downloaded data",
 ]
 
 [tool.flake8]
