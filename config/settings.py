@@ -18,8 +18,8 @@ config = dotenv_values(".envs/local")
 DEFAULT_MAX_NEWSPAPER_TITLE_CHAR_COUNT: Final[int] = 100
 
 MAX_NEWSPAPER_TITLE_CHAR_COUNT: int | None = (
-    config["MAX_NEWSPAPER_TITLE_CHAR_COUNT"]
-    if "MAX_ITEM_TITLE_LENGTH" in config
+    int(config["MAX_NEWSPAPER_TITLE_CHAR_COUNT"])
+    if "MAX_ITEM_TITLE_LENGTH" in config and config["MAX_NEWSPAPER_TITLE_CHAR_COUNT"]
     else DEFAULT_MAX_NEWSPAPER_TITLE_CHAR_COUNT
 )
 

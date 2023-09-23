@@ -7,11 +7,15 @@ from django.core.management import call_command
 # from django.conf import settings
 from django.utils.translation import activate
 
+from fulltext.models import Fulltext
 from lwmdb.utils import app_data_path
 from mitchells.import_fixtures import MITCHELLS_EXCEL_PATH
-from newspapers.models import DataProvider
+from newspapers.models import DataProvider, Issue, Item, Newspaper
+from newspapers.utils import path_to_newspaper_code
 
 BADGE_PATH: Path = Path("docs") / "assets" / "coverage.svg"
+PLAINTEXT_PATH_COMPRESSED: Path = Path("0003548_plaintext.zip")
+PLAINTEXT_PATH: Path = Path("0003548/1904/0707/0003548_19040707_art0037.txt")
 
 
 @pytest.fixture(autouse=True)
@@ -39,13 +43,6 @@ def media_storage(settings, tmpdir) -> None:
 def mitchells_data_path() -> Path:
     """Return path to `mitchells` app data."""
     return app_data_path("mitchells") / MITCHELLS_EXCEL_PATH
-
-
-def pytest_sessionfinish(session, exitstatus):
-    """Generate badges for docs after tests finish."""
-    if exitstatus == 0:
-        BADGE_PATH.parent.mkdir(parents=True, exist_ok=True)
-        gen_cov_badge(["-o", f"{BADGE_PATH}", "-f"])
 
 
 @pytest.fixture
@@ -77,5 +74,86 @@ def current_data_providers(updated_data_provider_path: Path) -> None:
 @pytest.fixture
 @pytest.mark.django_db
 def lwm_data_provider(current_data_providers) -> DataProvider:
-    """Return the `lwm-bl` `DataPRovider` instance."""
+    """Return the `bl_lwm` `DataProvider` instance."""
     return DataProvider.objects.get(code="bl_lwm")
+
+
+@pytest.fixture
+@pytest.mark.django_db
+def new_tredegar_newspaper() -> Newspaper:
+    """`Newspaper` using example `PLAINTEXT_PATH` fixture.
+
+    Note:
+        The `PLAINTEXT_PATH.parents` test fxiture includes the newspaper
+        `publication_code`, then `year`, then `month_day`. This extracts
+        that `publication_code` for efficiency.
+    """
+    new_tredegar = Newspaper(
+        publication_code=path_to_newspaper_code(PLAINTEXT_PATH, "publication"),
+        title=("New Tredegar, Bargoed & Caerphilly Journal"),
+        location="Bedwellty, Gwent, Wales",
+    )
+    new_tredegar.save()
+    return new_tredegar
+
+
+@pytest.fixture
+@pytest.mark.django_db
+def new_tredegar_last_issue(new_tredegar_newspaper) -> Issue:
+    """`Newspaper` `Issue` using example `PLAINTEXT_PATH` fixture.
+
+    Note:
+        The `PLAINTEXT_PATH.parents` test fxiture includes the newspaper
+        `publication_code`, then `year`, then `month_day`. This extracts
+        that `issue_code` for ease in maintaining tests.
+    """
+    last_issue = Issue(
+        issue_code=path_to_newspaper_code(PLAINTEXT_PATH, "issue"),
+        input_sub_path=str(PLAINTEXT_PATH.parent),
+        newspaper=new_tredegar_newspaper,
+        issue_date="1904-07-07",
+    )
+    last_issue.save()
+    return last_issue
+
+
+@pytest.fixture
+@pytest.mark.django_db
+def new_tredegar_last_issue_first_item(
+    new_tredegar_last_issue,
+    lwm_data_provider,
+) -> Item:
+    """`Item` from `new_tredegar_last_issue` and `lwm_data_provider`."""
+    item = Item(
+        item_code=path_to_newspaper_code(PLAINTEXT_PATH, "item"),
+        title="MEETING AT CAERPHILLY.",
+        item_type="ARTICLE",
+        ocr_quality_mean=0.8526,
+        ocr_quality_sd=0.2192,
+        input_filename=PLAINTEXT_PATH.name,
+        issue=new_tredegar_last_issue,
+        word_count=1261,
+        data_provider=lwm_data_provider,
+    )
+    item.save()
+    return item
+
+
+@pytest.fixture
+@pytest.mark.django_db
+def new_tredegar_last_issue_first_item_fulltext() -> Fulltext:
+    """`Fulltext` fixture to use with `new_tredegar_last_issue_first_item`."""
+    fulltext = Fulltext(
+        text="An excellent full article",
+        compressed_path=str(PLAINTEXT_PATH_COMPRESSED),
+        plaintext_path=str(PLAINTEXT_PATH),
+    )
+    fulltext.save()
+    return fulltext
+
+
+def pytest_sessionfinish(session, exitstatus):
+    """Generate badges for docs after tests finish."""
+    if exitstatus == 0:
+        BADGE_PATH.parent.mkdir(parents=True, exist_ok=True)
+        gen_cov_badge(["-o", f"{BADGE_PATH}", "-f"])
