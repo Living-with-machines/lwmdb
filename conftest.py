@@ -146,7 +146,7 @@ def new_tredegar_last_issue_first_item_fulltext() -> Fulltext:
     fulltext = Fulltext(
         text="An excellent full article",
         compressed_path=str(PLAINTEXT_PATH_COMPRESSED),
-        plaintext_path=str(PLAINTEXT_PATH),
+        path=str(PLAINTEXT_PATH),
     )
     fulltext.save()
     return fulltext
