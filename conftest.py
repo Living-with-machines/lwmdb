@@ -10,7 +10,7 @@ from django.db.models.query import QuerySet
 from django.utils.translation import activate
 
 from fulltext.models import Fulltext
-from lwmdb.utils import app_data_path, DupeRemoveConfig
+from lwmdb.utils import DupeRemoveConfig, app_data_path
 from mitchells.import_fixtures import MITCHELLS_EXCEL_PATH
 from newspapers.models import DataProvider, Issue, Item, Newspaper
 from newspapers.utils import path_to_newspaper_code
@@ -156,17 +156,20 @@ def new_tredegar_last_issue_first_item_fulltext() -> Fulltext:
 
 @pytest.fixture
 @pytest.mark.django_db
-def newspaper_dupes_qs(new_tredegar_newspaper: Newspaper,
-                       new_tredegar_last_issue: Issue) -> QuerySet:
+def newspaper_dupes_qs(
+    new_tredegar_newspaper: Newspaper, new_tredegar_last_issue: Issue
+) -> QuerySet:
     """Create model fixtures with a dupe for testing."""
-    Newspaper.objects.bulk_create([
-        Newspaper(
-            publication_code=new_tredegar_newspaper.publication_code,
-            title=new_tredegar_newspaper.title,
-            location=new_tredegar_newspaper.location,
-        ),
-        Newspaper(publication_code='0002648', title="Not Dupe News"),
-    ])
+    Newspaper.objects.bulk_create(
+        [
+            Newspaper(
+                publication_code=new_tredegar_newspaper.publication_code,
+                title=new_tredegar_newspaper.title,
+                location=new_tredegar_newspaper.location,
+            ),
+            Newspaper(publication_code="0002648", title="Not Dupe News"),
+        ]
+    )
     return Newspaper.objects.all()
 
 
