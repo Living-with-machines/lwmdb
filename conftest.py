@@ -1,14 +1,16 @@
 from pathlib import Path
+from pprint import pprint
 
 import pytest
 from coverage_badge.__main__ import main as gen_cov_badge
 from django.core.management import call_command
+from django.db.models.query import QuerySet
 
 # from django.conf import settings
 from django.utils.translation import activate
 
 from fulltext.models import Fulltext
-from lwmdb.utils import app_data_path
+from lwmdb.utils import app_data_path, DupeRemoveConfig
 from mitchells.import_fixtures import MITCHELLS_EXCEL_PATH
 from newspapers.models import DataProvider, Issue, Item, Newspaper
 from newspapers.utils import path_to_newspaper_code
@@ -150,6 +152,35 @@ def new_tredegar_last_issue_first_item_fulltext() -> Fulltext:
     )
     fulltext.save()
     return fulltext
+
+
+@pytest.fixture
+@pytest.mark.django_db
+def newspaper_dupes_qs(new_tredegar_newspaper: Newspaper,
+                       new_tredegar_last_issue: Issue) -> QuerySet:
+    """Create model fixtures with a dupe for testing."""
+    Newspaper.objects.bulk_create([
+        Newspaper(
+            publication_code=new_tredegar_newspaper.publication_code,
+            title=new_tredegar_newspaper.title,
+            location=new_tredegar_newspaper.location,
+        ),
+        Newspaper(publication_code='0002648', title="Not Dupe News"),
+    ])
+    return Newspaper.objects.all()
+
+
+@pytest.fixture
+@pytest.mark.django_db
+def newspaper_dupe_rm_config(newspaper_dupes_qs: QuerySet) -> DupeRemoveConfig:
+    """Create example `DupeRmoveConfig` from `newspaper_dupes_qs`."""
+    return DupeRemoveConfig(newspaper_dupes_qs)
+
+
+@pytest.fixture(autouse=True)
+def doctest_auto_fixtures(doctest_namespace: dict) -> None:
+    """Elements to add to default `doctest` namespace."""
+    doctest_namespace["pprint"] = pprint
 
 
 def pytest_sessionfinish(session, exitstatus):

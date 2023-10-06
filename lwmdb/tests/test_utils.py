@@ -4,9 +4,11 @@ from pathlib import Path
 
 import pytest
 from pandas import DataFrame, read_csv
+from django.core.exceptions import FieldError
 
 import census
 from mitchells.import_fixtures import MITCHELLS_CSV_URL, MITCHELLS_EXCEL_URL
+from newspapers.models import Newspaper, Issue
 
 from ..utils import (
     VALID_FALSE_STRS,
@@ -15,6 +17,7 @@ from ..utils import (
     download_file,
     path_or_str_suffix,
     str_to_bool,
+    # similar_records_pks,
 )
 
 # >>> call_command("loaddata",
@@ -139,3 +142,25 @@ class TestDataSource:
         file: DataFrame = rsd_1851.read()
         assert rsd_1851.is_local
         assert len(file.columns) == 69
+
+
+# class TestDBDupes:
+# 
+#     """Test checking and collection duplicate database records."""
+# 
+#     @pytest.mark.django_db
+#     def test_inconsistent_models(self, newspaper_dupes_qs) -> None:
+#         """Check raising error if `model` and `qs` are passed."""
+#         correct_error_str: str = "`qs` model: <class 'newspapers.models.Issue'> != passed `model` <class 'newspapers.models.Newspaper'>"
+#         with pytest.raises(ValueError) as exec_info:
+#              similar_record_pks(Newspaper, Issue.objects.all())
+#         assert str(exec_info.value) == correct_error_str
+# 
+#     @pytest.mark.django_db
+#     def test_incorrect_fields(self, newspaper_dupes_qs) -> None:
+#         """Check raising error if `model` and `qs` are passed."""
+#         correct_error: ValueError = ValueError("`qs` model: <class 'newspapers.models.Issue'> != passed `model` <class 'newspapers.models.Newspaper'>")
+#         with pytest.raises(FieldError) as exec_info:
+#              similar_record_pks(Newspaper, dupe_fields=('id', 'elephant'))
+#         assert "Cannot resolve keyword 'elephant'" in str(exec_info.value)
+
