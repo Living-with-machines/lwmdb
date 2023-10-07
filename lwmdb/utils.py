@@ -884,20 +884,6 @@ def bulk_fixture_update(
             call_command("loaddata", new_fixtures_tempfile.name)
 
 
-# def attr_str_to_field(model: Model, field_name: str, strict=True) -> Field | None:
-#     """Check and return `field_name` of `model`.
-#
-#     """
-#     try:
-#         assert hasattr(model, field_name):
-#     except AssertionError as attr_err:
-#         if strict:
-#             raise AttributeError(f"`model` {model} has {field_name} field.")
-#         else:
-#             return None
-#     return getattr(model, field_name)
-
-
 def check_model_field(model: Model, db_field: StrOrField) -> Field:
     """Check `fields` is correct for `self`.
 
@@ -1016,7 +1002,6 @@ def filter_by_not_all_null_fk(qs: QuerySet) -> tuple[QuerySet, QuerySet]:
         <DataFrameQuerySet [{'issue': ...}]>
         >>> to_delete.values('issue')  # Neither record to delete have related `issues`
         <DataFrameQuerySet [{'issue': None}, {'issue': None}]>
-
 
         ```
     """
@@ -1221,9 +1206,6 @@ class DupeRemoveConfig:
             return self.records_to_delete
 
 
-# def _model_qs_check(qs: QuerySet | None, model: Model | None,) -> tuple[
-
-
 def similar_records(
     qs: QuerySet,
     check_fields: tuple[str | Field, ...] = (),
@@ -1254,10 +1236,6 @@ def similar_records(
 
         ```
     """
-    model: Model = qs.model
-    model_fields: dict[str, Field] = {
-        db_field.name: db_field for db_field in model._meta.get_fields()
-    }
     if exclude_fields:
         check_fields = tuple(set(check_fields) - set(exclude_fields))
 
@@ -1318,187 +1296,3 @@ def dupes_to_rm(
     else:
         dupe_records: QuerySet = convert_similar_qs_to_records(similars_qs)
         return DupeRemoveConfig(dupe_records)
-
-
-# @dataclass
-# class DuplicateChecker:
-#
-#     """Check duplicates for correction.
-#
-#     Attributes:
-#         model: `Model` to check for duplicate records in `sql`.
-#         qs: `QuerySet` to check for duplicate records.
-#         dupe_fields: Fields in `Model` to check; default checks all.
-#         exclude_fields:
-#             Fields in `Model` to skip for comparision. Default `id`
-#             fields *must* be unique, as they are usually the primary
-#             key.
-#
-#     Example:
-#         ```pycon
-#         >>> getfixture("db")
-#         >>> dupe_qs: QuerySet = getfixture("newspaper_dupes_qs")
-#         >>> checker = DuplicateChecker(model=dupe_qs.model)
-#         >>> checker.dupes_to_rm()
-#         >>> checker.get_dupes()
-#         <DataFrameQuerySet []>
-#         >>> db_dupes(Newspaper, dupe_fields=('publication_code',))
-#         ... # doctest: +ELLIPSIS
-#         <DataFrameQuerySet [{'publication_code': '0003548', 'id__count': 2}]>
-#         >>> dupes_rm_config: DupeRemoveConfig = db_dupes.rm_config()
-#         >>> dupe_rm_config.delete_records()
-#         <DataFrameQuerySet [0003548, 0002648]>
-#         >>> dupe_rm_config.delete_records(dry_run=False)
-#         (2, {'newspapers.Newspaper': 2})
-#         >>> dupe_rm_config.records_last_deleted
-#         (2, {'newspapers.Newspaper': 2})
-#
-#         ```
-#
-#     """
-#
-#     EXCLUDE_FIELDS_DEFAULT: Final[tuple[str | Field, ...]] = ('id',),
-#
-#     model: Model | None = None
-#     qs: QuerySet | None = None
-#     dupe_fields: StrOrFieldTuple = field(default_factory=tuple),
-#     exclude_fields: StrOrFieldTuple = field(default_factory=tuple),
-#
-#     def __post_init__(self) -> None:
-#         """Check `model`, `qs`, `dupe_fields` and `exclude_fields`."""
-#         self._set_qs_and_model(qs=self.qs, model=self.model)
-#         self._set_fields_attrs(dupe_fields=self.dupe_fields,
-#                                exclude_fields=self.exclude_fields)
-#
-#     # def _set_model(self, model: Model, force_set_model=False) -> Model:
-#     #     """Set model and ensure it matches"""
-#
-#     def _set_qs_and_model(
-#         self,
-#         qs: QuerySet | None = None,
-#         model: Model | None = None,
-#         force_set_model: bool = False
-#     ) -> None:
-#         """Check and set `self.qs` and `self.model`.
-#
-#         Example:
-#             pycon
-#             getfixture("db")
-#             dupe_newspaper_qs: QuerySet = getfixture("newspaper_dupes_qs")
-#             dupe_checker: DuplicateChecker =
-#
-#         """
-#         if not qs and not model:
-#             raise ValueError(f"At least one of `qs` or `model` must be set.")
-#         elif qs and model:
-#             try:
-#                 assert qs.model is model
-#             except AssertionError:
-#                 error_str: str = f"`qs.model`: {qs.model} != `model` {model}"
-#                 if force_set_model:
-#                     logger.warning(
-#                         f"{error_str}\n'force_set_model' = True: "
-#                         f"setting 'self.model' to 'qs.model': {self.qs.model}"
-#                     )
-#                 else:
-#                     raise ValueError(error_str)
-#         elif not self.model:
-#             self.model = self.qs.model
-#         else:
-#             self.qs = self.model.objects.all()
-#
-#     def _set_fields_attrs(
-#         self,
-#         dupe_fields: StrOrFieldIter | None = None,
-#         exclude_fields: StrOrFieldIter | None = None,
-#     ) -> None:
-#         """Check and update `dupe_fields` and `exclude_fields` `attrs`."""
-#         if dupe_fields:
-#             self._set_fields_attr('dupe_fields', dupe_fields)
-#         if exclude_fields:
-#             self._set_fields_attr('exclude_fields', exclude_fields, self.EXCLUDE_FIELDS_DEFAULT)
-#
-#     def _set_fields_attr(
-#             self,
-#             field_name: str,
-#             values: StrOrFieldIter,
-#             default_values: tuple = ()) -> None:
-#         """Ensure `field_name` values are `Field"""
-#         if not values:
-#             setattr(self, field_name, default_values)
-#         else:
-#             values = tuple(
-#                 check_model_field(self.model, db_field=field_name) for
-#                 field_name in values if field_name
-#             )
-#             setattr(self, field_name, values)
-#
-#     @property
-#     def model_fields_dict(self) -> dict[str, Field]:
-#         """All fields in `self.model`."""
-#         return {field.name: db_field for db_field in self.model._meta.get_fields()}
-#
-#     # @property
-#     # def related_fields_dict(self) -> dict[str, Field]:
-#     #     """All fields in `self.model`."""
-#     #     return {
-#     #         field.name: field for field in self.model._meta.get_fields()
-#     #         if field.is_relation
-#     #     }
-#
-#     @property
-#     def final_dupe_fields(self) -> tuple[str, ...]:
-#         """Final net `tuple` of fields to check duplication."""
-#         return tuple(sorted(set(self.dupe_fields) - set(self.exclude_fields)))
-#
-#     def dupes_to_rm(
-#             self,
-#             from_cache: bool = True,
-#             **kwargs
-#         ) -> DupeRemoveConfig:
-#         """Return a `DupeRemoveConfig` instance to prepare for deletion."""
-#         dupe_ids: QuerySet
-#         assert False
-#         if not hasattr(self, '_dupe_ids') or not from_cache:
-#             dupe_ids = self.dupe_ids(**kwargs)
-#         else:
-#             dupe_ids = self._dupe_ids
-#         dupe_records: QuerySet = self.model.objects.filter(pk__in=dupe_ids)
-#         self.rm_config: DupeRemoveConfig = DupeRemoveConfig(dupe_records)
-#         return self.rm_config
-#
-#
-#     # @dataclass
-#     # class DupeRemoveConfig:
-#     #     all_dupe_records: QuerySet
-#     #     proposed_delete_records: QuerySet
-#     #     proposed_saved_records: QuerySet
-#
-#
-#     def dupe_ids(
-#         self,
-#         dupe_fields: StrOrFieldIter | None = None,
-#         exclude_fields: StrOrFieldIter | None = None,
-#         qs: QuerySet | None = None,
-#         force_set_model: bool = False,
-#         cache: bool = True,
-#     ) -> QuerySet:
-#         """Get dupes from `Model`; update `self.dupe_fields` and `self.exclude_fields`.
-#
-#         Todo:
-#             Add log info of altering attributes
-#
-#         """
-#         qs = qs if qs else self.qs
-#         dupe_fields = dupe_fiels if dupe_fields else self.dupe_fields
-#         exclude_fields = exclude_fields if exclude_fields else self.exclude_fields
-#         self._set_qs_and_model(qs=qs, force_set_model=force_set_model)
-#         self._set_fields_attrs(dupe_fields=dupe_fields, exclude_fields=exclude_fields)
-#         dupe_qs: QuerySet = (
-#             self.qs.values(*self.final_dupe_fields)
-#                 .annotate(Count('id'))
-#                 .order_by().filter(id__count__gt=1)
-#         )
-#         if cache:
-#             self._dupe_ids: QuerySet = dupe_qs
-#         return dupe_qs
