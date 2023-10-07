@@ -3,17 +3,20 @@ from logging import INFO
 from pathlib import Path
 
 import pytest
+from django.core.exceptions import FieldError
 from pandas import DataFrame, read_csv
 
 import census
 from mitchells.import_fixtures import MITCHELLS_CSV_URL, MITCHELLS_EXCEL_URL
+from newspapers.models import Newspaper
 
-from ..utils import (  # similar_records_pks,
+from ..utils import (
     VALID_FALSE_STRS,
     VALID_TRUE_STRS,
     DataSource,
     download_file,
     path_or_str_suffix,
+    similar_records,
     str_to_bool,
 )
 
@@ -141,22 +144,15 @@ class TestDataSource:
         assert len(file.columns) == 69
 
 
-# class TestDBDupes:
-#
-#     """Test checking and collection duplicate database records."""
-#
-#     @pytest.mark.django_db
-#     def test_inconsistent_models(self, newspaper_dupes_qs) -> None:
-#         """Check raising error if `model` and `qs` are passed."""
-#         correct_error_str: str = "`qs` model: <class 'newspapers.models.Issue'> != passed `model` <class 'newspapers.models.Newspaper'>"
-#         with pytest.raises(ValueError) as exec_info:
-#              similar_record_pks(Newspaper, Issue.objects.all())
-#         assert str(exec_info.value) == correct_error_str
-#
-#     @pytest.mark.django_db
-#     def test_incorrect_fields(self, newspaper_dupes_qs) -> None:
-#         """Check raising error if `model` and `qs` are passed."""
-#         correct_error: ValueError = ValueError("`qs` model: <class 'newspapers.models.Issue'> != passed `model` <class 'newspapers.models.Newspaper'>")
-#         with pytest.raises(FieldError) as exec_info:
-#              similar_record_pks(Newspaper, dupe_fields=('id', 'elephant'))
-#         assert "Cannot resolve keyword 'elephant'" in str(exec_info.value)
+class TestDBDupes:
+    """Test checking and collection duplicate database records."""
+
+    @pytest.mark.django_db
+    def test_incorrect_fields(self, newspaper_dupes_qs) -> None:
+        """Check raising error if `check_fields` are not in `qs.model`."""
+        correct_error: ValueError = ValueError(
+            "`qs` model: <class 'newspapers.models.Issue'> != passed `model` <class 'newspapers.models.Newspaper'>"
+        )
+        with pytest.raises(FieldError) as exec_info:
+            similar_records(Newspaper, check_fields=("id", "elephant"))
+        assert "Cannot resolve keyword 'elephant'" in str(exec_info.value)
