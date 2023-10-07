@@ -1059,7 +1059,7 @@ class DupeRemoveConfig:
         ```
     """
 
-    all_dupe_records: QuerySet | None = None
+    all_dupe_records: QuerySet | ModelBase | None = None
     records_to_delete: QuerySet | None = None
     records_to_keep: QuerySet | None = None
     dupe_method: Callable[
@@ -1203,7 +1203,7 @@ class DupeRemoveConfig:
                 if force_repeat_delete:
                     logger.info(f"Removing 'self.deleted_records' for new delete")
                     del prev_deleted_records
-            logger.info("Deleting {self.to_delete_count} via {self}")
+            logger.info(f"Deleting {self.to_delete_count} via {self}")
             assert self.records_to_delete
             setattr(self, self.DELETED_RECORDS_ATTR, self.records_to_delete.delete())
             return getattr(self, self.DELETED_RECORDS_ATTR)
@@ -1291,7 +1291,7 @@ def dupes_to_rm(
     qs_or_model: QuerySet | Model,
     dupe_fields: tuple[str | Field, ...] = (),
     exclude_fields: tuple[str | Field, ...] = EXCLUDE_SIMILAR_TO_QS_FIELDS_DEFAULT,
-) -> DupeRemoveConfig | None:
+) -> DupeRemoveConfig | QuerySet:
     """Check for similar records and return a `DupeRemoveConfig` for deletion.
 
     Args:
@@ -1306,12 +1306,15 @@ def dupes_to_rm(
     Returns:
         A `DupeRemoveConfig` instance with `.all_dupe_records`,
         `.records_to_delete` and `.records_to_keep` attributes set. This object
-        can then facilitate deleting duplicate records.
+        can then facilitate deleting duplicate records. If no dupes found, the
+        empty filtered `QuerySet` is returned.
 
     Example:
         ```pycon
         >>> getfixture("db")
         >>> dupe_qs: QuerySet = getfixture("newspaper_dupes_qs")
+        >>> caplog = getfixture("caplog")
+        >>> caplog.set_level(INFO)
         >>> dupes_rm_config: DupeRemoveConfig = dupes_to_rm(dupe_qs,
         ...     dupe_fields=('publication_code',))
         >>> dupes_rm_config.delete_records()
@@ -1320,6 +1323,10 @@ def dupes_to_rm(
         (1, {'newspapers.Newspaper': 1})
         >>> dupes_rm_config.records_last_deleted
         (1, {'newspapers.Newspaper': 1})
+        >>> from newspapers.models import DataProvider
+        >>> dupes_to_rm(DataProvider)
+        <DataFrameQuerySet []>
+        >>> assert "No dupes found with 'dupe_fields':" in caplog.text
 
         ```
     """
@@ -1328,7 +1335,11 @@ def dupes_to_rm(
         qs_or_model=qs, check_fields=dupe_fields, exclude_fields=exclude_fields
     )
     if not similars_qs:
-        return None
+        logger.info(
+            f"No dupes found with 'dupe_fields':\n{dupe_fields}\n"
+            f"'exclude_fields':\n{exclude_fields}\nin 'qs':\n{qs}"
+        )
+        return similars_qs
     else:
         dupe_records: QuerySet = convert_similar_qs_to_records(similars_qs)
         return DupeRemoveConfig(all_dupe_records=dupe_records)
