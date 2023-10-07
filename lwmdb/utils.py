@@ -1016,7 +1016,7 @@ def filter_by_not_all_null_fk(qs: QuerySet) -> tuple[QuerySet, QuerySet]:
             **filter_query_dict
         )
     records_with_at_least_one_fk: QuerySet = qs.difference(records_with_all_fks_null)
-    full_qs_with_at_least_one_fk: QuerySet = qs.model.filter(
+    full_qs_with_at_least_one_fk: QuerySet = qs.model.objects.filter(
         pk__in=records_with_at_least_one_fk
     )
     return records_with_all_fks_null, full_qs_with_at_least_one_fk
