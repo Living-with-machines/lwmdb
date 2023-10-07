@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pytest
 from django.core.exceptions import FieldError
+from django.db.models import QuerySet
 from pandas import DataFrame, read_csv
 
 import census
@@ -150,24 +151,35 @@ class TestDBDupes:
     """Test checking and collection duplicate database records."""
 
     @pytest.mark.django_db
-    def test_incorrect_fields(self, newspaper_dupes_qs) -> None:
+    def test_incorrect_fields(self, newspaper_dupes_qs: QuerySet) -> None:
         """Check raising error if `check_fields` are not in `qs.model`."""
-        correct_error: ValueError = ValueError(
-            "`qs` model: <class 'newspapers.models.Issue'> != passed `model` <class 'newspapers.models.Newspaper'>"
-        )
         with pytest.raises(FieldError) as exec_info:
             similar_records(Newspaper, check_fields=("id", "elephant"))
         assert "Cannot resolve keyword 'elephant'" in str(exec_info.value)
 
+    @pytest.mark.parametrize(
+        "to_delete_count, to_keep_count", ((1, 1), (2, 1), (10, 1))
+    )
     @pytest.mark.django_db
-    def test_dupes_to_rm(self, newspaper_dupes_qs) -> None:
+    def test_dupes_to_rm(
+        self,
+        newspaper_dupes_qs: QuerySet,
+        to_delete_count: int,
+        to_keep_count: int,
+    ) -> None:
         """Check raising error if `check_fields` are not in `qs.model`."""
+        for _ in range(to_delete_count - 1):
+            new_dupe: Newspaper = newspaper_dupes_qs[1]
+            new_dupe.pk = None
+            new_dupe.save()
+
         dupes_rm_config: DupeRemoveConfig = dupes_to_rm(
-            Newspaper, dupe_fields=("publication_code", "title")
+            newspaper_dupes_qs, dupe_fields=("publication_code", "title")
         )
-        assert len(dupes_rm_config) == 2
-        assert len(dupes_rm_config.records_to_delete) == 1
-        assert len(dupes_rm_config.records_to_keep) == 1
+
+        assert len(dupes_rm_config) == to_delete_count + to_keep_count
+        assert len(dupes_rm_config.records_to_delete) == to_delete_count
+        assert len(dupes_rm_config.records_to_keep) == to_keep_count
         assert set(
             dupes_rm_config.all_dupe_records.intersection(
                 dupes_rm_config.records_to_delete
