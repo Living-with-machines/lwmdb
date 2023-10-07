@@ -174,7 +174,7 @@ class TestDBDupes:
             new_dupe.save()
 
         dupes_rm_config: DupeRemoveConfig = dupes_to_rm(
-            newspaper_dupes_qs, dupe_fields=("publication_code", "title")
+            Newspaper, dupe_fields=("publication_code", "title")
         )
 
         assert len(dupes_rm_config) == to_delete_count + to_keep_count
