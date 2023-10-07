@@ -954,7 +954,6 @@ def convert_similar_qs_to_records(
         ```pycon
         >>> getfixture("db")
         >>> check_qs: QuerySet = getfixture("newspaper_dupes_qs")
-        >>> from newspapers.models import Newspaper
         >>> qs = similar_records(check_qs, check_fields=('publication_code',))
         >>> qs
         <DataFrameQuerySet [{'publication_code': '0003548', 'id__count': 2}]>
@@ -963,15 +962,17 @@ def convert_similar_qs_to_records(
 
         ```
     """
-    model: Model = similar_records_qs.model
-    converted_records_qs: QuerySet = model.objects.all()
+    all_records: QuerySet = similar_records_qs.model.objects.all()
+    converted_records_qs: QuerySet = similar_records_qs.model.objects.none()
     for similar_counts in similar_records_qs:
         similar_counts_for_query: QuerySet = similar_counts
         for key in exclude_fields:
             if isinstance(key, Field):
                 key = key.name
             similar_counts_for_query.pop(key, None)
-        converted_records_qs = converted_records_qs.filter(**similar_counts_for_query)
+        converted_records_qs = (
+            all_records.filter(**similar_counts_for_query) | converted_records_qs
+        )
     return converted_records_qs
 
 

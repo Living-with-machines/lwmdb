@@ -14,7 +14,9 @@ from ..utils import (
     VALID_FALSE_STRS,
     VALID_TRUE_STRS,
     DataSource,
+    DupeRemoveConfig,
     download_file,
+    dupes_to_rm,
     path_or_str_suffix,
     similar_records,
     str_to_bool,
@@ -156,3 +158,23 @@ class TestDBDupes:
         with pytest.raises(FieldError) as exec_info:
             similar_records(Newspaper, check_fields=("id", "elephant"))
         assert "Cannot resolve keyword 'elephant'" in str(exec_info.value)
+
+    @pytest.mark.django_db
+    def test_dupes_to_rm(self, newspaper_dupes_qs) -> None:
+        """Check raising error if `check_fields` are not in `qs.model`."""
+        dupes_rm_config: DupeRemoveConfig = dupes_to_rm(
+            Newspaper, dupe_fields=("publication_code", "title")
+        )
+        assert len(dupes_rm_config) == 2
+        assert len(dupes_rm_config.records_to_delete) == 1
+        assert len(dupes_rm_config.records_to_keep) == 1
+        assert set(
+            dupes_rm_config.all_dupe_records.intersection(
+                dupes_rm_config.records_to_delete
+            )
+        ) == set(dupes_rm_config.records_to_delete)
+        assert set(
+            dupes_rm_config.all_dupe_records.intersection(
+                dupes_rm_config.records_to_keep
+            )
+        ) == set(dupes_rm_config.records_to_keep)
