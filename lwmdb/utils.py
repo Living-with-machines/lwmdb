@@ -949,9 +949,21 @@ def convert_similar_qs_to_records(
     similar_records_qs: QuerySet,
     exclude_fields: StrOrFieldTuple = EXCLUDE_SIMILAR_TO_QS_FIELDS_DEFAULT,
 ) -> QuerySet:
-    """Convert a summary_qs to full implied records.
+    """Match full records to `similar_records_qs`.
 
-    Examples:
+    Args:
+        similar_records_qs:
+            `QuerySet` in `Count` structure.
+
+        exclude_fields:
+            `Tuple` of `Field` or `str` of `Field` name to exclude. These
+            are primarily for excluding added `annotation` elements
+            from functions like `similar_records`.
+
+    Returns:
+        `QuerySet` of full records that match the `similar_records_qs`.
+
+    Example:
         ```pycon
         >>> getfixture("db")
         >>> check_qs: QuerySet = getfixture("newspaper_dupes_qs")
@@ -964,7 +976,6 @@ def convert_similar_qs_to_records(
 
         ```
     """
-
     model: Model = similar_records_qs.model
     converted_records_qs: QuerySet = model.objects.all()
     for similar_counts in similar_records_qs:
@@ -978,8 +989,7 @@ def convert_similar_qs_to_records(
 
 
 def filter_by_not_all_null_fk(qs: QuerySet) -> tuple[QuerySet, QuerySet]:
-    """Return a `tuple` of `QuerySets` from `qs`: None, at least one
-    ForeignKey.
+    """Return `tuple` of `QuerySets`: (no `ForeignKeys`, >=1 `ForeignKey`).
 
     Args:
         qs: `QuerySet` to filter from.
@@ -1069,8 +1079,8 @@ class DupeRemoveConfig:
     DELETED_RECORDS_ATTR: Final[str] = "records_last_deleted"
 
     def __len__(self) -> int:
-        """Return `len` of `self.all_dupe_records`"""
-        return len(self.all_dupe_records)
+        """Return `len` of `self.all_dupe_records`."""
+        return len(self.all_dupe_records) if self.all_dupe_records else 0
 
     @property
     def to_delete_count(self) -> int:
@@ -1089,11 +1099,15 @@ class DupeRemoveConfig:
             return 0
 
     @property
-    def model(self) -> Model:
-        return self.all_dupe_records.model
+    def model(self) -> Model | None:
+        """Return model of `self.all_dupe_records`."""
+        if self.all_dupe_records:
+            return self.all_dupe_records.model
+        else:
+            return None
 
     def __repr__(self) -> str:
-        """Return config as `str`"""
+        """Return config as `str`."""
         return (
             f"<DupeRemoveConfig(model={self.model}, "
             f"len={len(self)}), valid={self.valid_config})>"
@@ -1118,8 +1132,7 @@ class DupeRemoveConfig:
 
     @property
     def valid_config(self) -> bool:
-        """Check `records_to_delete` and `records_to_keep` match
-        `all_dupe_records`.
+        """Check `all_dupe_records` match `records_to_delete`/`keep`.
 
         Example:
             ```pycon
@@ -1153,8 +1166,13 @@ class DupeRemoveConfig:
                 Return the `records_to_delete` `QuerySet` if True, else delete
                 all in `records_to_delete`.
 
-            check_quries:
+            check_queries:
                 Whether to run checks (currently `self.valid_config`) before
+                proceeding with `dry_run` or `delete`.
+
+            force_repeat_delete:
+                Whether to force another delete event after a recorded delete
+                event completed.
 
         Example:
             ```pycon
@@ -1261,7 +1279,11 @@ def dupes_to_rm(
     Args:
         qs_or_model:
             `QuerySet` to filter from, or `Model` to filter all records from.
-        dupe_fiel
+        dupe_fields:
+            `Field` list to query as duplications.
+        exclude_fields:
+            `Fields` to exclude from comparison. Defaults to `pk` which must be
+            unique.
 
     Example:
         ```pycon
