@@ -1012,11 +1012,14 @@ def filter_by_not_all_null_fk(qs: QuerySet) -> tuple[QuerySet, QuerySet]:
     for fk_field in fk_fields:
         filter_query_dict: dict[str, Any] = {fk_field.name + "__isnull": True}
         logger.debug(f"Filtering {qs} with {fk_field}")
-        records_with_all_fks_null = records_with_all_fks_null.filter(
+        records_with_all_fks_null: QuerySet = records_with_all_fks_null.filter(
             **filter_query_dict
         )
     records_with_at_least_one_fk: QuerySet = qs.difference(records_with_all_fks_null)
-    return records_with_all_fks_null, records_with_at_least_one_fk
+    full_qs_with_at_least_one_fk: QuerySet = qs.Model.filter(
+        pk__in=records_with_at_least_one_fk
+    )
+    return records_with_all_fks_null, full_qs_with_at_least_one_fk
 
 
 @dataclass
