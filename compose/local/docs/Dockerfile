@@ -8,7 +8,6 @@ FROM python as python-run-stage
 
 ARG BUILD_ENVIRONMENT=local
 ARG APP_HOME=/app
-ARG DOCS_PATH=/docs
 
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -32,8 +31,6 @@ RUN pip install poetry
 EXPOSE 8000
 
 RUN poetry config virtualenvs.create false && poetry install --with docs
-
-WORKDIR ${DOCS_PATH}
 
 ENTRYPOINT [ "mkdocs" ]
 CMD ["serve", "--dev-addr=0.0.0.0:8000"]

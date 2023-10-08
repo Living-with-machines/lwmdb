@@ -8,6 +8,7 @@ nav:
   - Advanced:
       - Fulltext: fulltext.md
       - Import: raw_import.md
+      - Duplicates: manage_dupes.md
       - Deploy: deploy.md
       - Management: management.md
       - Schema: schema.md

@@ -24,6 +24,8 @@ class Fulltext(models.Model):
             This can help keep track of the timing of any changes
             after, for example, an import from an `alto2txt2fixture`
             `json` fixture file.
+        errors:
+            `str` records of any logged errors generating this `Fulltext`.
 
     Example:
         ```pycon
@@ -47,5 +49,6 @@ class Fulltext(models.Model):
     path = models.CharField(max_length=200, blank=True, null=True)
     compressed_path = models.CharField(max_length=200, blank=True, null=True)
     fixture_path = models.CharField(max_length=200, blank=True, null=True)
+    errors = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

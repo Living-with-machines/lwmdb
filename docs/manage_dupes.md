@@ -1,4 +1,4 @@
-# Managing Potential Duplicate records
+# Managing Potential Duplicate Records
 
 There are risks in saving records to `lwmdb` that could lead to duplicates. In a variety of cases [`unique=True`](https://docs.djangoproject.com/en/4.2/ref/models/fields/#unique) is set to prevent that, raising an [`IntegrityError`](https://docs.djangoproject.com/en/4.2/ref/exceptions/#django.db.IntegrityError) error if a duplicate record save is attempted. 
 
