@@ -1,6 +1,7 @@
 from collections.abc import Generator
 from logging import INFO
 from pathlib import Path
+from typing import Any
 
 import pytest
 from django.core.exceptions import FieldError
@@ -9,7 +10,7 @@ from pandas import DataFrame, read_csv
 
 import census
 from mitchells.import_fixtures import MITCHELLS_CSV_URL, MITCHELLS_EXCEL_URL
-from newspapers.models import Newspaper
+from newspapers.models import Issue, Newspaper
 
 from ..utils import (
     VALID_FALSE_STRS,
@@ -18,7 +19,9 @@ from ..utils import (
     DupeRemoveConfig,
     download_file,
     dupes_to_rm,
+    filter_by_null_fk,
     path_or_str_suffix,
+    qs_difference,
     similar_records,
     str_to_bool,
 )
@@ -158,7 +161,12 @@ class TestDBDupes:
         assert "Cannot resolve keyword 'elephant'" in str(exec_info.value)
 
     @pytest.mark.parametrize(
-        "to_delete_count, to_keep_count", ((1, 1), (2, 1), (10, 1))
+        "to_delete_count, to_keep_count, dupe_fields, dupe_method_kwargs",
+        (
+            (1, 1, ("publication_code",), {"null_relations": ("issue",)}),
+            (2, 1, ("publication_code",), {"null_relations": ("issue",)}),
+            (10, 1, ("publication_code",), {"null_relations": ("issue",)}),
+        ),
     )
     @pytest.mark.django_db
     def test_dupes_to_rm(
@@ -166,6 +174,8 @@ class TestDBDupes:
         newspaper_dupes_qs: QuerySet,
         to_delete_count: int,
         to_keep_count: int,
+        dupe_fields: tuple[str, ...],
+        dupe_method_kwargs: dict[str, Any],
     ) -> None:
         """Check raising error if `check_fields` are not in `qs.model`."""
         for _ in range(to_delete_count - 1):
@@ -174,7 +184,7 @@ class TestDBDupes:
             new_dupe.save()
 
         dupes_rm_config: DupeRemoveConfig = dupes_to_rm(
-            Newspaper, dupe_fields=("publication_code", "title")
+            Newspaper, dupe_fields=dupe_fields, dupe_method_kwargs=dupe_method_kwargs
         )
 
         assert len(dupes_rm_config) == to_delete_count + to_keep_count
@@ -190,3 +200,46 @@ class TestDBDupes:
                 dupes_rm_config.records_to_keep
             )
         ) == set(dupes_rm_config.records_to_keep)
+
+    @pytest.mark.parametrize(
+        "new_dupes, to_delete_count, to_keep_count, include_issue",
+        ((0, 3, 0, False), (1, 4, 0, False), (2, 5, 0, False), (10, 8, 5, True)),
+    )
+    @pytest.mark.django_db(transaction=True, reset_sequences=True)
+    def test_filter_by_null_relations(
+        self,
+        newspaper_dupes_qs: QuerySet,
+        new_dupes: int,
+        to_delete_count: int,
+        to_keep_count: int,
+        include_issue: bool,
+    ) -> None:
+        """Check raising error if `check_fields` are not in `qs.model`.
+
+        Todo:
+            * Recheck less complex examples
+            * Add examples where `is_null = False`
+        """
+        no_included_fks: QuerySet
+        at_least_one_included_fk: QuerySet
+
+        for i in range(new_dupes):
+            new_dupe: Newspaper = newspaper_dupes_qs[1]
+            new_dupe.pk = None
+            new_dupe.save()
+            if i > 2 and i % 2:
+                new_issue: Issue = Issue(issue_date="1865-06-19")
+                new_issue.newspaper_id = new_dupe.id
+                new_issue.issue_code = (f"{new_dupe.publication_code}-18650619",)
+                new_issue.input_sub_path = "0003040/1865/0619"
+                new_issue.save()
+        null_relations: tuple[str, ...] = ("issue",) if include_issue else ()
+        no_included_fks = filter_by_null_fk(
+            Newspaper.objects.all(), null_relations=null_relations
+        )
+        at_least_one_included_fk = qs_difference(
+            Newspaper.objects.all(),
+            no_included_fks,
+        )
+        assert len(no_included_fks) == to_delete_count
+        assert len(at_least_one_included_fk) == to_keep_count

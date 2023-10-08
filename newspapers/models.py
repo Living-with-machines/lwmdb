@@ -11,7 +11,7 @@ from django_pandas.managers import DataFrameManager
 
 from fulltext.models import Fulltext
 from gazetteer.models import Place
-from lwmdb.utils import truncate_str, word_count
+from lwmdb.utils import DupeRemoveConfig, dupes_to_rm, truncate_str, word_count
 
 logger = getLogger(__name__)
 
@@ -142,6 +142,15 @@ class Newspaper(NewspapersModel):
                 ]
             )
         ]
+
+    @classmethod
+    def dupe_pub_codes_manager(cls) -> DupeRemoveConfig:
+        """Return a `DupeRemoveConfig` of potential duplicate records."""
+        return dupes_to_rm(
+            qs_or_model=cls,
+            dupe_fields=("publication_code",),
+            dupe_method_kwargs={"null_relations": ("issue",)},
+        )
 
 
 class Issue(NewspapersModel):

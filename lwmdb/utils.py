@@ -2,7 +2,7 @@ import json
 import re
 from collections import defaultdict
 from collections.abc import Callable, Generator, Iterable, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from glob import glob
 from logging import ERROR, INFO, WARNING, getLogger
@@ -50,6 +50,8 @@ DEFAULT_APP_FIXTURE_FOLDER: Final[Path] = Path(DEFAULT_FIXTURE_PATH)
 StrOrField = str | Field
 StrOrFieldTuple = tuple[StrOrField, ...]
 StrOrFieldIter = Iterable[StrOrField]
+
+QueryTupleFilter = Callable[[QuerySet], tuple[QuerySet, QuerySet]]
 
 EXCLUDE_DUPE_FIELDS_DEFAULT: Final[tuple[StrOrField, ...]] = ("id",)
 EXCLUDE_SIMILAR_TO_QS_FIELDS_DEFAULT: Final[tuple[StrOrField, ...]] = ("id__count",)
@@ -976,50 +978,59 @@ def convert_similar_qs_to_records(
     return converted_records_qs
 
 
-def filter_by_not_all_null_fk(qs: QuerySet) -> tuple[QuerySet, QuerySet]:
+def qs_to_full_record_qs(qs: QuerySet) -> QuerySet:
+    """Ensure a `QuerySet` of full model attributes from `filtered_qs`."""
+    return qs.model.objects.filter(pk__in=set(qs.values_list("pk", flat=True)))
+
+
+def qs_difference(qs: QuerySet, qs_subset: QuerySet) -> QuerySet:
+    """Generate a `QuerySet` of full models from `filtered_qs`."""
+    residual_qs: QuerySet = qs.difference(qs_subset.distinct())
+    return qs_to_full_record_qs(residual_qs)
+
+
+def filter_by_null_fk(
+    qs: QuerySet, null_relations: tuple[str, ...] = (), is_null: bool = True
+) -> QuerySet:
     """Return `tuple` of `QuerySets`: (no `ForeignKeys`, >=1 `ForeignKey`).
 
     Args:
         qs: `QuerySet` to filter from.
+        null_relations: `tuple` of `Field` names to filter via `__isnull`.
+        is_null: Whether to filter for `__isnull` = True or False
 
     Returns:
-        First `QuerySet` has `None` values for all `ForeignKey` `Fields`, the
-        second has at least one `not` `Null` `ForeignKey`.
+        Tuple of `QuerySets`: the first match the null relations, the
+            second is the remaining records for `qs` not in the first
+            (matched) `QuerySet`.
 
     Example:
         ```pycon
         >>> getfixture("db")
         >>> caplog = getfixture("caplog")
         >>> dupe_qs: QuerySet = getfixture("newspaper_dupes_qs")
-        >>> to_delete, to_keep = filter_by_not_all_null_fk(dupe_qs)
+        >>> to_delete: QuerySet = filter_by_null_fk(
+        ...     dupe_qs, null_relations=('issue',))
         >>> to_delete
         <DataFrameQuerySet [0003548, 0002648]>
         >>> to_delete.values_list('pk', flat=True)
         <DataFrameQuerySet [..., ...]>
-        >>> to_keep  # Note same publication code as record above
-        <DataFrameQuerySet [0003548]>
-        >>> to_keep.values_list('pk', flat=True)  # But different `pk`
-        <DataFrameQuerySet [...]>
-        >>> to_keep.values('issue')  # The record to keep has an related `issue`
-        <DataFrameQuerySet [{'issue': ...}]>
-        >>> to_delete.values('issue')  # Neither record to delete have related `issues`
+        >>> to_delete.values('issue')  # returned records  don't have `issues`
         <DataFrameQuerySet [{'issue': None}, {'issue': None}]>
 
         ```
     """
-    fk_fields: tuple[Field] = tuple(foreign_key_fields(qs.model))
-    records_with_all_fks_null: QuerySet = qs.all()
+    fk_fields: dict[Field] = tuple(foreign_key_fields(qs.model))
+    matched_qs: QuerySet = qs.all()
+    if null_relations:
+        qs.order_by(*null_relations)
+    filter_query_dict: dict[str, Any]
     for fk_field in fk_fields:
-        filter_query_dict: dict[str, Any] = {fk_field.name + "__isnull": True}
-        logger.debug(f"Filtering {qs} with {fk_field}")
-        records_with_all_fks_null: QuerySet = records_with_all_fks_null.filter(
-            **filter_query_dict
-        )
-    records_with_at_least_one_fk: QuerySet = qs.difference(records_with_all_fks_null)
-    full_qs_with_at_least_one_fk: QuerySet = qs.model.objects.filter(
-        pk__in=records_with_at_least_one_fk
-    )
-    return records_with_all_fks_null, full_qs_with_at_least_one_fk
+        if fk_field.name in null_relations:
+            filter_query_dict = {fk_field.name + "__isnull": is_null}
+            logger.debug(f"Filtering by {filter_query_dict}")
+            matched_qs = matched_qs.filter(**filter_query_dict)
+    return qs_to_full_record_qs(matched_qs)
 
 
 @dataclass
@@ -1046,7 +1057,13 @@ class DupeRemoveConfig:
         ...     all_dupe_records=dupe_qs,)
         >>> dupe_config
         <DupeRemoveConfig(model=<class 'newspapers.models.Newspaper'>, len=3,
-                          valid=True)>
+                valid=False)>
+        >>> dupe_config: DupeRemoveConfig = DupeRemoveConfig(
+        ...     all_dupe_records=dupe_qs,
+        ...     dupe_method_kwargs={'null_relations': ('issue',)},)
+        >>> dupe_config
+        <DupeRemoveConfig(model=<class 'newspapers.models.Newspaper'>, len=3,
+                valid=True)>
         >>> dupe_config.records_to_delete
         <DataFrameQuerySet [0003548, 0002648]>
         >>> dupe_config.records_to_delete.values_list('pk', flat=True)
@@ -1066,9 +1083,9 @@ class DupeRemoveConfig:
     all_dupe_records: QuerySet | ModelBase | None = None
     records_to_delete: QuerySet | None = None
     records_to_keep: QuerySet | None = None
-    dupe_method: Callable[
-        [QuerySet], tuple[QuerySet, QuerySet]
-    ] | None = filter_by_not_all_null_fk
+    dupe_method: Callable[[QuerySet], QuerySet] = filter_by_null_fk
+    dupe_method_kwargs: dict[str, Any] = field(default_factory=dict)
+
     DELETED_RECORDS_ATTR: Final[str] = "records_last_deleted"
 
     def __post_init__(self) -> None:
@@ -1135,9 +1152,12 @@ class DupeRemoveConfig:
 
     def set_records_to_keep_and_delete(self) -> None:
         """Apply `dupe_method` for `self.to_delete`/`keep` if both None."""
-        if self.dupe_method and not self.records_to_delete and not self.records_to_keep:
-            self.records_to_delete, self.records_to_keep = self.dupe_method(
-                self.all_dupe_records
+        if not self.records_to_delete and not self.records_to_keep:
+            self.records_to_delete = self.dupe_method(
+                self.all_dupe_records, **self.dupe_method_kwargs
+            )
+            self.records_to_keep = qs_difference(
+                self.all_dupe_records, self.records_to_delete
             )
         else:
             logger.info(
@@ -1295,6 +1315,8 @@ def dupes_to_rm(
     qs_or_model: QuerySet | Model,
     dupe_fields: tuple[str | Field, ...] = (),
     exclude_fields: tuple[str | Field, ...] = EXCLUDE_SIMILAR_TO_QS_FIELDS_DEFAULT,
+    dupe_method: Callable[[QuerySet], QuerySet] = filter_by_null_fk,
+    dupe_method_kwargs: dict[str, Any] = {},
 ) -> DupeRemoveConfig | QuerySet:
     """Check for similar records and return a `DupeRemoveConfig` for deletion.
 
@@ -1320,7 +1342,12 @@ def dupes_to_rm(
         >>> caplog = getfixture("caplog")
         >>> caplog.set_level(INFO)
         >>> dupes_rm_config: DupeRemoveConfig = dupes_to_rm(dupe_qs,
-        ...     dupe_fields=('publication_code',))
+        ...     dupe_fields=('publication_code',),
+        ...     dupe_method_kwargs={'null_relations': ('issue',)},
+        ... )
+        >>> dupes_rm_config
+        <DupeRemoveConfig(model=<class 'newspapers.models.Newspaper'>,
+                          len=2, valid=True)>
         >>> dupes_rm_config.delete_records()
         <DataFrameQuerySet [0003548]>
         >>> dupes_rm_config.delete_records(dry_run=False)
@@ -1346,4 +1373,8 @@ def dupes_to_rm(
         return similars_qs
     else:
         dupe_records: QuerySet = convert_similar_qs_to_records(similars_qs)
-        return DupeRemoveConfig(all_dupe_records=dupe_records)
+        return DupeRemoveConfig(
+            all_dupe_records=dupe_records,
+            dupe_method=dupe_method,
+            dupe_method_kwargs=dupe_method_kwargs,
+        )

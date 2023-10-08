@@ -177,7 +177,10 @@ def newspaper_dupes_qs(
 @pytest.mark.django_db
 def newspaper_dupe_rm_config(newspaper_dupes_qs: QuerySet) -> DupeRemoveConfig:
     """Create example `DupeRmoveConfig` from `newspaper_dupes_qs`."""
-    return DupeRemoveConfig(newspaper_dupes_qs)
+    return DupeRemoveConfig(
+        newspaper_dupes_qs,
+        dupe_method_kwargs={"null_relations": ("issue",)},
+    )
 
 
 @pytest.fixture(autouse=True)
