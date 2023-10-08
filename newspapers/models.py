@@ -148,7 +148,7 @@ class Newspaper(NewspapersModel):
         """Return a `DupeRemoveConfig` of potential duplicate records."""
         return dupes_to_rm(
             qs_or_model=cls,
-            dupe_fields=("publication_code",),
+            dupe_fields=("publication_code", "title"),
             dupe_method_kwargs={"null_relations": ("issue",)},
         )
 

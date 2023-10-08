@@ -70,7 +70,7 @@ To these potential duplicates side by side, the `all_dupe_records` attribute is 
 
 ```pycon
 >>> for i, newspaper in enumerate(
-...     all_dupe_records.records_to_keep.order_by('publication_code')[:16]
+...     dupes_to_check.all_dupe_records.order_by('publication_code')[:16]
 ... ):
 ...     print(i, newspaper, newspaper.publication_code, newspaper.issues.count())
 0 The Aberdeen Journal and General Advertiser for the North of Scotland 0000031 0
@@ -90,4 +90,53 @@ To these potential duplicates side by side, the `all_dupe_records` attribute is 
 14 Blackburn Standard 0000039 0
 15 Brighton Patriot and Lewes Free Press etc 0000039 72
 
+```
+
+Note the variations in the titles, despite the same `publication_code`. This suggests that while the records might be similar, and only one has any related `Entries`, it might be safer to only remove cases with multiple matching fields, specifically:
+
+- `publication_code`
+- `title`
+
+Returning to the original configuration, adding the `title` to the `dupe_fields` parameter incorporates that filter as well, in a nested fashion:
+
+```pycon
+>>> from newspapers.models import Newspaper
+>>> from lwmdb.utils import dupes_to_rm, filter_by_null_fk
+>>> dupes_to_check = dupes_to_rm(
+...    qs_or_model=Newspaper,
+...    dupe_fields=('publication_code', 'title'),
+...    dupe_method=filter_by_null_fk,  # This is the default method
+...    dupe_method_kwargs={"null_relations": ("issue",)},
+... )
+>>> dupes_to_check
+<DupeRemoveConfig(model=<class 'newspapers.models.Newspaper'>, len=78, valid=True)>
+>>> len(dupes_to_check.records_to_delete)
+39
+>>> len(dupes_to_check.records_to_keep)
+39
+```
+
+By 'nested' I mean each subsequent `field` in `dupe_fields` is added for the sake of futher filtering, so all records here are duplicate in both `publication_code` and `title` as demonstrated below:
+
+```pycon
+>>> for i, newspaper in enumerate(
+...     dupes_to_check.all_dupe_records.order_by('publication_code')[:16]
+... ):
+...     print(i, newspaper, newspaper.publication_code, newspaper.issues.count())
+0 Birmingham Daily Post 0000033 0
+1 Birmingham Daily Post 0000033 11506
+2 The Bristol Mercury and Daily Post 0000035 6683
+3 The Bristol Mercury and Daily Post 0000035 0
+4 Daily News 0000051 21764
+5 Daily News 0000051 0
+6 Y Genedl Cymreig 0000059 1558
+7 Y Genedl Cymreig 0000059 0
+8 Glasgow Herald 0000060 15457
+9 Glasgow Herald 0000060 0
+10 Hampshire Telegraph and Naval Chronicle 0000070 693
+11 Hampshire Telegraph and Naval Chronicle 0000070 0
+12 The Illustrated Police News etc 0000072 0
+13 The Illustrated Police News etc 0000072 2703
+14 Jackson's Oxford Journal 0000075 0
+15 Jackson's Oxford Journal 0000075 172
 ```
