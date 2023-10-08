@@ -1,6 +1,6 @@
 # Database Schema
 
-![Database Schema](./assets/lwmdb-doc.svg)
+![Database Schema](./assets/lwmdb-doc-fulltext.svg)
 
 ??? note "A full [`kroki`](https://kroki.io/)-generated schema to check discrepensies with code and above"
 
