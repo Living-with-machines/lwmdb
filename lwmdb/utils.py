@@ -1000,9 +1000,7 @@ def filter_by_null_fk(
         is_null: Whether to filter for `__isnull` = True or False
 
     Returns:
-        Tuple of `QuerySets`: the first match the null relations, the
-            second is the remaining records for `qs` not in the first
-            (matched) `QuerySet`.
+        A `QuerySet` filtered by `null_relations` fields == `is_null` parameter.
 
     Example:
         ```pycon
@@ -1246,7 +1244,7 @@ def get_qs_or_model(
 
     Returns:
         If passed a `QuerySet`, the same `QuerySet`.
-        If passed a `Model`, a `QuerySet` of all `Model` records.
+            If passed a `Model`, a `QuerySet` of all `Model` records.
 
     Example:
         ```pycon
@@ -1331,9 +1329,9 @@ def dupes_to_rm(
 
     Returns:
         A `DupeRemoveConfig` instance with `.all_dupe_records`,
-        `.records_to_delete` and `.records_to_keep` attributes set. This object
-        can then facilitate deleting duplicate records. If no dupes found, the
-        empty filtered `QuerySet` is returned.
+            `.records_to_delete` and `.records_to_keep` attributes set. This object
+            can then facilitate deleting duplicate records. If no dupes found, the
+            empty filtered `QuerySet` is returned.
 
     Example:
         ```pycon
