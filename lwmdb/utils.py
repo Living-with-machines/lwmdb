@@ -984,7 +984,7 @@ def filter_by_not_all_null_fk(qs: QuerySet) -> tuple[QuerySet, QuerySet]:
 
     Returns:
         First `QuerySet` has `None` values for all `ForeignKey` `Fields`, the
-        second has at least one `not` `Null` `ForeignKey`.
+            second has at least one `not` `Null` `ForeignKey`.
 
     Example:
         ```pycon
@@ -1016,7 +1016,7 @@ def filter_by_not_all_null_fk(qs: QuerySet) -> tuple[QuerySet, QuerySet]:
             **filter_query_dict
         )
     records_with_at_least_one_fk: QuerySet = qs.difference(records_with_all_fks_null)
-    full_qs_with_at_least_one_fk: QuerySet = qs.model.objects.filter(
+    full_qs_with_at_least_one_fk: QuerySet = qs.model.filter(
         pk__in=records_with_at_least_one_fk
     )
     return records_with_all_fks_null, full_qs_with_at_least_one_fk
@@ -1226,7 +1226,7 @@ def get_qs_or_model(
 
     Returns:
         If passed a `QuerySet`, the same `QuerySet`.
-        If passed a `Model`, a `QuerySet` of all `Model` records.
+            If passed a `Model`, a `QuerySet` of all `Model` records.
 
     Example:
         ```pycon
@@ -1309,9 +1309,9 @@ def dupes_to_rm(
 
     Returns:
         A `DupeRemoveConfig` instance with `.all_dupe_records`,
-        `.records_to_delete` and `.records_to_keep` attributes set. This object
-        can then facilitate deleting duplicate records. If no dupes found, the
-        empty filtered `QuerySet` is returned.
+            `.records_to_delete` and `.records_to_keep` attributes set. This object
+            can then facilitate deleting duplicate records. If no dupes found, the
+            empty filtered `QuerySet` is returned.
 
     Example:
         ```pycon

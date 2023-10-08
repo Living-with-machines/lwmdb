@@ -23,7 +23,7 @@ services:
     env_file:
       - ./.envs/local
     ports:
-      - '8000:8000'
+      # - '8000:8000'
       - '9090:9090' # For Jupyter
     command: /start
 
@@ -86,12 +86,10 @@ services:
     env_file:
       - ./.envs/local
     volumes:
-      - ./docs:/docs:z
-      - ./config:/app/config:z
-      - ./lwmdb:/app/lwmdb:z
+      - .:/app:z
     ports:
-      - '9000:9000'
-    command: serve --dev-addr=0.0.0.0:9000
+      - '8000:8000'
+    command: serve --dev-addr=0.0.0.0:8000
 
   mailhog:
     image: mailhog/mailhog:v1.0.0
