@@ -11,7 +11,7 @@ on:
     paths-ignore: ['docs/**']
 
   push:
-    branches: ['main', 'geocensus', 'fulltext-hmd-dedupe']
+    branches: ['main', 'geocensus', 'fulltext-hmd']
     paths-ignore: ['docs/**']
 
 concurrency:
