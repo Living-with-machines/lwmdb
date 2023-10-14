@@ -13,8 +13,6 @@ class Fulltext(models.Model):
             path to `plaintext` (`txt`) source file (if used). If
             `self.compressed_path` is set, then `path` is to relevant
             `txt` file when `self.compressed_path` is uncompressed
-        fixture_path:
-            path to `fixture` `JSON` used to load (if used)
         created_at:
             date and time the record is created. This can also be
             provided by a fixture, for example via `alto2txt2fixture`
@@ -48,7 +46,6 @@ class Fulltext(models.Model):
     text = models.TextField()
     path = models.CharField(max_length=200, blank=True, null=True)
     compressed_path = models.CharField(max_length=200, blank=True, null=True)
-    fixture_path = models.CharField(max_length=200, blank=True, null=True)
     errors = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
