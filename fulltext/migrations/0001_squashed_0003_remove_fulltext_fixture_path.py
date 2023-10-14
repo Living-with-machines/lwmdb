@@ -30,11 +30,11 @@ class Migration(migrations.Migration):
                 ("created_at", models.DateTimeField(auto_now_add=True)),
                 ("updated_at", models.DateTimeField(auto_now=True)),
                 ("text", models.TextField()),
+                ("path", models.CharField(blank=True, max_length=200, null=True)),
                 (
                     "compressed_path",
                     models.CharField(blank=True, max_length=200, null=True),
                 ),
-                ("path", models.CharField(blank=True, max_length=200, null=True)),
                 ("errors", models.TextField(blank=True, null=True)),
             ],
         ),
