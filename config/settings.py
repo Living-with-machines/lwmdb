@@ -40,7 +40,7 @@ DEBUG = True
 
 # SECURITY WARNING: customise these when run in production
 
-ALLOWED_HOSTS = ["0.0.0.0", "127.0.0.1", "localhost", "20.68.197.14", "193.60.220.253"]
+ALLOWED_HOSTS = ["0.0.0.0", "127.0.0.1", "localhost",]
 
 # Add VIRTUAL_HOST from .envs/local if available
 # See Deploy section of documentation for details

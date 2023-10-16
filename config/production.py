@@ -2,7 +2,7 @@ from typing import Any, Final
 
 from .settings import *  # noqa
 
-DEFAULT_ALLOWED_HOSTS: Final[list[str]] = ["lwmdb.livingwithmachines.ac.uk", "0.0.0.0"]
+DEFAULT_ALLOWED_HOSTS: Final[list[str]] = ["lwmdb.livingwithmachines.ac.uk", "0.0.0.0",]
 DEFAULT_CONN_MAX_AGE: Final[int] = 60
 DEFAULT_SECURE_SSL_REDIRECT: Final[bool] = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#secure-hsts-include-subdomains
@@ -95,7 +95,13 @@ SECURE_CONTENT_TYPE_NOSNIFF = config["DJANGO_SECURE_CONTENT_TYPE_NOSNIFF"]
 
 # STATIC
 # ------------------------
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STORAGES = {
+    # ...
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
+
 # MEDIA
 # ------------------------------------------------------------------------------
 

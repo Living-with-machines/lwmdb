@@ -48,6 +48,7 @@ FROM python as python-run-stage
 
 ARG BUILD_ENVIRONMENT=production
 ARG APP_HOME=/app
+ARG STATIC_FILES=${APP_HOME}/staticfiles
 
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -115,6 +116,10 @@ COPY --from=client-builder --chown=django:django ${APP_HOME} ${APP_HOME}
 
 # make django owner of the WORKDIR directory as well.
 RUN chown django:django ${APP_HOME}
+
+
+WORKDIR ${APP_HOME}
+
 
 USER django
 

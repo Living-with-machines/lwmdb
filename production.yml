@@ -3,6 +3,7 @@ version: '3'
 volumes:
   lwmdb_production_postgres_data: {}
   lwmdb_production_postgres_data_backups: {}
+  production_django_media: {}
   # production_caddy: {}
 
 services:
@@ -15,13 +16,15 @@ services:
     depends_on:
       - postgres
       - redis
+    user: "1001"  # Necessary for staticfile permission see https://github.com/cookiecutter/cookiecutter-django/discussions/3691
     volumes:
       - .:/app:z
+      - production_django_media:/app/lwmdb/media
     env_file:
       - ./.envs/production
     ports:
       - '8000:8000'
-      # - '9090:9090'  # For Jupyter
+      - '9090:9090'  # For Jupyter
       - '5000:5000'
     command: /start
 
@@ -41,6 +44,16 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+  nginx:
+    build:
+      context: .
+      dockerfile: ./compose/production/nginx/Dockerfile
+    image: lwmdb_local_nginx
+    depends_on:
+      - django
+    volumes:
+      - production_django_media:/usr/share/nginx/media:ro
 
   # caddy:
   #   build:
@@ -76,3 +89,4 @@ services:
   #   ports:
   #     - '5555:5555'
   #   command: /start-flower
+
