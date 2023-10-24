@@ -1,4 +1,3 @@
-from collections.abc import Generator
 from logging import INFO
 from pathlib import Path
 from typing import Any
@@ -6,16 +5,14 @@ from typing import Any
 import pytest
 from django.core.exceptions import FieldError
 from django.db.models import QuerySet
-from pandas import DataFrame, read_csv
+from pandas import DataFrame
 
-import census
 from mitchells.import_fixtures import MITCHELLS_CSV_URL, MITCHELLS_EXCEL_URL
 from newspapers.models import Issue, Newspaper
 
 from ..utils import (
     VALID_FALSE_STRS,
     VALID_TRUE_STRS,
-    DataSource,
     DupeRemoveConfig,
     download_file,
     dupes_to_rm,
@@ -113,22 +110,6 @@ def test_download_no_internet(caplog, tmp_path) -> None:
     LOG_0 = f"{test_xlsx_path} not found, downloading from {MITCHELLS_EXCEL_URL}"
     LOG_1 = f"Download error (likely no internet connection): {MITCHELLS_EXCEL_URL}"
     assert caplog.messages == [LOG_0, LOG_1]
-
-
-@pytest.fixture
-def rsd_1851() -> Generator[DataSource, None, None]:
-    """Example csv DataSource."""
-    rsd: DataSource = DataSource(
-        file_name="demographics_england_wales_1851.csv",
-        app=census,
-        url="https://reshare.ukdataservice.ac.uk/853547/4/1851_RSD_data.csv",
-        read_func=read_csv,
-        description="Demographic and socio-economic variables for Registration Sub-Districts (RSDs) in England and Wales, 1851",
-        citation="https://dx.doi.org/10.5255/UKDA-SN-853547",
-        license="http://creativecommons.org/licenses/by/4.0/",
-    )
-    yield rsd
-    rsd.delete()
 
 
 class TestDataSource:

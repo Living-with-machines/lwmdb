@@ -1,5 +1,9 @@
+from collections.abc import Generator
+from os import chdir
 from pathlib import Path
 from pprint import pprint
+from shutil import copyfile
+from typing import Final
 
 import pytest
 from coverage_badge.__main__ import main as gen_cov_badge
@@ -8,16 +12,37 @@ from django.db.models.query import QuerySet
 
 # from django.conf import settings
 from django.utils.translation import activate
+from pandas import read_csv
 
-from fulltext.models import Fulltext
-from lwmdb.utils import DupeRemoveConfig, app_data_path
+import census
+
+# from fulltext.models import Fulltext
+from lwmdb.utils import (
+    DEFAULT_LOCAL_ENV_PATH,
+    DataSource,
+    DupeRemoveConfig,
+    ProductionENVGenConfig,
+    app_data_path,
+)
 from mitchells.import_fixtures import MITCHELLS_EXCEL_PATH
-from newspapers.models import DataProvider, Issue, Item, Newspaper
+from newspapers.models import DataProvider, Fulltext, Issue, Item, Newspaper
 from newspapers.utils import path_to_newspaper_code
 
-BADGE_PATH: Path = Path("docs") / "assets" / "coverage.svg"
-PLAINTEXT_PATH_COMPRESSED: Path = Path("0003548_plaintext.zip")
-PLAINTEXT_PATH: Path = Path("0003548/1904/0707/0003548_19040707_art0037.txt")
+ROOT_PATH: Path = Path().absolute()
+LWMDB_TEST_FIXTURES_PATH: Final[Path] = Path("./lwmdb/tests").absolute()
+BADGE_PATH: Final[Path] = Path("docs") / "assets" / "coverage.svg"
+PLAINTEXT_PATH_COMPRESSED: Final[Path] = Path("0003548_plaintext.zip")
+PLAINTEXT_PATH: Final[Path] = Path("0003548/1904/0707/0003548_19040707_art0037.txt")
+
+DATA_PROVIDER_INITIAL_FIXTURE_PATH: Final[Path] = (
+    LWMDB_TEST_FIXTURES_PATH / "initial-test-dataprovider.json"
+)
+DATA_PROVIDER_CORRECTED_FIXTURE_PATH: Final[Path] = (
+    LWMDB_TEST_FIXTURES_PATH / "update-test-dataprovider.json"
+)
+MITCHELLS_APP_EXCEL_PATH: Final[Path] = (
+    app_data_path("mitchells") / MITCHELLS_EXCEL_PATH
+)
 
 
 @pytest.fixture(autouse=True)
@@ -35,28 +60,58 @@ def set_default_language() -> None:
 #         )
 
 
+@pytest.fixture
+def root_dir() -> Path:
+    """Return `lwmdb` installation `Path`."""
+    return ROOT_PATH
+
+
+@pytest.fixture
+def local_env_copy_path(tmp_path: Path) -> Path:
+    """Create a test copy of `DEFAULT_LOCAL_ENV_PATH`."""
+    test_local_config_path: Path = tmp_path / Path(DEFAULT_LOCAL_ENV_PATH)
+    test_local_config_path.parent.mkdir(parents=True, exist_ok=True)
+    return copyfile(DEFAULT_LOCAL_ENV_PATH, test_local_config_path)
+
+
+@pytest.fixture
+def production_config_manager(local_env_copy_path: Path) -> ProductionENVGenConfig:
+    """Test example `ProductionENVGenConfig` configuration."""
+    chdir(local_env_copy_path.parents[1])
+    return ProductionENVGenConfig()
+
+
 @pytest.fixture(autouse=True)
-def media_storage(settings, tmpdir) -> None:
+def media_storage(settings, tmp_path: Path) -> None:
     """Generate a temp path for testing media files."""
-    settings.MEDIA_ROOT = tmpdir.strpath
+    settings.MEDIA_ROOT = str(tmp_path)
 
 
 @pytest.fixture(scope="session")
-def mitchells_data_path() -> Path:
+def mitchells_data_path(tmp_path_factory) -> Generator[Path, None, None]:
     """Return path to `mitchells` app data."""
-    return app_data_path("mitchells") / MITCHELLS_EXCEL_PATH
+    tmp_path: Path = tmp_path_factory.mktemp("mitchells_data")
+    yield copyfile(
+        ROOT_PATH / MITCHELLS_APP_EXCEL_PATH, tmp_path / MITCHELLS_APP_EXCEL_PATH.name
+    )
 
 
 @pytest.fixture
-def old_data_provider_fixture_path() -> Path:
-    """Load old example `newspaper.DataProvider` fixture."""
-    return Path("lwmdb/tests/initial-test-dataprovider.json")
+def old_data_provider_fixture_path(tmp_path: Path) -> Path:
+    """Load initial example `newspaper.DataProvider` fixture."""
+    return copyfile(
+        DATA_PROVIDER_INITIAL_FIXTURE_PATH,
+        tmp_path / DATA_PROVIDER_INITIAL_FIXTURE_PATH.name,
+    )
 
 
 @pytest.fixture
-def updated_data_provider_path() -> Path:
-    """Load old example `newspaper.DataProvider` fixture."""
-    return Path("lwmdb/tests/update-test-dataprovider.json")
+def updated_data_provider_fixture_path(tmp_path: Path) -> Path:
+    """Load updated example `newspaper.DataProvider` fixture."""
+    return copyfile(
+        DATA_PROVIDER_CORRECTED_FIXTURE_PATH,
+        tmp_path / DATA_PROVIDER_CORRECTED_FIXTURE_PATH.name,
+    )
 
 
 @pytest.fixture
@@ -68,9 +123,9 @@ def old_data_provider(old_data_provider_fixture_path: Path) -> None:
 
 @pytest.fixture
 @pytest.mark.django_db
-def current_data_providers(updated_data_provider_path: Path) -> None:
+def current_data_providers(updated_data_provider_fixture_path: Path) -> None:
     """Load old example `newspaper.DataProvider` fixture."""
-    call_command("loaddata", updated_data_provider_path)
+    call_command("loaddata", updated_data_provider_fixture_path)
 
 
 @pytest.fixture
@@ -147,8 +202,8 @@ def new_tredegar_last_issue_first_item_fulltext() -> Fulltext:
     """`Fulltext` fixture to use with `new_tredegar_last_issue_first_item`."""
     fulltext = Fulltext(
         text="An excellent full article",
-        compressed_path=str(PLAINTEXT_PATH_COMPRESSED),
-        path=str(PLAINTEXT_PATH),
+        compressed_text_path=str(PLAINTEXT_PATH_COMPRESSED),
+        text_path=str(PLAINTEXT_PATH),
     )
     fulltext.save()
     return fulltext
@@ -181,6 +236,22 @@ def newspaper_dupe_rm_config(newspaper_dupes_qs: QuerySet) -> DupeRemoveConfig:
         newspaper_dupes_qs,
         dupe_method_kwargs={"null_relations": ("issue",)},
     )
+
+
+@pytest.fixture
+def rsd_1851() -> Generator[DataSource, None, None]:
+    """Example csv DataSource."""
+    rsd: DataSource = DataSource(
+        file_name="demographics_england_wales_1851.csv",
+        app=census,
+        url="https://reshare.ukdataservice.ac.uk/853547/4/1851_RSD_data.csv",
+        read_func=read_csv,
+        description="Demographic and socio-economic variables for Registration Sub-Districts (RSDs) in England and Wales, 1851",
+        citation="https://dx.doi.org/10.5255/UKDA-SN-853547",
+        license="http://creativecommons.org/licenses/by/4.0/",
+    )
+    yield rsd
+    rsd.delete()
 
 
 @pytest.fixture(autouse=True)

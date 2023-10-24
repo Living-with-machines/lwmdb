@@ -33,4 +33,4 @@ EXPOSE 8000
 RUN poetry config virtualenvs.create false && poetry install --with docs
 
 ENTRYPOINT [ "mkdocs" ]
-CMD ["serve", "--dev-addr=0.0.0.0:8000"]
+CMD ["serve", "-f", "/app/mkdocs.yml", "--dev-addr=0.0.0.0:8000"]

@@ -1,14 +1,17 @@
 import json
 import re
+import secrets
 from collections import defaultdict
 from collections.abc import Callable, Generator, Iterable, Sequence
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from glob import glob
 from logging import ERROR, INFO, WARNING, getLogger
 from os import PathLike
 from pathlib import Path
+from random import randint
 from shutil import copyfileobj
+from string import ascii_letters, digits
 from tempfile import NamedTemporaryFile
 from types import ModuleType
 from typing import Any, Final, TypedDict
@@ -16,10 +19,12 @@ from urllib.error import URLError
 from urllib.request import urlopen
 
 from django.apps import apps
+from django.core.checks.security.base import _check_secret_key
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.db.models import Count, Field, Model, QuerySet
 from django.db.models.base import ModelBase
+from dotenv import dotenv_values, set_key
 from pandas import DataFrame, Series
 from tqdm import tqdm
 from validators.url import url as validate_url
@@ -29,6 +34,11 @@ logger = getLogger(__name__)
 VALID_TRUE_STRS: Final[tuple[str, ...]] = ("y", "yes", "t", "true", "on", "1")
 VALID_FALSE_STRS: Final[tuple[str, ...]] = ("n", "no", "f", "false", "off", "0")
 
+# WARNING: MAX_PATH_LENGTH is used in database model configuration and
+# should NOT be altered once a database is created
+MAX_PATH_LENGTH: Final[int] = 1000
+
+DEFAULT_MAX_KEY_ITERATIONS: Final[int] = 10000
 DEFAULT_FIXTURE_PATH: Final[str] = "fixtures"
 JSON_FORMAT_EXTENSION: Final[str] = ".json"
 
@@ -39,6 +49,15 @@ DEFAULT_CALLABLE_CHUNK_METHOD_NAME: Final[str] = "save"
 DEFAULT_TRUNCATION_CHARS: Final[str] = "..."
 
 DIGITS_REGEX: Final[str] = r"(\d+)"
+
+DEFAULT_LOCAL_ENV_PATH: Final[PathLike] = Path(".envs/local")
+DEFAULT_PRODUCTION_ENV_PATH: Final[PathLike] = Path(".envs/production")
+DEFAULT_MIN_KEY_LENGTH: Final[int] = 50
+DEFAULT_MAX_KEY_LENGTH: Final[int] = 4096
+DEFAULT_KEY_CHARS: Final[str] = ascii_letters + digits
+DEFAULT_KEY_MINIMUM_DIGITS: Final[int] = 4
+DEFAULT_MAX_FLOWER_USER_NAME_LENGTH: Final[int] = 40
+DEFAULT_MIN_FLOWER_USER_NAME_LENGTH: Final[int] = 20
 
 # Note: importing these can cause a circular import, hence defining locally
 NEWSPAPER_MODEL_NAME: Final[str] = "Newspaper"
@@ -55,6 +74,183 @@ QueryTupleFilter = Callable[[QuerySet], tuple[QuerySet, QuerySet]]
 
 EXCLUDE_DUPE_FIELDS_DEFAULT: Final[tuple[StrOrField, ...]] = ("id",)
 EXCLUDE_SIMILAR_TO_QS_FIELDS_DEFAULT: Final[tuple[StrOrField, ...]] = ("id__count",)
+
+
+def gen_key(
+    min_length: int = DEFAULT_MIN_KEY_LENGTH,
+    max_length: int = DEFAULT_MAX_KEY_LENGTH,
+    valid_chars: Sequence[str] = DEFAULT_KEY_CHARS,
+    checker: Callable[[str], bool] | None = _check_secret_key,
+    min_digits: int = DEFAULT_KEY_MINIMUM_DIGITS,
+    max_iterations: int = DEFAULT_MAX_KEY_ITERATIONS,
+) -> str:
+    """Generate an encryption key within passed specification.
+
+    Args:
+        min_length:
+            Minimum `key` length in chararcters.
+
+        max_length:
+            Maximum `key` length in chararcters.
+
+        valid_chars:
+            Characters allowed for key generation.
+
+        checker:
+            A callable to test generated key.
+
+    Returns:
+        A random `str` adhering to passed constraints.
+
+    Example:
+        ```pycon
+        >>> key: str = gen_key(min_length=1, max_length=10) # doctest: +SKIP
+        >>> len(key) < 11  # doctest: +SKIP
+        True
+        >>> len(key) > 0   # doctest: +SKIP
+        True
+        >>> sum(c.isupper() for c in key) > 1  # doctest: +SKIP
+        True
+        >>> (sum(c.isdigit() for c in key) >=  # doctest: +SKIP
+        ...  DEFAULT_KEY_MINIMUM_DIGITS)
+        True
+
+        ```
+    """
+    assert 0 < min_length < max_length
+    key_len: int = randint(min_length, max_length)
+    key: str
+    for i in range(max_iterations):
+        key = "".join(secrets.choice(valid_chars) for j in range(key_len))
+        if (
+            any(c.islower() for c in key)
+            and any(c.isupper() for c in key)
+            and sum(c.isdigit() for c in key) >= min_digits
+        ):
+            if checker and checker(key):
+                return key
+            else:
+                return key
+    raise ValueError(f"No valid key found after {max_iterations} iterations")
+
+
+@dataclass
+class ProductionENVGenConfig:
+    """Configuration for generating a `.env` for production.
+
+    Attributes:
+        SECRET_KEY_KWARGS:
+            Parameter to pass to `self.key_gen_func`.
+        POSTGRES_PASSWORD_KWARGS:
+            Parameters to pass to `self.key_gen_func`.
+        CELERY_FLOWER_USER_KWARGS:
+            Parameter to pass to `self.key_gen_func`.
+        CELERY_FLOWER_PASSWORD_KWARGS:
+            Parameter to pass to `self.key_gen_func`.
+        key_gen_func: Callable = gen_key
+            Function to call to generate keys.
+        CHECK_ATTR_ENDS_WITH: Final[str] = '_KWARGS'
+            `str` to check attributes end with to
+            indicate they are ENV fields.
+    """
+
+    SECRET_KEY_KWARGS: dict[str, Any] = field(default_factory=dict)
+    POSTGRES_PASSWORD_KWARGS: dict[str, Any] = field(default_factory=dict)
+    CELERY_FLOWER_USER_KWARGS: dict[str, Any] = field(
+        default_factory=lambda: {
+            "min_length": DEFAULT_MIN_FLOWER_USER_NAME_LENGTH,
+            "max_length": DEFAULT_MAX_FLOWER_USER_NAME_LENGTH,
+        }
+    )
+    CELERY_FLOWER_PASSWORD_KWARGS: dict[str, Any] = field(default_factory=dict)
+    key_gen_func: Callable = gen_key
+    CHECK_ATTR_ENDS_WITH: Final[str] = "_KWARGS"
+
+    def gen_config(self) -> dict[str, str]:
+        """Generate dict of `KEY: VALUE` from set `KWARGS` attributes.
+
+        Example:
+            ```pycon
+            >>> config_manager = getfixture("production_config_manager")
+            >>> config: dict[str, str] = config_manager.gen_config()
+            >>> config.keys()
+            dict_keys(['SECRET_KEY', 'POSTGRES_PASSWORD', 'CELERY_FLOWER_USER',
+                       'CELERY_FLOWER_PASSWORD'])
+            >>> (DEFAULT_MIN_FLOWER_USER_NAME_LENGTH
+            ...  <= len(config['CELERY_FLOWER_USER'])
+            ...  <= DEFAULT_MAX_FLOWER_USER_NAME_LENGTH)
+            True
+
+            ```
+        """
+        key_vals: dict[str, str] = {}
+        for field_name, field_value in asdict(self).items():
+            if field_name.endswith(self.CHECK_ATTR_ENDS_WITH):
+                key_var_name: str = field_name.removesuffix(self.CHECK_ATTR_ENDS_WITH)
+                key_vals[key_var_name] = self.key_gen_func(**field_value)
+        return key_vals
+
+    def write_env(
+        self,
+        new_env_path: Path = DEFAULT_PRODUCTION_ENV_PATH,
+        template_env_path: Path = DEFAULT_LOCAL_ENV_PATH,
+        overwrite_new_env_path: bool = False,
+    ) -> Path:
+        """Read `in_path` `ENV` config and write new config to `out_path`.
+
+        Params:
+            new_env_path:
+                `Path` to write new `ENV` file to.
+
+            template_env_path:
+                `Path` to read initial values from.
+
+            overwrite_new_env_path:
+                Whether to overwite `new_env_path` if it already exists.
+
+        Example:
+            ```pycon
+            >>> config_manager = getfixture("production_config_manager")
+            >>> new_config_path: Path = config_manager.write_env()
+            >>> assert new_config_path == DEFAULT_PRODUCTION_ENV_PATH
+            >>> new_config_from_file: dict = dotenv_values(
+            ...     DEFAULT_PRODUCTION_ENV_PATH)
+            >>> local_config_from_file: dict = dotenv_values(
+            ...     DEFAULT_LOCAL_ENV_PATH)
+            >>> local_config_from_file == new_config_from_file
+            False
+            >>> local_config_from_file.keys() == new_config_from_file.keys()
+            True
+            >>> tuple(new_config_from_file.keys())
+            ('POSTGRES_HOST', 'POSTGRES_PORT', 'POSTGRES_DB',
+             'POSTGRES_USER', 'POSTGRES_PASSWORD', 'SECRET_KEY',
+             'USE_DOCKER', 'IPYTHONDIR', 'REDIS_URL', 'CELERY_FLOWER_USER',
+             'CELERY_FLOWER_PASSWORD')
+
+            ```
+        """
+        if new_env_path.exists():
+            if new_env_path.is_dir():
+                raise FileExistsError(
+                    f"'{new_env_path}' is a folder and cannot " f"be overwritten."
+                )
+            elif new_env_path.is_file():
+                if overwrite_new_env_path:
+                    logger.warning(f"Forced re-write of '{new_env_path}'")
+                else:
+                    raise FileExistsError(
+                        f"'{new_env_path}' already exists. Set "
+                        "'overwrite_new_env_path = True' to replace."
+                    )
+        new_env_path.parent.mkdir(exist_ok=True)
+        new_env_path.touch()
+        final_conf_dict: dict[str, Any] = {
+            **dotenv_values(template_env_path),
+            **self.gen_config(),
+        }
+        for key, value in final_conf_dict.items():
+            set_key(new_env_path, key, value)
+        return new_env_path
 
 
 class JSONFixtureType(TypedDict):
@@ -323,12 +519,16 @@ def get_fixture_paths(
 
     Example:
         ```pycon
-        >>> sorted(get_fixture_paths('lwmdb/tests/'))  # doctest: +NORMALIZE_WHITESPACE
-        ['lwmdb/tests/initial-test-dataprovider.json',
-         'lwmdb/tests/update-test-dataprovider.json']
+        >>> from os import chdir
+        >>> old_fixture_path = getfixture("old_data_provider_fixture_path")
+        >>> updated_fixture_path = getfixture("updated_data_provider_fixture_path")
+        >>> chdir(old_fixture_path.parents[1])
+        >>> sorted(get_fixture_paths(old_fixture_path.parent.name))
+        ['lwmdb.../initial-test-dataprovider.json',
+         'lwmdb.../update-test-dataprovider.json']
         >>> (
-        ...     get_fixture_paths('lwmdb/tests/') ==
-        ...     get_fixture_paths(Path('lwmdb') / 'tests')
+        ...     get_fixture_paths(old_fixture_path.parent.name) ==
+        ...     get_fixture_paths(Path(old_fixture_path.parent.name))
         ... )
         True
 
@@ -592,13 +792,16 @@ def app_data_path(app_name: str, data_path: PathLike = DEFAULT_APP_DATA_FOLDER) 
 
     Example:
         ```pycon
+        >>> from os import chdir
+        >>> root_dir: Path = getfixture("root_dir")
+        >>> chdir(root_dir)
         >>> app_data_path('mitchells')
         PosixPath('mitchells/data')
 
         ```
     """
     path = Path(app_name) / Path(data_path)
-    path.mkdir(exist_ok=True)
+    path.mkdir(exist_ok=True, parents=True)
     return path
 
 
@@ -823,7 +1026,7 @@ def bulk_fixture_update(
         >>> getfixture("db")
         >>> getfixture("old_data_provider")
         Installed 4 object(s) from 1 fixture(s)
-        >>> updated_fixture_path = getfixture("updated_data_provider_path")
+        >>> updated_fixture_path = getfixture("updated_data_provider_fixture_path")
         >>> from newspapers.models import DataProvider
         >>> for provider in DataProvider.objects.all():
         ...     print(provider)
