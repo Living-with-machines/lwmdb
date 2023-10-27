@@ -9,60 +9,60 @@ authors = [
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.12"
-django = "^4.2.4"
+django = "^4.2.6"
 seaborn = "^0.12.2"
-pandas = "^2.0.3"
-ipython = "^8.14.0"
+pandas = "^2.1.2"
+ipython = "^8.16.1"
 jupyter = "^1.0.0"
 django-pandas = "^0.6.6"
 django-extensions = "^3.2.3"
 colorama = "^0.4.6"
 uvicorn = "^0.22.0"
 python-dotenv = "^1.0.0"
-azure-storage-blob = "^12.17.0"
+azure-storage-blob = "^12.18.3"
 GDAL = {version = "3.5.3", platform = "darwin"}
-whitenoise = "^6.5.0"
-tqdm = "^4.65.0"
-psycopg = {extras = ["binary"], version = "^3.1.9"}
-django-debug-toolbar = "^4.1.0"
+whitenoise = "^6.6.0"
+tqdm = "^4.66.1"
+psycopg = {extras = ["binary"], version = "^3.1.12"}
+django-debug-toolbar = "^4.2.0"
 psutil = "5.9.4"
 gunicorn = "^20.1.0"
 django-anymail = "^9.2"
-pyopenssl = "^23.2.0"
+pyopenssl = "^23.3.0"
 validators = "^0.20.0"
 openpyxl = "^3.1.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest-cov = "^4.1.0"
 pytest-sugar = "^0.9.7"
-pyfakefs = "^5.2.3"
+pyfakefs = "^5.3.0"
 pytest-django = "^4.5.2"
 Werkzeug = "^3.0.1"
 pyparsing = "^3.1.1"
 pydot = "^1.4.2"
-pre-commit = "^3.3.3"
+pre-commit = "^3.5.0"
 django-coverage-plugin = "^3.1.0"
-django-stubs = {extras = ["compatible-mypy"], version = "^4.2.3"}
+django-stubs = {extras = ["compatible-mypy"], version = "^4.2.6"}
 mkdocs-kroki-plugin = "^0.6.1"
 alto2txt2fixture = {git = "https://github.com/living-with-machines/alto2txt2fixture"}
 coverage-badge = "^1.1.0"
 pytest-xdist = "^3.3.1"
 
 [tool.poetry.group.docs.dependencies]
-mkdocs-material = "^9.1.21"
+mkdocs-material = "^9.4.6"
 mkdocs-literate-nav = "^0.6.0"
 mkdocs-gen-files = "^0.5.0"
-markdown-exec = {extras = ["ansi"], version = "^1.6.0"}
+markdown-exec = {extras = ["ansi"], version = "^1.7.0"}
 mkdocs-section-index = "^0.3.5"
 mkdocstrings-python = "^0.9.0"
-black = "^23.7.0"
-pygments = "^2.15.1"
+black = "^23.10.1"
+pygments = "^2.16.1"
 mkdocs-autorefs = "^0.4.1"
 mkdocs-include-markdown-plugin = "^4.0.4"
 pygments-pytest = "^2.3.0"
 
 [tool.poetry.group.doc.dependencies]
-pygments-git = "^1.6.0"
+pygments-git = "^1.7.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
