@@ -104,19 +104,11 @@ jobs:
           restore-keys: |
             mkdocs-material-
 
-      - name: Build, Test and Save Test Coverage
+      - name: Install doc dependencies via poetry
         run: |
-          docker compose -f local.yml build
-          docker compose -f local.yml up --detach
-          docker compose -f local.yml run django pytest -p no:sugar
-          export DJANGO_ID=$(docker compose -f local.yml ps -q django)
-          echo "django_id=$DJANGO_ID" >> $GITHUB_ENV
-
-      # - name: Install doc dependencies via poetry
-      #   run: |
-      #     pip install poetry
-      #     poetry install --with docs
+          pip install poetry
+          poetry install --with docs
 
       - name: Build docs with gh-deploy --force
         run: |
-          docker compose -f local.yml exec docs poetry run mkdocs gh-deploy --force
+          poetry run mkdocs gh-deploy --force
