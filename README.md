@@ -23,7 +23,7 @@ Background on the development of the database is available in [_Metadata Enrichm
 
 It is possible to run this code without Docker, but at present we are only maintaining it via Docker Containers so we _highly_ recommend installing Docker to run and/or test this code locally. Instructions are available for most operating systems here: https://docs.docker.com/desktop/
 
-### Clone the repository 
+### Clone the repository
 
 Clone the repository via either
 
