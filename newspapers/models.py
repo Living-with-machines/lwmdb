@@ -351,7 +351,7 @@ class Item(NewspapersModel):
         ingest:
             Related tool used for database ingest, including version in `Ingest`.
 
-        fulltext:
+        full_text:
             Related record of `item` plain text in `FullText`.
 
     Example:
@@ -631,23 +631,23 @@ class Item(NewspapersModel):
                     os.remove(download_file_path)
                     print(f"Removing empty download: {download_file_path}")
 
-    def extract_fulltext_file(self):
+    def extract_full_text_file(self):
         """Extract Item's full text file from a zip archive to DOWNLOAD_DIR."""
         archive = self.text_archive_dir / self.zip_file
         with ZipFile(archive, "r") as zip_ref:
             zip_ref.extract(str(self.text_path), path=self.text_extracted_dir)
 
-    def read_fulltext_file(self) -> list[str]:
+    def read_full_text_file(self) -> list[str]:
         """Read the full text for this Item from a file."""
         with open(self.text_extracted_dir / self.text_path) as f:
             lines = f.readlines()
         return lines
 
-    def extract_fulltext(self) -> list[str]:
+    def extract_full_text(self) -> list[str]:
         """Extract the full text of this newspaper item."""
         # If the item full text has already been extracted, read it.
         if os.path.exists(self.text_extracted_dir / self.text_path):
-            return self.read_fulltext_file()
+            return self.read_full_text_file()
 
         if self.FULLTEXT_METHOD == "download":
             # If not already available locally, download the full text archive.
@@ -660,7 +660,7 @@ class Item(NewspapersModel):
                 )
 
             # Extract the text for this item.
-            self.extract_fulltext_file()
+            self.extract_full_text_file()
 
         elif self.FULLTEXT_METHOD == "blobfuse":
             raise NotImplementedError("Blobfuse access is not yet implemented.")
@@ -669,16 +669,16 @@ class Item(NewspapersModel):
 
         else:
             raise RuntimeError(
-                "A valid fulltext access method must be selected: options are 'download' or 'blobfuse'."
+                "A valid full_text access method must be selected: options are 'download' or 'blobfuse'."
             )
 
         # If the item full text still hasn't been extracted, report failure.
         if not os.path.exists(self.text_extracted_dir / self.text_path):
             raise RuntimeError(
-                f"Failed to extract fulltext for {self.item_code}; path does not exist: {self.text_extracted_dir / self.text_path}"
+                f"Failed to extract full_text for {self.item_code}; path does not exist: {self.text_extracted_dir / self.text_path}"
             )
 
-        return self.read_fulltext_file()
+        return self.read_full_text_file()
 
 
 class FullText(NewspapersModel):
@@ -711,26 +711,26 @@ class FullText(NewspapersModel):
     Example:
         ```pycon
         >>> getfixture("db")
-        >>> item_fulltext = FullText(
+        >>> item_full_text = FullText(
         ...     compressed_text_path='0003548_plaintext.zip',
         ...     text_path='0003548/1904/0707/0003548_19040707_art0037.txt',
         ...     fixture_path='fulltext/fixtures/plaintext_fixture-38884.json',
         ... )
-        >>> item_fulltext.save()
-        >>> item_fulltext.canonical
+        >>> item_full_text.save()
+        >>> item_full_text.canonical
         False
-        >>> item_fulltext.item is None
+        >>> item_full_text.item is None
         True
         >>> new_tredegar_item: Item = getfixture(
         ...     "new_tredegar_last_issue_first_item")
         Installed 5 object(s) from 1 fixture(s)
-        >>> item_fulltext.set_related_item_by_text_path(
+        >>> item_full_text.set_related_item_by_text_path(
         ...     set_canonical=True)
         0003548-19040707-art0037
-        >>> (set(new_tredegar_item.fulltexts.all()) ==
-        ...  set((item_fulltext,)))
+        >>> (set(new_tredegar_item.full_texts.all()) ==
+        ...  set((item_full_text,)))
         True
-        >>> item_fulltext.canonical
+        >>> item_full_text.canonical
         True
 
         ```
@@ -740,11 +740,11 @@ class FullText(NewspapersModel):
     item = models.ForeignKey(
         Item,
         on_delete=models.SET_NULL,
-        verbose_name="fulltext",
+        verbose_name="Full Text",
         blank=True,
         null=True,
-        related_name="fulltexts",
-        related_query_name="fulltext",
+        related_name="full_texts",
+        related_query_name="full_text",
     )
     text_path = models.CharField(max_length=MAX_PATH_LENGTH, blank=True, null=True)
     compressed_text_path = models.CharField(
@@ -761,7 +761,7 @@ class FullText(NewspapersModel):
         return Path(self.text_path).name if self.text_path else ""
 
     def set_canonical(self):
-        if not self.canonical and self.item and self.item.fulltexts.count() == 1:
+        if not self.canonical and self.item and self.item.full_texts.count() == 1:
             self.canonical = True
             self.save()
 
@@ -791,8 +791,8 @@ class FullText(NewspapersModel):
                 )
             else:
                 logger.warning(f"No matching 'Newspaper.Item' found for {self}")
-                return
-        return
+                return None
+        return None
 
     class DuplicateFullTextError(Exception):
         ...
