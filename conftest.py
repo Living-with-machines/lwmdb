@@ -15,8 +15,6 @@ from django.utils.translation import activate
 from pandas import read_csv
 
 import census
-
-# from fulltext.models import Fulltext
 from lwmdb.utils import (
     DEFAULT_LOCAL_ENV_PATH,
     DataSource,
@@ -25,7 +23,7 @@ from lwmdb.utils import (
     app_data_path,
 )
 from mitchells.import_fixtures import MITCHELLS_EXCEL_PATH
-from newspapers.models import DataProvider, Fulltext, Issue, Item, Newspaper
+from newspapers.models import DataProvider, FullText, Issue, Item, Newspaper
 from newspapers.utils import path_to_newspaper_code
 
 ROOT_PATH: Path = Path().absolute()
@@ -198,9 +196,9 @@ def new_tredegar_last_issue_first_item(
 
 @pytest.fixture
 @pytest.mark.django_db
-def new_tredegar_last_issue_first_item_fulltext() -> Fulltext:
-    """`Fulltext` fixture to use with `new_tredegar_last_issue_first_item`."""
-    fulltext = Fulltext(
+def new_tredegar_last_issue_first_item_fulltext() -> FullText:
+    """`FullText` fixture to use with `new_tredegar_last_issue_first_item`."""
+    fulltext = FullText(
         text="An excellent full article",
         compressed_text_path=str(PLAINTEXT_PATH_COMPRESSED),
         text_path=str(PLAINTEXT_PATH),
