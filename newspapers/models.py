@@ -1,7 +1,7 @@
 import os
 from logging import getLogger
 from pathlib import Path
-from typing import Final
+from typing import Final, Union
 from zipfile import ZipFile
 
 from azure.storage.blob import BlobClient
@@ -20,7 +20,9 @@ from lwmdb.utils import (
 
 logger = getLogger(__name__)
 
+CODE_SEPERATOR_CHAR: Final[str] = "-"
 MAX_PRINT_SELF_STR_LENGTH: Final[int] = 80
+NEWSPAPER_ISSUE_ITEM_CODE_MAX_LENGTH: Final[int] = 600
 
 
 class NewspapersModel(models.Model):
@@ -122,7 +124,9 @@ class Newspaper(NewspapersModel):
 
     # TODO #55: publication_code should be unique? Currently unique (
     #                           but not tested with BNA)
-    publication_code = models.CharField(max_length=600, default=None)
+    publication_code = models.CharField(
+        max_length=NEWSPAPER_ISSUE_ITEM_CODE_MAX_LENGTH, default=None
+    )
     title = models.CharField(max_length=255, default=None)
     location = models.CharField(max_length=255, default=None, blank=True, null=True)
     place_of_publication = models.ForeignKey(
@@ -223,7 +227,9 @@ class Issue(NewspapersModel):
     """
 
     # TODO #55: issue_code should be unique? Currently unique (but not tested with BNA)
-    issue_code = models.CharField(max_length=600, default=None)
+    issue_code = models.CharField(
+        max_length=NEWSPAPER_ISSUE_ITEM_CODE_MAX_LENGTH, default=None
+    )
     issue_date = models.DateField()
     input_sub_path = models.CharField(max_length=MAX_PATH_LENGTH, default=None)
 
@@ -252,7 +258,7 @@ class Issue(NewspapersModel):
         return (
             f"https://www.britishnewspaperarchive.co.uk/viewer/BL/"
             f"{self.newspaper.publication_code}/"
-            f"{str(self.issue_date).replace('-', '')}/001/0001"
+            f"{str(self.issue_date).replace(CODE_SEPERATOR_CHAR, '')}/001/0001"
         )
 
     class Meta:
@@ -403,7 +409,9 @@ class Item(NewspapersModel):
     # TODO #55: item_code should be unique? Currently, not unique, however so needs fixing in alto2txt2fixture
     MAX_TITLE_CHAR_COUNT: int | None = settings.MAX_NEWSPAPER_TITLE_CHAR_COUNT
 
-    item_code = models.CharField(max_length=600, default=None)
+    item_code = models.CharField(
+        max_length=NEWSPAPER_ISSUE_ITEM_CODE_MAX_LENGTH, default=None
+    )
     title = models.TextField(max_length=MAX_TITLE_CHAR_COUNT, default=None)
     title_word_count = models.IntegerField(null=True)
     title_char_count = models.IntegerField(null=True)
@@ -472,7 +480,7 @@ class Item(NewspapersModel):
         title_text_char_count: int = len(self.title)
         if not self.title_char_count or force:
             logger.debug(
-                f"Setting `title_char_count` for {self.item_code} "
+                f"Setting 'title_char_count' for '{self.item_code}' "
                 f"to {title_text_char_count}"
             )
             self.title_char_count = title_text_char_count
@@ -485,14 +493,14 @@ class Item(NewspapersModel):
                     raise self.TitleLengthError(
                         f"{self.title_char_count} characters does not "
                         f"equal {title_text_char_count}: the length of "
-                        f"title of {self.item_code}"
+                        f"title of '{self.item_code}'"
                     )
 
     def _sync_title_word_count(self, force: bool = False) -> None:
         title_text_word_count: int = word_count(self.title)
         if not self.title_word_count or force:
             logger.debug(
-                f"Setting `title_word_count` for {self.item_code} to {title_text_word_count}"
+                f"Setting 'title_word_count' for '{self.item_code}' to {title_text_word_count}"
             )
             self.title_word_count = title_text_word_count
         else:
@@ -502,7 +510,7 @@ class Item(NewspapersModel):
                 )
 
     def _sync_title_counts(self, force: bool = False) -> None:
-        """Run `_sync` methods, then trim title if long."""
+        """Run '_sync' methods, then trim title if long."""
         self._sync_title_char_count(force=force)
         self._sync_title_word_count(force=force)
         if (
@@ -511,7 +519,7 @@ class Item(NewspapersModel):
             and self.title_char_count > self.MAX_TITLE_CHAR_COUNT
         ):
             logger.debug(
-                f"Trimming title of {self.item_code} to {self.MAX_TITLE_CHAR_COUNT} chars."
+                f"Trimming title of '{self.item_code}' to {self.MAX_TITLE_CHAR_COUNT} chars."
             )
             self.title = self.title[: self.MAX_TITLE_CHAR_COUNT]
             self.title_truncated = True
@@ -570,6 +578,20 @@ class Item(NewspapersModel):
         extracted) from the `DOWNLOAD_DIR` and the filename.
         """
         return Path(self.issue.input_sub_path) / self.input_filename
+
+    @property
+    def full_text_canonical(self) -> Union["FullText", None]:
+        """If a related `FullText` is marked `canonical` return, else None."""
+        query = self.full_texts.filter(canonical=True).distinct()
+        if len(query) == 1:
+            return query[0]
+        elif len(query) > 1:
+            raise FullText.DuplicateFullTextError(
+                f"{len(query)} related 'FullText' entries "
+                f"marked 'canonical', sould be maximum 1 for {self}. "
+            )
+        else:
+            return None
 
     # Commenting this out as it will fail with the dev on #56 (see branch kallewesterling/issue56).
     # As this will likely not be the first go-to for fulltext access, we can keep it as a method:
@@ -685,17 +707,20 @@ class FullText(NewspapersModel):
     """Optical Charater Recognition newspaper `Item` body text.
 
     Attributes:
-        text:
-            plain text from an article
-        text_path:
-            path to `plaintext` (`txt`) source file (if used). If
+        text: Plain text of `Item`, potentially quite large newspaper
+            articles. May have unusual or unreadable sequences of
+            characters due to issues with Optical Character Recognition
+            quality.
+        text_path: path to `plaintext` (`txt`) source file (if used). If
             `self.compressed_path` is set, then `text_path` is to relevant
             `txt` file when `self.text_compressed_path` is uncompressed
-        text_compressed_path:
-            path to zip file  (if used).
-        text_fixute_path:
-            if `self` is loaded via a `fixture` (likely generated by
-            `alto2txt2fixture` in `json` format), the path to that fixture file.
+        text_compressed_path: path to zip file  (if used).
+        text_fixute_path: if `self` is loaded via a `fixture` (likely
+            generated by `alto2txt2fixture` in `json` format), the path
+            to that fixture file.
+        info:  # noqa: D410,D405,D214,D411
+            Further information about the text, eg. configuration for new
+            OCR method.
         errors:
             `str` records of any logged errors generating this `FullText`.
         created_at:
@@ -712,9 +737,10 @@ class FullText(NewspapersModel):
         ```pycon
         >>> getfixture("db")
         >>> item_full_text = FullText(
-        ...     compressed_text_path='0003548_plaintext.zip',
+        ...     item_code='0003548-19040707-art0037',
+        ...     text_fixture_path='fulltext/fixtures/plaintext_fixture-38884.json',
+        ...     text_compressed_path='0003548_plaintext.zip',
         ...     text_path='0003548/1904/0707/0003548_19040707_art0037.txt',
-        ...     fixture_path='fulltext/fixtures/plaintext_fixture-38884.json',
         ... )
         >>> item_full_text.save()
         >>> item_full_text.canonical
@@ -746,13 +772,18 @@ class FullText(NewspapersModel):
         related_name="full_texts",
         related_query_name="full_text",
     )
+    item_code = models.CharField(
+        max_length=NEWSPAPER_ISSUE_ITEM_CODE_MAX_LENGTH, blank=True, null=True
+    )
     text_path = models.CharField(max_length=MAX_PATH_LENGTH, blank=True, null=True)
-    compressed_text_path = models.CharField(
+    text_compressed_path = models.CharField(
         max_length=MAX_PATH_LENGTH, blank=True, null=True
     )
-    fixture_path = models.CharField(max_length=MAX_PATH_LENGTH, blank=True, null=True)
+    text_fixture_path = models.CharField(
+        max_length=MAX_PATH_LENGTH, blank=True, null=True
+    )
     errors = models.TextField(blank=True, null=True)
-    notes = models.TextField(blank=True, null=True)
+    info = models.TextField(blank=True, null=True)
     canonical = models.BooleanField(default=False)
 
     @property
@@ -765,7 +796,9 @@ class FullText(NewspapersModel):
             self.canonical = True
             self.save()
 
-    def set_related_item_by_text_path(self, set_canonical: bool = False) -> Item | None:
+    def set_related_item_by_text_path(
+        self, set_canonical: bool = False, use_filename_endswith: bool = False
+    ) -> Item | None:
         """Check and set related `Newspaper.Item` instance by `text_path`.
 
         Following the convention that `Newspaper.Item.input_filename` should
@@ -774,25 +807,47 @@ class FullText(NewspapersModel):
         if successful returns that Model.
 
         Args:
-            set_canonical: Run `self.set_canonical` if related `Item` found.
+            set_canonical:
+                Run `self.set_canonical` if related `Item` found.
+            use_filename_endswith:
+                If `self.item_code` is not set, search for related `Items`
+                    with a similar `file_name` that ends with `self.file_name`.
         """
         if self.text_path:
-            related_items: Item = Item.objects.filter(input_filename=self.file_name)
-            if len(related_items) == 1:
-                self.item = related_items[0]
-                self.save()
-                if set_canonical:
-                    self.set_canonical()
-                return self.item
-            elif len(related_items.unique()) > 1:
-                raise self.DuplicateFullTextError(
-                    f"{len(related_items)} Newspaper Items expect "
-                    f"FullText from text_path {self.text_path} "
+            if self.item_code:
+                try:
+                    self.item = Item.objects.get(item_code=self.item_code)
+                except Item.DoesNotExist:
+                    raise self.NoMatchingItemCode(
+                        f"No 'Item' records have 'item_code': {self.item_code}"
+                    )
+            elif use_filename_endswith:
+                related_items: models.QuerySet = Item.objects.filter(
+                    input_filename__endswith=self.file_name
                 )
+                if len(related_items) == 1:
+                    self.item = related_items[0]
+                    if self.item:
+                        self.item_code = self.item.item_code
+                elif len(related_items.distinct()) > 1:
+                    raise self.DuplicateFullTextError(
+                        f"{len(related_items)} newspaper Items should have exactly 1 "
+                        f"FullText from 'text_path' {self.text_path} "
+                    )
             else:
                 logger.warning(f"No matching 'Newspaper.Item' found for {self}")
                 return None
+            self.save()
+            if set_canonical:
+                self.set_canonical()
+            return self.item
         return None
 
     class DuplicateFullTextError(Exception):
+        ...
+
+    class DuplicateCanonicalError(Exception):
+        ...
+
+    class NoMatchingItemCode(Exception):
         ...
