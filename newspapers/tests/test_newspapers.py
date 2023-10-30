@@ -5,10 +5,12 @@ from typing import Final
 
 import pytest
 from django.conf import settings
+from django.core.management import call_command
+from django.db.models import QuerySet
 
 from lwmdb.utils import truncate_str, word_count
 
-from .models import (
+from ..models import (
     CODE_SEPERATOR_CHAR,
     MAX_PRINT_SELF_STR_LENGTH,
     DataProvider,
@@ -78,6 +80,14 @@ def item_1894_sep_5(
         issue=issue_1894_sep_5,
         data_provider=bl_lwm_data_provider,
     )
+
+
+@pytest.mark.django_db
+@pytest.fixture
+def plaintext_qs() -> QuerySet:
+    """Load `test_plaintext.json.zip` fixture and return `queryset`."""
+    call_command("loaddata", "newspapers/tests/test_plaintext.json.zip")
+    return FullText.objects.all()
 
 
 @pytest.mark.django_db
@@ -272,3 +282,13 @@ def test_full_text_and_item(
         assert full_text_1894_sep_5.item == item_1894_sep_5
         assert set(item_1894_sep_5.full_texts.all()) == {full_text_1894_sep_5}
         assert item_1894_sep_5.full_text_canonical == full_text_1894_sep_5
+
+
+@pytest.mark.django_db
+def test_loading_plaintext_fixture(plaintext_qs) -> None:
+    """Text loading example `zip` `json` `plaintext` fixture."""
+    count: int = len(plaintext_qs)
+    assert count == 5
+    first_example: FullText = plaintext_qs.first()
+    assert first_example.text_path == "0002647/1824/0216/0002647_18240216_art0023.txt"
+    assert first_example.item_code == "0002647-18240216-art0023"
