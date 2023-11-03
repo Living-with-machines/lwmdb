@@ -15,6 +15,7 @@ nav:
   - Contributing:
       - Development: contributing.md
       - Code of Conduct: code_of_conduct.md
+      - License: licence.md
   - Issues: https://github.com/living-with-machines/lwmdb/issues
   - Reference: reference/
 
