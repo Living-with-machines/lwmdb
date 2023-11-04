@@ -129,8 +129,8 @@ def current_data_providers(updated_data_provider_fixture_path: Path) -> None:
 @pytest.fixture
 @pytest.mark.django_db
 def lwm_data_provider(current_data_providers) -> DataProvider:
-    """Return the `bl_lwm` `DataProvider` instance."""
-    return DataProvider.objects.get(code="bl_lwm")
+    """Return the `bl-lwm` `DataProvider` instance."""
+    return DataProvider.objects.get(code="bl-lwm")
 
 
 @pytest.fixture

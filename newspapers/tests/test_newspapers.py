@@ -61,9 +61,9 @@ def issue_1894_sep_5(birkhead_newspaper: Newspaper) -> Issue:
 @pytest.mark.django_db
 @pytest.fixture
 def bl_lwm_data_provider() -> DataProvider:
-    """Test `bl_lwm` `DataProvider` fixture."""
+    """Test `bl-lwm` `DataProvider` fixture."""
     return DataProvider.objects.create(
-        name="bl_lwm", collection="newspapers", source_note=""
+        name="bl-lwm", collection="newspapers", source_note=""
     )
 
 
@@ -99,10 +99,10 @@ class TestItems:
         assert item == item_1894_sep_5
 
         assert item.title == TEST_ITEM_TITLE
-        assert item.data_provider.name == "bl_lwm"
+        assert item.data_provider.name == "bl-lwm"
         assert item.zip_file == "0003040_plaintext.zip"
         assert item.text_path == Path("0003040/1894/0905/") / TEST_ITEM_INPUT_FILENAME
-        assert item.text_container == "bl_lwm-alto2txt"
+        assert item.text_container == "bl-lwm-alto2txt"
 
         assert item.download_dir == Path.home() / "metadata-db/"
         assert item.text_archive_dir == Path.home() / "metadata-db/archives"

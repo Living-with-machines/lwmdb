@@ -102,7 +102,11 @@ def test_download_invalid_url(caplog, tmp_path) -> None:
 
 @pytest.mark.xfail(reason="need to automate conditional http block")
 def test_download_no_internet(caplog, tmp_path) -> None:
-    """Test downloading with no internet connection."""
+    """Test downloading with no internet connection.
+
+    Note:
+        * While British Library data downloading is blocked, this passes.
+    """
     caplog.set_level(INFO)
     test_xlsx_path: Path = tmp_path / "test.xlsx"
     success: bool = download_file(test_xlsx_path, MITCHELLS_EXCEL_URL)
