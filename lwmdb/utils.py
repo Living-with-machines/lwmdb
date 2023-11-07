@@ -589,7 +589,7 @@ def callable_on_chunks(
     """Apply `method_name` to `qs`, filter by `start_index` and `end_index`.
 
     Args:
-        qs: `django` `QerySet` instance to apply `method_name` total
+        qs: `django` `QuerySet` instance to apply `method_name` total
         method_name: `Callable` `method` of `qs` `class` to apply to `qs`
         start_index: `int` of `qs` start point to apply `method_name` from
         end_index: `int` of `qs` end point to apply `method_name` to
