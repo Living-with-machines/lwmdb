@@ -157,11 +157,11 @@ class TestItems:
         assert test_item.title_word_count == correct_word_count
         correct_logs: list[str] = [
             (
-                f"{MODULE_LOG_PREFIX}482 Setting 'title_char_count' for "
+                f"{MODULE_LOG_PREFIX}484 Setting 'title_char_count' for "
                 f"'{TEST_ITEM_CODE}' to {correct_char_count}"
             ),
             (
-                f"{MODULE_LOG_PREFIX}502 Setting 'title_word_count' for "
+                f"{MODULE_LOG_PREFIX}504 Setting 'title_word_count' for "
                 f"'{TEST_ITEM_CODE}' to {correct_word_count}"
             ),
         ]
@@ -193,15 +193,15 @@ class TestItems:
         assert test_item.title_word_count == correct_word_count
         correct_logs: list[str] = [
             (
-                f"{MODULE_LOG_PREFIX}482 Setting 'title_char_count' for "
+                f"{MODULE_LOG_PREFIX}484 Setting 'title_char_count' for "
                 f"'{TEST_ITEM_CODE}' to {correct_char_count}"
             ),
             (
-                f"{MODULE_LOG_PREFIX}502 Setting 'title_word_count' for "
+                f"{MODULE_LOG_PREFIX}504 Setting 'title_word_count' for "
                 f"'{TEST_ITEM_CODE}' to {correct_word_count}"
             ),
             (
-                f"{MODULE_LOG_PREFIX}521 Trimming title of '{TEST_ITEM_CODE}' "
+                f"{MODULE_LOG_PREFIX}523 Trimming title of '{TEST_ITEM_CODE}' "
                 f"to {test_item.MAX_TITLE_CHAR_COUNT} chars."
             ),
         ]
@@ -235,11 +235,11 @@ class TestItems:
         assert test_item.title_word_count == correct_word_count
         correct_logs: list[str] = [
             (
-                f"{MODULE_LOG_PREFIX}482 Setting 'title_char_count' for "
+                f"{MODULE_LOG_PREFIX}484 Setting 'title_char_count' for "
                 f"'{TEST_ITEM_CODE}' to {correct_char_count}"
             ),
             (
-                f"{MODULE_LOG_PREFIX}502 Setting 'title_word_count' for "
+                f"{MODULE_LOG_PREFIX}504 Setting 'title_word_count' for "
                 f"'{TEST_ITEM_CODE}' to {correct_word_count}"
             ),
         ]
@@ -267,14 +267,14 @@ def test_full_text_and_item(
     assert not full_text_1894_sep_5.canonical
     assert full_text_1894_sep_5.item is None
 
-    # The `item_code` is returned from `.set_related_item_by_text_path`
+    # The `item_code` is returned from `.set_related_item`
     if item_code == "wrong":
-        with pytest.raises(FullText.NoMatchingItemCode):
-            full_text_1894_sep_5.set_related_item_by_text_path(
+        with pytest.raises(Item.DoesNotExist):
+            full_text_1894_sep_5.set_related_item(
                 set_canonical=True, use_filename_endswith=use_filename_endswith
             )
     else:
-        issue: Issue = full_text_1894_sep_5.set_related_item_by_text_path(
+        issue: Issue = full_text_1894_sep_5.set_related_item(
             set_canonical=True, use_filename_endswith=use_filename_endswith
         )
         assert repr(issue) == TEST_ITEM_CODE

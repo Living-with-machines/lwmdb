@@ -1234,6 +1234,67 @@ def filter_by_null_fk(
     return qs_to_full_record_qs(matched_qs)
 
 
+def get_unique_record(
+    qs: QuerySet, skip_exceptions: bool = False, **kwargs
+) -> QuerySet | Model:
+    """Query `qs` for a unique record via `kwargs`.
+
+    Args:
+        qs: `QuerySet` to filter from.
+        skip_exceptions:
+            `log` errors and return potential duplicates if True,
+                else raise exceptions.
+        kwargs: `kwargs` passed to `QuerySet` `filter`.
+
+    Returns:
+        `Model` from `qs` if success, `QuerySet` if more than one
+        instance matches, `None` if no instances match.
+
+    Raises:
+        ValueError: No `kwargs` passed to query `qs`.
+        Model.MultipleObjectsReturned: More than one record matches `kwargs` query.
+        Model.DoesNotExist: No records match `kwargs` query.
+
+    Example:
+        ```pycon
+        >>> getfixture("db")
+        >>> dupe_qs: QuerySet = getfixture("newspaper_dupes_qs")
+        >>> get_unique_record(dupe_qs, issue__isnull=False)
+        0003548
+        >>> get_unique_record(dupe_qs, skip_exceptions=True,
+        ...                   issue__isnull=True)
+        <...QuerySet [000...48, 000...48]>
+        >>> get_unique_record(dupe_qs, skip_exceptions=True,
+        ...                   title='Not a title')
+        <...QuerySet []>
+
+        ```
+    """
+    if not kwargs:
+        raise ValueError(f"No query for {qs} passed, add via `kwargs`.")
+    related_records: QuerySet = qs.filter(**kwargs)
+    if len(related_records) == 1:
+        return related_records.first()
+    elif len(related_records.distinct()) > 1:
+        log_str: str = (
+            f"{qs} has more than 1 ({len(related_records)}) "
+            f"records for query: {kwargs}"
+        )
+        if skip_exceptions:
+            logger.error(log_str)
+            return related_records
+        else:
+            raise qs.model.MultipleObjectsReturned(log_str)
+    else:
+        assert len(related_records) == 0
+        log_str: str = f"{qs} has no matching " f"records for query: {kwargs}"
+        if skip_exceptions:
+            logger.error(log_str)
+            return related_records
+        else:
+            raise qs.model.DoesNotExist(log_str)
+
+
 @dataclass
 class DupeRemoveConfig:
     """Configuration of potential duplication records for deletion.

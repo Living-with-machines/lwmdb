@@ -7,6 +7,7 @@ from zipfile import ZipFile
 from azure.storage.blob import BlobClient
 from django.conf import settings
 from django.db import models
+from django.db.models import QuerySet
 from django_pandas.managers import DataFrameManager
 
 from gazetteer.models import Place
@@ -14,6 +15,7 @@ from lwmdb.utils import (
     MAX_PATH_LENGTH,
     DupeRemoveConfig,
     dupes_to_rm,
+    get_unique_record,
     truncate_str,
     word_count,
 )
@@ -750,8 +752,7 @@ class FullText(NewspapersModel):
         >>> new_tredegar_item: Item = getfixture(
         ...     "new_tredegar_last_issue_first_item")
         Installed 5 object(s) from 1 fixture(s)
-        >>> item_full_text.set_related_item_by_text_path(
-        ...     set_canonical=True)
+        >>> item_full_text.set_related_item(set_canonical=True)
         0003548-19040707-art0037
         >>> (set(new_tredegar_item.full_texts.all()) ==
         ...  set((item_full_text,)))
@@ -796,15 +797,19 @@ class FullText(NewspapersModel):
             self.canonical = True
             self.save()
 
-    def set_related_item_by_text_path(
-        self, set_canonical: bool = False, use_filename_endswith: bool = False
+    def set_related_item(
+        self,
+        set_canonical: bool = False,
+        use_filename_endswith: bool = False,
+        skip_exceptions: bool = False,
     ) -> Item | None:
-        """Check and set related `Newspaper.Item` instance by `text_path`.
+        """Check and set related `Item` instance by `item_code` or `text_path`.
 
-        Following the convention that `Newspaper.Item.input_filename` should
-        be the same as the `plaintext` file name exported by `alto2txt2fixture`,
-        this function queries `Newspaper.Item` records for that match, and
-        if successful returns that Model.
+        Following the conventions that `Item.item_code` and `Item.input_filename`
+        should match `text_code` and `text_path` fields exported by
+        `alto2txt2fixture`, this function queries `Newspaper.Item` records for
+        matches, and if successful sets that relation and returns that `Item`
+        instance.
 
         Args:
             set_canonical:
@@ -812,26 +817,30 @@ class FullText(NewspapersModel):
             use_filename_endswith:
                 If `self.item_code` is not set, search for related `Items`
                     with a similar `file_name` that ends with `self.file_name`.
+            skip_exceptions: Log `errors` instead of Raise assertions.
         """
+        item_obj_or_qs: Item | QuerySet
         if self.text_path:
             if self.item_code:
-                try:
-                    self.item = Item.objects.get(item_code=self.item_code)
-                except Item.DoesNotExist:
-                    raise self.NoMatchingItemCode(
-                        f"No 'Item' records have 'item_code': {self.item_code}"
-                    )
-            elif use_filename_endswith:
-                related_items: models.QuerySet = Item.objects.filter(
-                    input_filename__endswith=self.file_name
+                item_obj_or_qs = get_unique_record(
+                    Item.objects.all(),
+                    skip_exceptions=skip_exceptions,
+                    item_code=self.item_code,
                 )
-                if len(related_items) == 1:
-                    self.item = related_items[0]
-                    if self.item:
-                        self.item_code = self.item.item_code
-                elif len(related_items.distinct()) > 1:
+                if isinstance(item_obj_or_qs, Item):
+                    self.item = item_obj_or_qs
+            elif use_filename_endswith:
+                item_obj_or_qs = get_unique_record(
+                    Item.objects.all(),
+                    skip_exceptions=skip_exceptions,
+                    input_filename__endswith=self.file_name,
+                )
+                if isinstance(item_obj_or_qs, Item):
+                    self.item = item_obj_or_qs
+                    self.item_code = self.item.item_code
+                elif len(item_obj_or_qs) > 1:
                     raise self.DuplicateFullTextError(
-                        f"{len(related_items)} newspaper Items should have exactly 1 "
+                        f"{len(item_obj_or_qs)} newspaper Items should have exactly 1 "
                         f"FullText from 'text_path' {self.text_path} "
                     )
             else:
