@@ -35,14 +35,14 @@ repos:
       - id: rst-inline-touching-normal
 
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: 'v3.0.3'
+    rev: 'v3.1.0'
     hooks:
       - id: prettier
         types_or: [yaml, markdown, json]
         args: ['--prose-wrap=never', '--tab-width', '2', '--single-quote'] # Following django-cookiecutter
 
   - repo: https://github.com/python-poetry/poetry
-    rev: 1.6.0
+    rev: 1.7.0
     hooks:
       - id: poetry-check
       - id: poetry-lock
@@ -61,7 +61,7 @@ repos:
         args: [--py311-plus]
 
   - repo: https://github.com/hadialqattan/pycln
-    rev: v2.3.0
+    rev: v2.4.0
     hooks:
       - id: pycln
         args: [--config=pyproject.toml]
@@ -72,7 +72,7 @@ repos:
       - id: isort
 
   - repo: https://github.com/psf/black
-    rev: 23.10.0
+    rev: 23.11.0
     hooks:
       - id: black
 
@@ -112,7 +112,7 @@ repos:
       - id: djlint-django
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.6.1
+    rev: v1.7.0
     hooks:
       - id: mypy
         args: [--config-file, ./pyproject.toml]
