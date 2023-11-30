@@ -62,14 +62,15 @@ plugins:
   - literate-nav:
       nav_file: DOC_STRINGS.md
   - section-index
-  - kroki:
-      # Note: set up to work with a local.yml docker run
-      # and needs to be consistent with local.yml KROKI_LISTEN port
-      ServerURL: http://kroki:9100
-      FileTypes:
-        - svg
-        # - png
-      DownloadImages: true
+  - autorefs
+    #- kroki:
+    #    # Note: set up to work with a local.yml docker run
+    #    # and needs to be consistent with local.yml KROKI_LISTEN port
+    #    ServerURL: http://kroki:9100
+    #    FileTypes:
+    #      - svg
+    #      # - png
+    #    DownloadImages: true
 
   - mkdocstrings:
       handlers:

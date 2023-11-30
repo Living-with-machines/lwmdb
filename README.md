@@ -23,15 +23,21 @@ Background on the development of the database is available in [_Metadata Enrichm
 
 It is possible to run this code without Docker, but at present we are only maintaining it via Docker Containers so we _highly_ recommend installing Docker to run and/or test this code locally. Instructions are available for most operating systems here: https://docs.docker.com/desktop/
 
-### Clone repository to local drive
+### Clone the repository
 
-Run the following command on your command line:
+Clone the repository via either
 
 ```console
-git clone git@github.com:Living-with-machines/lwmdb.git
+git clone https://github.com:living-with-machines/lwmdb.git
 ```
 
-Followed by:
+or (using a `GitHub` [`ssh key`](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent))
+
+```console
+git clone git@github.com:living-with-machines/lwmdb.git
+```
+
+followed by:
 
 ```console
 cd lwmdb
