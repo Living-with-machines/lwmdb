@@ -19,7 +19,9 @@ from urllib.error import URLError
 from urllib.request import urlopen
 
 from django.apps import apps
-from django.core.checks.security.base import _check_secret_key
+from django.core.checks.security.base import (
+    _check_secret_key,  # type: ignore[attr-defined]
+)
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.db.models import Count, Field, Model, QuerySet
@@ -1296,7 +1298,7 @@ def get_unique_record(
 
 
 @dataclass
-class DupeFixConfig:
+class DupeRecords:
     """Configuration of potential duplication records for deletion.
 
     Attributes:
@@ -1315,16 +1317,16 @@ class DupeFixConfig:
         >>> getfixture("db")
         >>> caplog = getfixture("caplog")
         >>> dupe_qs: QuerySet = getfixture("newspaper_dupes_qs")
-        >>> dupe_config: DupeFixConfig = DupeFixConfig(
+        >>> dupe_config: DupeRecords = DupeRecords(
         ...     all_dupe_records=dupe_qs,)
         >>> dupe_config
-        <DupeFixConfig(model=<class 'newspapers.models.Newspaper'>, len=3,
+        <DupeRecords(model=<class 'newspapers.models.Newspaper'>, len=3,
                 valid=False)>
-        >>> dupe_config: DupeFixConfig = DupeFixConfig(
+        >>> dupe_config: DupeRecords = DupeRecords(
         ...     all_dupe_records=dupe_qs,
         ...     dupe_method_kwargs={'null_relations': ('issue',)},)
         >>> dupe_config
-        <DupeFixConfig(model=<class 'newspapers.models.Newspaper'>, len=3,
+        <DupeRecords(model=<class 'newspapers.models.Newspaper'>, len=3,
                 valid=True)>
         >>> dupe_config.records_to_delete
         <DataFrameQuerySet [0003548, 0002648]>
@@ -1361,7 +1363,7 @@ class DupeFixConfig:
     def __repr__(self) -> str:
         """Return config as `str`."""
         return (
-            f"<DupeFixConfig(model={self.model}, "
+            f"<DupeRecords(model={self.model}, "
             f"len={len(self)}, valid={self.valid_config})>"
         )
 
@@ -1372,7 +1374,7 @@ class DupeFixConfig:
         Example:
             ```pycon
             >>> getfixture("db")
-            >>> dupe_config = getfixture('newspaper_dupe_rm_config')
+            >>> dupe_config = getfixture('newspaper_dupe_config')
             >>> dupe_config.valid_config
             True
             >>> dupe_config.records_to_delete = None
@@ -1452,7 +1454,7 @@ class DupeFixConfig:
         Example:
             ```pycon
             >>> getfixture("db")
-            >>> dupe_config = getfixture('newspaper_dupe_rm_config')
+            >>> dupe_config = getfixture('newspaper_dupe_config')
             >>> caplog = getfixture('caplog')
             >>> dupe_config.delete_records()
             <DataFrameQuerySet [0003548, 0002648]>
@@ -1573,14 +1575,14 @@ def similar_records(
     )
 
 
-def dupes_to_fix(
+def dupes_to_check(
     qs_or_model: QuerySet | Model,
     dupe_fields: tuple[str | Field, ...] = (),
     exclude_fields: tuple[str | Field, ...] = EXCLUDE_SIMILAR_TO_QS_FIELDS_DEFAULT,
     dupe_method: Callable[[QuerySet], QuerySet] = filter_by_null_fk,
     dupe_method_kwargs: dict[str, Any] = {},
-) -> DupeFixConfig | QuerySet:
-    """Check for similar records and return a `DupeFixConfig` for deletion.
+) -> DupeRecords | QuerySet:
+    """Check for similar records and return a `DupeRecords` for deletion.
 
     Args:
         qs_or_model:
@@ -1592,7 +1594,7 @@ def dupes_to_fix(
             unique.
 
     Returns:
-        A `DupeFixConfig` instance with `.all_dupe_records`,
+        A `DupeRecords` instance with `.all_dupe_records`,
             `.records_to_delete` and `.records_to_keep` attributes set. This object
             can then facilitate deleting duplicate records. If no dupes found, the
             empty filtered `QuerySet` is returned.
@@ -1603,21 +1605,21 @@ def dupes_to_fix(
         >>> dupe_qs: QuerySet = getfixture("newspaper_dupes_qs")
         >>> caplog = getfixture("caplog")
         >>> caplog.set_level(INFO)
-        >>> dupes_rm_config: DupeFixConfig = dupes_to_fix(dupe_qs,
+        >>> dupes_config: DupeRecords = dupes_to_check(dupe_qs,
         ...     dupe_fields=('publication_code',),
         ...     dupe_method_kwargs={'null_relations': ('issue',)},
         ... )
-        >>> dupes_rm_config
-        <DupeFixConfig(model=<class 'newspapers.models.Newspaper'>,
+        >>> dupes_config
+        <DupeRecords(model=<class 'newspapers.models.Newspaper'>,
                           len=2, valid=True)>
-        >>> dupes_rm_config.delete_records()
+        >>> dupes_config.delete_records()
         <DataFrameQuerySet [0003548]>
-        >>> dupes_rm_config.delete_records(dry_run=False)
+        >>> dupes_config.delete_records(dry_run=False)
         (1, {'newspapers.Newspaper': 1})
-        >>> dupes_rm_config.records_last_deleted
+        >>> dupes_config.records_last_deleted
         (1, {'newspapers.Newspaper': 1})
         >>> from newspapers.models import DataProvider
-        >>> dupes_to_fix(DataProvider)
+        >>> dupes_to_check(DataProvider)
         <DataFrameQuerySet []>
         >>> assert "No dupes found with 'dupe_fields':" in caplog.text
 
@@ -1635,7 +1637,7 @@ def dupes_to_fix(
         return similars_qs
     else:
         dupe_records: QuerySet = convert_similar_qs_to_records(similars_qs)
-        return DupeFixConfig(
+        return DupeRecords(
             all_dupe_records=dupe_records,
             dupe_method=dupe_method,
             dupe_method_kwargs=dupe_method_kwargs,

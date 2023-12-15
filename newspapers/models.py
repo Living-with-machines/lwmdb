@@ -13,8 +13,8 @@ from django_pandas.managers import DataFrameManager
 from gazetteer.models import Place
 from lwmdb.utils import (
     MAX_PATH_LENGTH,
-    DupeFixConfig,
-    dupes_to_fix,
+    DupeRecords,
+    dupes_to_check,
     get_unique_record,
     truncate_str,
     word_count,
@@ -155,9 +155,9 @@ class Newspaper(NewspapersModel):
         ]
 
     @classmethod
-    def dupe_pub_codes_manager(cls) -> DupeFixConfig:
-        """Return a `DupeFixConfig` of potential duplicate records."""
-        return dupes_to_fix(
+    def dupe_pub_codes_manager(cls) -> DupeRecords:
+        """Return a `DupeRecords` of potential duplicate records."""
+        return dupes_to_check(
             qs_or_model=cls,
             dupe_fields=("publication_code", "title"),
             dupe_method_kwargs={"null_relations": ("issue",)},

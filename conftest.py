@@ -18,7 +18,7 @@ import census
 from lwmdb.utils import (
     DEFAULT_LOCAL_ENV_PATH,
     DataSource,
-    DupeFixConfig,
+    DupeRecords,
     ProductionENVGenConfig,
     app_data_path,
 )
@@ -85,13 +85,13 @@ def media_storage(settings, tmp_path: Path) -> None:
     settings.MEDIA_ROOT = str(tmp_path)
 
 
+@pytest.mark.slow
+@pytest.mark.download
 @pytest.fixture(scope="session")
 def mitchells_data_path(tmp_path_factory) -> Generator[Path, None, None]:
     """Return path to `mitchells` app data."""
     tmp_path: Path = tmp_path_factory.mktemp("mitchells_data")
-    yield copyfile(
-        ROOT_PATH / MITCHELLS_APP_EXCEL_PATH, tmp_path / MITCHELLS_APP_EXCEL_PATH.name
-    )
+    yield tmp_path / MITCHELLS_APP_EXCEL_PATH.name
 
 
 @pytest.fixture
@@ -200,7 +200,7 @@ def new_tredegar_last_issue_first_item_fulltext() -> FullText:
     """`FullText` fixture to use with `new_tredegar_last_issue_first_item`."""
     fulltext = FullText(
         text="An excellent full article",
-        compressed_text_path=str(PLAINTEXT_PATH_COMPRESSED),
+        text_compressed_path=str(PLAINTEXT_PATH_COMPRESSED),
         text_path=str(PLAINTEXT_PATH),
     )
     fulltext.save()
@@ -228,9 +228,9 @@ def newspaper_dupes_qs(
 
 @pytest.fixture
 @pytest.mark.django_db
-def newspaper_dupe_rm_config(newspaper_dupes_qs: QuerySet) -> DupeFixConfig:
-    """Create example `DupeFixConfig` from `newspaper_dupes_qs`."""
-    return DupeFixConfig(
+def newspaper_dupe_config(newspaper_dupes_qs: QuerySet) -> DupeRecords:
+    """Create example `DupeRecords` from `newspaper_dupes_qs`."""
+    return DupeRecords(
         newspaper_dupes_qs,
         dupe_method_kwargs={"null_relations": ("issue",)},
     )

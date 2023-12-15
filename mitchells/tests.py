@@ -33,6 +33,7 @@ def test_mitchells_xlsx_path(mitchells_data_path) -> None:
 
 
 # Example for Contributing docs
+@pytest.mark.download
 def test_download_local_mitchells_excel(caplog, mitchells_data_path) -> None:
     """Test downloading `MITCHELLS_EXCEL_URL` fixture.
 
