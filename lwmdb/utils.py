@@ -1296,7 +1296,7 @@ def get_unique_record(
 
 
 @dataclass
-class DupeRemoveConfig:
+class DupeFixConfig:
     """Configuration of potential duplication records for deletion.
 
     Attributes:
@@ -1315,16 +1315,16 @@ class DupeRemoveConfig:
         >>> getfixture("db")
         >>> caplog = getfixture("caplog")
         >>> dupe_qs: QuerySet = getfixture("newspaper_dupes_qs")
-        >>> dupe_config: DupeRemoveConfig = DupeRemoveConfig(
+        >>> dupe_config: DupeFixConfig = DupeFixConfig(
         ...     all_dupe_records=dupe_qs,)
         >>> dupe_config
-        <DupeRemoveConfig(model=<class 'newspapers.models.Newspaper'>, len=3,
+        <DupeFixConfig(model=<class 'newspapers.models.Newspaper'>, len=3,
                 valid=False)>
-        >>> dupe_config: DupeRemoveConfig = DupeRemoveConfig(
+        >>> dupe_config: DupeFixConfig = DupeFixConfig(
         ...     all_dupe_records=dupe_qs,
         ...     dupe_method_kwargs={'null_relations': ('issue',)},)
         >>> dupe_config
-        <DupeRemoveConfig(model=<class 'newspapers.models.Newspaper'>, len=3,
+        <DupeFixConfig(model=<class 'newspapers.models.Newspaper'>, len=3,
                 valid=True)>
         >>> dupe_config.records_to_delete
         <DataFrameQuerySet [0003548, 0002648]>
@@ -1361,7 +1361,7 @@ class DupeRemoveConfig:
     def __repr__(self) -> str:
         """Return config as `str`."""
         return (
-            f"<DupeRemoveConfig(model={self.model}, "
+            f"<DupeFixConfig(model={self.model}, "
             f"len={len(self)}, valid={self.valid_config})>"
         )
 
@@ -1573,14 +1573,14 @@ def similar_records(
     )
 
 
-def dupes_to_rm(
+def dupes_to_fix(
     qs_or_model: QuerySet | Model,
     dupe_fields: tuple[str | Field, ...] = (),
     exclude_fields: tuple[str | Field, ...] = EXCLUDE_SIMILAR_TO_QS_FIELDS_DEFAULT,
     dupe_method: Callable[[QuerySet], QuerySet] = filter_by_null_fk,
     dupe_method_kwargs: dict[str, Any] = {},
-) -> DupeRemoveConfig | QuerySet:
-    """Check for similar records and return a `DupeRemoveConfig` for deletion.
+) -> DupeFixConfig | QuerySet:
+    """Check for similar records and return a `DupeFixConfig` for deletion.
 
     Args:
         qs_or_model:
@@ -1592,7 +1592,7 @@ def dupes_to_rm(
             unique.
 
     Returns:
-        A `DupeRemoveConfig` instance with `.all_dupe_records`,
+        A `DupeFixConfig` instance with `.all_dupe_records`,
             `.records_to_delete` and `.records_to_keep` attributes set. This object
             can then facilitate deleting duplicate records. If no dupes found, the
             empty filtered `QuerySet` is returned.
@@ -1603,12 +1603,12 @@ def dupes_to_rm(
         >>> dupe_qs: QuerySet = getfixture("newspaper_dupes_qs")
         >>> caplog = getfixture("caplog")
         >>> caplog.set_level(INFO)
-        >>> dupes_rm_config: DupeRemoveConfig = dupes_to_rm(dupe_qs,
+        >>> dupes_rm_config: DupeFixConfig = dupes_to_fix(dupe_qs,
         ...     dupe_fields=('publication_code',),
         ...     dupe_method_kwargs={'null_relations': ('issue',)},
         ... )
         >>> dupes_rm_config
-        <DupeRemoveConfig(model=<class 'newspapers.models.Newspaper'>,
+        <DupeFixConfig(model=<class 'newspapers.models.Newspaper'>,
                           len=2, valid=True)>
         >>> dupes_rm_config.delete_records()
         <DataFrameQuerySet [0003548]>
@@ -1617,7 +1617,7 @@ def dupes_to_rm(
         >>> dupes_rm_config.records_last_deleted
         (1, {'newspapers.Newspaper': 1})
         >>> from newspapers.models import DataProvider
-        >>> dupes_to_rm(DataProvider)
+        >>> dupes_to_fix(DataProvider)
         <DataFrameQuerySet []>
         >>> assert "No dupes found with 'dupe_fields':" in caplog.text
 
@@ -1635,7 +1635,7 @@ def dupes_to_rm(
         return similars_qs
     else:
         dupe_records: QuerySet = convert_similar_qs_to_records(similars_qs)
-        return DupeRemoveConfig(
+        return DupeFixConfig(
             all_dupe_records=dupe_records,
             dupe_method=dupe_method,
             dupe_method_kwargs=dupe_method_kwargs,

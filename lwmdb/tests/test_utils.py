@@ -13,9 +13,9 @@ from newspapers.models import Issue, Newspaper
 from ..utils import (
     VALID_FALSE_STRS,
     VALID_TRUE_STRS,
-    DupeRemoveConfig,
+    DupeFixConfig,
     download_file,
-    dupes_to_rm,
+    dupes_to_fix,
     filter_by_null_fk,
     path_or_str_suffix,
     qs_difference,
@@ -154,7 +154,7 @@ class TestDBDupes:
         ),
     )
     @pytest.mark.django_db
-    def test_dupes_to_rm(
+    def test_dupes_to_fix(
         self,
         newspaper_dupes_qs: QuerySet,
         to_delete_count: int,
@@ -168,7 +168,7 @@ class TestDBDupes:
             new_dupe.pk = None
             new_dupe.save()
 
-        dupes_rm_config: DupeRemoveConfig = dupes_to_rm(
+        dupes_rm_config: DupeFixConfig = dupes_to_fix(
             Newspaper, dupe_fields=dupe_fields, dupe_method_kwargs=dupe_method_kwargs
         )
 

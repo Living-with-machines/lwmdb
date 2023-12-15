@@ -18,7 +18,7 @@ import census
 from lwmdb.utils import (
     DEFAULT_LOCAL_ENV_PATH,
     DataSource,
-    DupeRemoveConfig,
+    DupeFixConfig,
     ProductionENVGenConfig,
     app_data_path,
 )
@@ -228,9 +228,9 @@ def newspaper_dupes_qs(
 
 @pytest.fixture
 @pytest.mark.django_db
-def newspaper_dupe_rm_config(newspaper_dupes_qs: QuerySet) -> DupeRemoveConfig:
-    """Create example `DupeRmoveConfig` from `newspaper_dupes_qs`."""
-    return DupeRemoveConfig(
+def newspaper_dupe_rm_config(newspaper_dupes_qs: QuerySet) -> DupeFixConfig:
+    """Create example `DupeFixConfig` from `newspaper_dupes_qs`."""
+    return DupeFixConfig(
         newspaper_dupes_qs,
         dupe_method_kwargs={"null_relations": ("issue",)},
     )
