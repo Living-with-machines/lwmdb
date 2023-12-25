@@ -35,7 +35,7 @@ repos:
       - id: rst-inline-touching-normal
 
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: 'v4.0.0-alpha.4'
+    rev: 'v4.0.0-alpha.8'
     hooks:
       - id: prettier
         types_or: [yaml, markdown, json]
@@ -67,12 +67,12 @@ repos:
         args: [--config=pyproject.toml]
 
   - repo: https://github.com/PyCQA/isort
-    rev: 5.13.0
+    rev: 5.13.2
     hooks:
       - id: isort
 
   - repo: https://github.com/psf/black
-    rev: 23.11.0
+    rev: 23.12.1
     hooks:
       - id: black
 
@@ -105,14 +105,14 @@ repos:
         additional_dependencies: ['bandit[toml]']
 
   - repo: https://github.com/Riverside-Healthcare/djLint
-    rev: v1.34.0
+    rev: v1.34.1
     hooks:
       - id: djlint-reformat-django
         args: ['--configuration', './pyproject.toml']
       - id: djlint-django
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.7.1
+    rev: v1.8.0
     hooks:
       - id: mypy
         args: [--config-file, ./pyproject.toml]
