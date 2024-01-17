@@ -1,3 +1,43 @@
+"""Utilities and a selection of project wide default settings.
+
+Attributes:
+    VALID_TRUE_STRS: `tuple` of `str` values that are treated as `True`.
+    VALID_FALSE_STRS: `tuple` of `str` values that are treated as `False`.
+    MAX_PATH_LENGTH: Maximum default length for file paths.
+    DEFAULT_MAX_KEY_ITERATIONS: Maximum default iterations to generate a random key.
+    DEFAULT_FIXTURE_PATH: Default folder name for model database fixtures.
+    JSON_FORMAT_EXTENSION: Standard extension for `JSON` format files.
+    DEFAULT_MAX_LOG_STR_LENGTH: Maximum default length for log `str` values.
+    DEFAULT_CALLABLE_CHUNK_SIZE: Maximum default number of calls in `sql` chunks.
+    DEFAULT_CALLABLE_CHUNK_METHOD_NAME: Name of default method to call on `model` classes.
+    DIGITS_REGEX: Regular expression to match digit characters (e.g. '0', '1' etc.)
+    DEFAULT_LOCAL_ENV_PATH: Path of default `.env` `local` configuration file.
+    DEFAULT_PRODUCTION_ENV_PATH: Path of default `.env` `production` configuration file.
+    DEFAULT_MIN_KEY_LENGTH: Minimum default key length.
+    DEFAULT_MAX_KEY_LENGTH: Maximum default key length.
+    DEFAULT_KEY_CHARS: Default characters that can be included in a generated key.
+    DEFAULT_KEY_MINIMUM_DIGITS: Minimum number of digits (numbers) in generated key.
+    DEFAULT_MAX_FLOWER_USER_NAME_LENGTH: Maximum generated `flower` service user name
+        character length.
+    DEFAULT_MIN_FLOWER_USER_NAME_LENGTH: Minimum generated `flower` service user name
+        character length.
+    NEWSPAPER_MODEL_NAME: Name from `newspaper.models.Newspaper`
+        (here to avoid a circular import).
+    ITEM_MODEL_NAME: Name from `newspaper.models.Item`
+        (here to avoid a circular import).
+    DEFAULT_APP_DATA_FOLDER: Name of default `data` folder.
+    DEFAULT_APP_FIXTURE_FOLDER: Name of default fixture path in each app.
+
+    StrOrField: `Type` of `str` or `django.models.Field`.
+    StrOrFieldTuple: `Type` of `tuples` of `StrOrField` (arbitrary length).
+    StrOrFieldIter: `Type` of iterable collections of `StrOrField`.
+
+    EXCLUDE_DUPE_FIELDS_DEFAULT: Model filed names to default exclude from
+        duplication checking.
+    EXCLUDE_SIMILAR_TO_QS_FIELDS_DEFAULT: Model attributes/fields to exclude
+        by default comarisons of model instance similarity checking.
+"""
+
 import json
 import re
 import secrets
@@ -49,6 +89,7 @@ DEFAULT_CALLABLE_CHUNK_SIZE: Final[int] = 20000
 DEFAULT_CALLABLE_CHUNK_METHOD_NAME: Final[str] = "save"
 
 DEFAULT_TRUNCATION_CHARS: Final[str] = "..."
+"""Default characters to trail a truncated string."""
 
 DIGITS_REGEX: Final[str] = r"(\d+)"
 
@@ -72,8 +113,6 @@ StrOrField = str | Field
 StrOrFieldTuple = tuple[StrOrField, ...]
 StrOrFieldIter = Iterable[StrOrField]
 
-QueryTupleFilter = Callable[[QuerySet], tuple[QuerySet, QuerySet]]
-
 EXCLUDE_DUPE_FIELDS_DEFAULT: Final[tuple[StrOrField, ...]] = ("id",)
 EXCLUDE_SIMILAR_TO_QS_FIELDS_DEFAULT: Final[tuple[StrOrField, ...]] = ("id__count",)
 
@@ -89,17 +128,12 @@ def gen_key(
     """Generate an encryption key within passed specification.
 
     Args:
-        min_length:
-            Minimum `key` length in chararcters.
-
-        max_length:
-            Maximum `key` length in chararcters.
-
-        valid_chars:
-            Characters allowed for key generation.
-
-        checker:
-            A callable to test generated key.
+        min_length: Minimum `key` length in chararcters.
+        max_length: Maximum `key` length in chararcters.
+        valid_chars: Characters allowed for key generation.
+        checker: A callable to test generated key.
+        min_digits: Minimum number of digit characters in generated key.
+        max_iterations: Maximum number of iterations generating key.
 
     Returns:
         A random `str` adhering to passed constraints.
@@ -276,7 +310,7 @@ def str_to_bool(
         which is due to depricate, hence equivalent below.
 
     Args:
-        var: `str` to convert into a `bool`
+        val: `str` to convert into a `bool`
         true_strs: a `Sequence` of `str` values treated as `True`
         false_strs: a `Sequence` of `str` values treated as `False`
 
@@ -285,7 +319,7 @@ def str_to_bool(
 
     Raises:
         ValueError: if `val`, lowercased, is not a `str` in the `true_strs`
-        or `false_strs`.
+            or `false_strs`.
 
     Example:
         ```pycon
@@ -394,8 +428,7 @@ def natural_keys(
     Args:
         text: `str` instance to process as a key
         split_regex: a regular expression to split keys, default extracts digits
-        func:
-            function to call on the results of `split_regex`, the results are
+        func: function to call on the results of `split_regex`, the results are
             can be used with `sorted` for ordering.
 
     Example:
@@ -412,33 +445,39 @@ def natural_keys(
     return [func(c) for c in re.split(split_regex, text)]
 
 
-def filter_starts_with(
-    fixture_paths: Sequence[str],
+def filter_paths_start_with(
+    fixture_paths: Sequence[PathLike],
     starts_with_str: str = NEWSPAPER_MODEL_NAME,
     key_func: Callable = natural_keys,
 ) -> list[str]:
     """Filter and sort `fixture_paths` that begin with `starts_with_str`.
 
+    Args:
+        fixture_paths: a `Sequence` of `str` paths to search.
+        starts_with_str: `str` to filter by the start of each `PathLike`
+            in `fixture_paths`.
+        key_func: function to call to for sorting.
+
     Example:
         ```pycon
         >>> paths = ['path/Newspaper-11.json', 'path/Issue-11.json', 'path/News-1.json']
-        >>> filter_starts_with(fixture_paths=paths, starts_with_str="News")
+        >>> filter_paths_start_with(fixture_paths=paths, starts_with_str="News")
         ['path/News-1.json', 'path/Newspaper-11.json']
 
         ```
     """
     return sorted(
         (
-            f
+            str(f)
             for f in fixture_paths
-            if f.startswith(f"{Path(f).parent}/{starts_with_str}")
+            if str(f).startswith(f"{Path(f).parent}/{starts_with_str}")
         ),
         key=key_func,
     )
 
 
-def filter_exclude_starts_with(
-    fixture_paths: Sequence[str],
+def filter_exclude_paths_start_with(
+    fixture_paths: Sequence[PathLike],
     starts_str1: str = ITEM_MODEL_NAME,
     starts_str2: str = NEWSPAPER_MODEL_NAME,
     key_func: Callable = natural_keys,
@@ -447,7 +486,7 @@ def filter_exclude_starts_with(
 
     Example:
         ```pycon
-        >>> filter_exclude_starts_with(['path/Newspaper-11.json', 'path/Issue-11.json',
+        >>> filter_exclude_paths_start_with(['path/Newspaper-11.json', 'path/Issue-11.json',
         ...                             'path/Item-1.json', 'cat'])
         ['cat', 'path/Issue-11.json']
 
@@ -455,17 +494,17 @@ def filter_exclude_starts_with(
     """
     return sorted(
         (
-            f
+            str(f)
             for f in fixture_paths
-            if not f.startswith(f"{Path(f).parent}/{starts_str1}")
-            and not f.startswith(f"{Path(f).parent}/{starts_str2}")
+            if not str(f).startswith(f"{Path(f).parent}/{starts_str1}")
+            and not str(f).startswith(f"{Path(f).parent}/{starts_str2}")
         ),
         key=key_func,
     )
 
 
 def sort_all_fixture_paths(
-    unsorted_fixture_paths: Sequence[str], key_func: Callable = natural_keys
+    unsorted_fixture_paths: Sequence[PathLike], key_func: Callable = natural_keys
 ) -> list[str]:
     """Sort fixture paths for `Newspaper.models` with order compatibility.
 
@@ -474,8 +513,8 @@ def sort_all_fixture_paths(
     for `fixtures` including `newspapers` tables.
 
     Args:
-        unsorted_fixture_paths: `Sequence` of `str` `fixture` paths to sort
-        key_fun: function to call to order `unsorted_fixture_paths`
+        unsorted_fixture_paths: `Sequence` of `PathLike` `fixture` paths to sort
+        key_func: function to call to order `unsorted_fixture_paths`
 
     Returns:
         `list` of sorted paths `str` via `key_func`
@@ -491,14 +530,14 @@ def sort_all_fixture_paths(
 
         ```
     """
-    newspaper_fixture_paths: list[str] = filter_starts_with(
+    newspaper_fixture_paths: list[str] = filter_paths_start_with(
         unsorted_fixture_paths, NEWSPAPER_MODEL_NAME, key_func
     )
-    non_newspaper_non_item_fixture_paths: list[str] = filter_exclude_starts_with(
+    non_newspaper_non_item_fixture_paths: list[str] = filter_exclude_paths_start_with(
         fixture_paths=unsorted_fixture_paths,
         key_func=key_func,
     )
-    item_fixtures: list[str] = filter_starts_with(
+    item_fixtures: list[str] = filter_paths_start_with(
         unsorted_fixture_paths, ITEM_MODEL_NAME, key_func
     )
     return (
@@ -545,8 +584,8 @@ def log_and_django_terminal(
     level: int = INFO,
     django_command_instance: BaseCommand | None = None,
     style: Callable | None = None,
-    *arg,
-    **kwargs,
+    *args: Any,
+    **kwargs: Any,
 ) -> None:
     """Log and add Django formatted print to terminal if available.
 
@@ -554,13 +593,12 @@ def log_and_django_terminal(
         See: https://code.djangoproject.com/ticket/21429
 
     Args:
-        messsage: `str` to log and potential print to terminal
+        message: `str` to log and potential print to terminal
         terminal_print: whether to print  to terminal as well
         level: what `logger` level to create
-        django_command_instance:
-            `BaseCommand` or subclass instance to manage `terminal interaction`
-        style:
-            function to call on `message` prior to sending to
+        django_command_instance: `BaseCommand` or subclass instance
+            to manage `terminal interaction`
+        style: function to call on `message` prior to sending to
             `django_command_instance` if provided. No effect
             without `django_command_instance`
         args: any positional arguments to send to `logger.log` call
@@ -569,7 +607,7 @@ def log_and_django_terminal(
     Returns:
         None
     """
-    logger.log(level, message, *arg, **kwargs)
+    logger.log(level, message, *args, **kwargs)
     if terminal_print:
         print(message)
     if django_command_instance:
@@ -820,7 +858,16 @@ def path_or_str_suffix(
     force: bool = False,
     split_str: str = ".",
 ) -> str:
-    """Return suffix of `str_or_path`, else ''.
+    """Return suffix of `str_or_path`, else `''`.
+
+    Args:
+        str_or_path: `str` or `PathLike` instance to extract `suffix` from.
+        max_extension_len: Maximum `extension` allowed for `suffix` to extract.
+        force: `bool` for overrised `max_extension_len` constraint.
+        split_str: `str` to split `str_or_path` by, usually `.` for file path.
+
+    Returns:
+        `str` extracted from the end of `str_or_path`.
 
     Example:
         ```pycon
@@ -1237,16 +1284,15 @@ def filter_by_null_fk(
 
 
 def get_unique_record(
-    qs: QuerySet, skip_exceptions: bool = False, **kwargs
+    qs: QuerySet, skip_exceptions: bool = False, **kwargs: Any
 ) -> QuerySet | Model:
     """Query `qs` for a unique record via `kwargs`.
 
     Args:
         qs: `QuerySet` to filter from.
-        skip_exceptions:
-            `log` errors and return potential duplicates if True,
-                else raise exceptions.
-        kwargs: `kwargs` passed to `QuerySet` `filter`.
+        skip_exceptions: `log` errors and return potential duplicates if True,
+            else raise exceptions.
+        **kwargs: `kwargs` passed to `QuerySet` `filter`.
 
     Returns:
         `Model` from `qs` if success, `QuerySet` if more than one

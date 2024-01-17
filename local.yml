@@ -16,7 +16,7 @@ services:
     #   - "8000"
     depends_on:
       - postgres
-      - mailhog
+      - mailpit
       # - redis
     volumes:
       - .:/app:z
@@ -91,9 +91,10 @@ services:
       - '8000:8000'
         # command: serve --dev-addr=0.0.0.0:8000
 
-  mailhog:
-    image: mailhog/mailhog:v1.0.0
-    container_name: lwmdb_local_mailhog
+  mailpit:
+    # image: mailhog/mailhog:v1.0.0
+    image: axllent/mailpit
+    container_name: lwmdb_local_mailpit
     ports:
       - '8025:8025'
 
@@ -109,7 +110,7 @@ services:
   #   depends_on:
   #     - redis
   #     - postgres
-  #     - mailhog
+  #     - mailpit
   #   ports: []
   #   command: /start-celeryworker
 
@@ -120,7 +121,7 @@ services:
   #   depends_on:
   #     - redis
   #     - postgres
-  #     - mailhog
+  #     - mailpit
   #   ports: []
   #   command: /start-celerybeat
 
