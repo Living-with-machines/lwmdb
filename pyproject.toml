@@ -31,6 +31,7 @@ django-anymail = "^9.2"
 pyopenssl = "^23.3.0"
 validators = "^0.20.0"
 openpyxl = "^3.1.2"
+django-admin-cursor-paginator = "^0.1.5"
 
 [tool.poetry.group.dev.dependencies]
 pytest-cov = "^4.1.0"

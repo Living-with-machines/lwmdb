@@ -88,7 +88,7 @@ services:
     volumes:
       - .:/app:z
     ports:
-      - '8000:8000'
+      - '9000:8000'
         # command: serve --dev-addr=0.0.0.0:8000
 
   mailpit:
