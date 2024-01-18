@@ -1,5 +1,7 @@
 exclude: '^docs/|/migrations/'
 default_stages: [commit]
+default_language_version:
+  python: python3.11
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -130,6 +132,7 @@ repos:
           - tqdm
           - psycopg[binary]
           - validators
+          - django-admin-cursor-paginator
 # sets up .pre-commit-ci.yaml to ensure pre-commit dependencies stay up to date
 ci:
   autoupdate_schedule: weekly

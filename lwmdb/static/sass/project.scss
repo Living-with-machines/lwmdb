@@ -17,6 +17,8 @@ $pink: #f2dede;
 $dark-pink: #eed3d7;
 $red: #b94a48;
 
+$green-backgroun: #b8c4c6;
+
 ////////////////////////////////
 		//Alerts//
 ////////////////////////////////
@@ -34,4 +36,27 @@ $red: #b94a48;
   background-color: $pink;
   border-color: $dark-pink;
   color: $red;
+}
+
+////////////////////////////////
+		//Public Layout//
+////////////////////////////////
+
+body {
+  background-image: url('../images/LWM-Tablet-Banners-2500x1302.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 100vh;
+}
+
+.splash {
+  display: block;
+  width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20%;
+}
+
+.logo{
+  width: 100px;
 }

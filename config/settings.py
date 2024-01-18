@@ -7,6 +7,7 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+import mimetypes
 import os
 from pathlib import Path
 from typing import Final
@@ -67,6 +68,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.gis",
     "django_extensions",
+    "admin_cursor_paginator",
 ]
 
 MIDDLEWARE = [
@@ -173,6 +175,11 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
 
+# Enable SVG
+
+mimetypes.add_type("image/svg+xml", ".svg", True)
+mimetypes.add_type("image/svg+xml", ".svgz", True)
+
 # MEDIA
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#media-root
@@ -233,6 +240,10 @@ DEBUG_TOOLBAR_CONFIG = {
 INTERNAL_IPS = ["127.0.0.1", "10.0.2.2"]
 
 use_docker_key: Final[str] = "USE_DOCKER"
+
+ADMIN_SITE_TITLE: Final[str] = "lwmdb: Living with Machines DataBase"
+ADMIN_SITE_HEADER: Final[str] = "lwmdb administration"
+ADMIN_INDEX_TITLE: Final[str] = "lwmdb admin"
 
 
 def is_docker():
