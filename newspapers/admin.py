@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import DataProvider, Digitisation, Ingest, Issue, Item, Newspaper
+from .models import DataProvider, Digitisation, FullText, Ingest, Issue, Item, Newspaper
 
 
 class IssueAdmin(admin.TabularInline):
@@ -18,3 +18,4 @@ admin.site.register(DataProvider)
 admin.site.register(Digitisation)
 admin.site.register(Ingest)
 admin.site.register(Item)
+admin.site.register(FullText)

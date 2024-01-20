@@ -783,6 +783,21 @@ class FullText(NewspapersModel):
     info = models.TextField(blank=True, null=True)
     canonical = models.BooleanField(default=False)
 
+    STR_PREFIX: str = "FullText: "
+
+    class Meta:
+        verbose_name: str = "full text"
+        verbose_name_plural: str = "full texts"
+
+    def __str__(self) -> str:
+        """Return self.item str if available, else truncated start of text."""
+        if self.item:
+            return self.STR_PREFIX + str(self.item)
+        else:
+            return self.STR_PREFIX + truncate_str(
+                self.text, max_length=MAX_PRINT_SELF_STR_LENGTH
+            )
+
     @property
     def file_name(self) -> str:
         """If `self.text_path`, infer file name, else return ''."""
