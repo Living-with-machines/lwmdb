@@ -261,7 +261,7 @@ class ProductionENVGenConfig:
             ('POSTGRES_HOST', 'POSTGRES_PORT', 'POSTGRES_DB',
              'POSTGRES_USER', 'POSTGRES_PASSWORD', 'SECRET_KEY',
              'USE_DOCKER', 'IPYTHONDIR', 'REDIS_URL', 'CELERY_FLOWER_USER',
-             'CELERY_FLOWER_PASSWORD')
+             'CELERY_FLOWER_PASSWORD', 'VIRTUAL_HOST')
 
             ```
         """
