@@ -108,7 +108,7 @@ POSTGRES_USER=lwmdb
 ...
 ```
 
-The name of the database is separate from the names of the tables so, for example, you can replace the `POSTGRES_DB` and `POSTGRES_USER` with your preferred configuration. This works because each of the models in this project (for example [`newspapers.Item`](../reference/newspapers/models#Item) )
+The name of the database is separate from the names of the tables so, for example, you can replace the `POSTGRES_DB` and `POSTGRES_USER` with your preferred configuration. This works because each of the models in this project (for example [`newspapers.Item`](/reference/newspapers/models/#newspapers.models.Item))
 
 
 !!! warning

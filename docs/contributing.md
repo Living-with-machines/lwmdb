@@ -27,7 +27,7 @@ but it does *not* auto update as local changes are made. Port `8080` is specifie
 
 !!! warning
 
-    The [`schema`](advanced/schema.md) currently raises an error. See ticket [`#115`](https://github.com/Living-with-machines/lwmdb/issues/115) for updates.
+    The [`schema`](schema.md) currently raises an error. See ticket [`#115`](https://github.com/Living-with-machines/lwmdb/issues/115) for updates.
 
 ## Local `docker` test runs
 
@@ -388,7 +388,7 @@ We use [All Contributors](https://allcontributors.org) in our semi-automated fil
 
 ### All Contributors
 
-All Contributors is a service for managing credit for contributions to a `git` repository. `.all-contributorsrc` is a `json` file in the root directory of the `alnm` repository. It also specifies design for what's rendered in `README.md` and intro [contributors](/#contributors) section of this documentation. 
+All Contributors is a service for managing credit for contributions to a `git` repository. `.all-contributorsrc` is a `json` file in the root directory of the `alnm` repository. It also specifies design for what's rendered in `README.md` and intro [contributors](index.md#contributors) section of this documentation. 
 
 The `json` structure follows the All Contributors [`specification`](https://allcontributors.org/docs/en/specification). Below is an example of this format
 
@@ -471,7 +471,7 @@ This project's configuration file has malformed JSON: .all-contributorsrc. Error
 
 ### CITATION.CFF
 
-We also maintain a [`Citation File Format (CFF)`](`cff-version`) file for citeable, academic credit for contributions via our [`zenodo`](10.5281/zenodo.8208203) registration. This helps automate the process of releasing academically citeable [Digital Object Identifyer (DOI)](https://en.wikipedia.org/wiki/Digital_object_identifier) for releases of `lwmdb`.
+We also maintain a [`Citation File Format (CFF)`](`cff-version`) file for citeable, academic credit for contributions via our [`zenodo`](https://zenodo.org/records/8208203) registration. This helps automate the process of releasing academically citeable [Digital Object Identifyer (DOI)](https://en.wikipedia.org/wiki/Digital_object_identifier) for releases of `lwmdb`.
 
 `CFF` supports [Open Researcher and Contributor IDs (`orcid`)](https://en.wikipedia.org/wiki/ORCID), which eases automating academic credit for evolving contribtuions to academic work, even as individuals change academic positions. 
 For reference a simplified example based on `cff-version 1.2.0`:

@@ -31,6 +31,7 @@ django-anymail = "^9.2"
 pyopenssl = "^23.3.0"
 validators = "^0.20.0"
 openpyxl = "^3.1.2"
+django-admin-cursor-paginator = "^0.1.5"
 
 [tool.poetry.group.dev.dependencies]
 pytest-cov = "^4.1.0"
@@ -71,6 +72,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "config.test_settings"
 python_files = ["tests.py", "test_*.py"]
+doctest_optionflags = ["NORMALIZE_WHITESPACE", "ELLIPSIS",]
 addopts = """
 --cov=lwmdb
 --cov-report=term:skip-covered
@@ -81,12 +83,14 @@ addopts = """
 --ignore=notebooks
 --ignore=docs
 --ignore=lwmdb/contrib/sites
+--strict-markers
 --durations=3
 -n auto
 """
 markers = [
-  "slow: marks tests as slow (deselect with '-m \"not slow\"')",
-  "cli: marks tests as using the command-line-interface",
+  "slow: slow tests (deselect with '-m \"not slow\"')",
+  "cli: use the command-line-interface",
+  "download: require data download",
 ]
 
 [tool.flake8]

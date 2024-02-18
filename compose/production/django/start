@@ -6,7 +6,33 @@ set -o nounset
 
 
 python /app/manage.py collectstatic --noinput
-# /usr/local/bin/gunicorn config.asgi --bind 0.0.0.0:5000 --chdir=/app -k uvicorn.workers.UvicornWorker --lifespan on
+
+compress_enabled() {
+python << END
+import sys
+
+# Modified from default conf with environ to use dotenv
+# from environ import Env
+
+from dotenv import dotenv_values
+
+config = dotenv_values(".envs/production")
+config['COMPRESS_ENABLED'] = False
+
+if config['COMPRESS_ENABLED']:
+    sys.exit(0)
+else:
+    sys.exit(1)
+
+END
+}
+
+if compress_enabled; then
+  # NOTE this command will fail if django-compressor is disabled
+  # 'compress' module may not be installed
+  python /app/manage.py compress
+fi
+# /usr/local/bin/gunicorn config.asgi --bind 0.0.0.0:5000 --chdir=/app -k uvicorn.workers.UvicornWorker --lifespanon
 
 # /usr/local/bin/gunicorn config.asgi --bind 0.0.0.0:5000 --chdir=/app -k uvicorn.workers.UvicornWorker
 /usr/local/bin/gunicorn config.asgi:application --bind 0.0.0.0:5000 --chdir=/app -k uvicorn.workers.UvicornWorker

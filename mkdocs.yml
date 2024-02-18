@@ -8,6 +8,7 @@ nav:
   - Advanced:
       - Fulltext: fulltext.md
       - Import: raw_import.md
+      - Duplicates: manage_dupes.md
       - Deploy: deploy.md
       - Management: management.md
       - Schema: schema.md
@@ -75,12 +76,16 @@ plugins:
         python:
           paths: [.]
           options:
+            show_symbol_type_toc: true
             separate_signature: true
             show_signature_annotations: true
             annotations_path: brief
             line_length: 80
             signature_crossrefs: true
             merge_init_into_classes: true
+            filters:
+              - '!^_[^_]' # Included by default
+              - "!^.*\\.bak{1}.*$"
 
 markdown_extensions:
   - smarty

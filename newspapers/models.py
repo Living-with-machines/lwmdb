@@ -1,20 +1,30 @@
 import os
 from logging import getLogger
 from pathlib import Path
-from typing import Final
+from typing import Final, Union
 from zipfile import ZipFile
 
 from azure.storage.blob import BlobClient
+from django.conf import settings
 from django.db import models
+from django.db.models import QuerySet
 from django_pandas.managers import DataFrameManager
 
-from fulltext.models import Fulltext
 from gazetteer.models import Place
-from lwmdb.utils import truncate_str, word_count
+from lwmdb.utils import (
+    MAX_PATH_LENGTH,
+    DupeRecords,
+    dupes_to_check,
+    get_unique_record,
+    truncate_str,
+    word_count,
+)
 
 logger = getLogger(__name__)
 
+CODE_SEPERATOR_CHAR: Final[str] = "-"
 MAX_PRINT_SELF_STR_LENGTH: Final[int] = 80
+NEWSPAPER_ISSUE_ITEM_CODE_MAX_LENGTH: Final[int] = 600
 
 
 class NewspapersModel(models.Model):
@@ -81,10 +91,44 @@ class Ingest(NewspapersModel):
 
 
 class Newspaper(NewspapersModel):
-    """Newspaper, including title and place."""
+    """Newspaper, including title and place.
 
-    # TODO #55: publication_code should be unique? Currently unique (but not tested with BNA)
-    publication_code = models.CharField(max_length=600, default=None)
+    Attributes:
+        publication_code:
+            a code to uniquely identify each newspaper derived from
+        title:
+            Newspaper title (assumed to be constant over time)
+        location:
+            Name of location an instance is associated with
+        place_of_publication:
+            A `Place` `gazetteer` record an instance is associated with.
+
+    Example:
+        ```pycon
+        >>> getfixture("db")
+        >>> new_tredegar = Newspaper(publication_code="0003548",
+        ...                          title=("New Tredegar, "
+        ...                                 "Bargoed & Caerphilly Journal"),
+        ...                          location="Bedwellty, Gwent, Wales",)
+        >>> new_tredegar
+        0003548
+        >>> str(new_tredegar)
+        'New Tredegar, Bargoed & Caerphilly Journal'
+        >>> new_tredegar.place_of_publication
+        >>> Newspaper.objects.count()
+        0
+        >>> new_tredegar.save()
+        >>> Newspaper.objects.count()
+        1
+
+        ```
+    """
+
+    # TODO #55: publication_code should be unique? Currently unique (
+    #                           but not tested with BNA)
+    publication_code = models.CharField(
+        max_length=NEWSPAPER_ISSUE_ITEM_CODE_MAX_LENGTH, default=None
+    )
     title = models.CharField(max_length=255, default=None)
     location = models.CharField(max_length=255, default=None, blank=True, null=True)
     place_of_publication = models.ForeignKey(
@@ -110,14 +154,86 @@ class Newspaper(NewspapersModel):
             )
         ]
 
+    @classmethod
+    def dupe_pub_codes_manager(cls) -> DupeRecords:
+        """Return a `DupeRecords` of potential duplicate records."""
+        return dupes_to_check(
+            qs_or_model=cls,
+            dupe_fields=("publication_code", "title"),
+            dupe_method_kwargs={"null_relations": ("issue",)},
+        )
+
 
 class Issue(NewspapersModel):
-    """Newspaper Issue, including date and relevant source url."""
+    """Newspaper Issue, including date and relevant source url.
+
+    Attributes:
+        issue_code:
+            A `str` of form:
+
+            ```
+            {newspaper.publication_code}-{issue.issue_date.strftime('%Y%m%d')}
+            ```
+
+            For example: if
+
+            * `newspaper.publication_code` is `0000347`
+            * `issue_date` is `datetime.date(1904, 7, 7)`
+
+            then the `issue_code` is
+
+            ```
+            0003548-19040707
+            ```
+
+            These codes are designed to uniquely identify each issue, at
+            least with respect to each related `Newspaper`.
+
+            !!! note
+
+                See tickets [#55](https://github.com/Living-with-machines/lwmdb/issues/55)
+                and [#93](https://github.com/Living-with-machines/lwmdb/issues/55)
+                for updates on ensuring uniqueness.
+        issue_date:
+            Date of issue publication.
+        input_sub_path:
+            A `str` to convert into a path for related source OCR files.
+            See `Item.text_path`
+        newspaper:
+            `Newspaper` record each `Issue` is from.
+
+    Example:
+        ```pycon
+        >>> getfixture("db")
+        >>> from datetime import date
+        >>> new_tredegar = Newspaper(publication_code="0003548",
+        ...                          title=("New Tredegar, "
+        ...                                 "Bargoed & Caerphilly Journal"),
+        ...                          location="Bedwellty, Gwent, Wales",)
+        >>> issue = Issue(issue_code="0003548-19040707",
+        ...               issue_date=date(1904, 7, 7),
+        ...               newspaper=new_tredegar,
+        ...               input_sub_path='0003548/1904/0707')
+        >>> print(issue)
+        0003548-19040707
+        >>> issue.issue_date
+        datetime.date(1904, 7, 7)
+        >>> new_tredegar.save()
+        >>> Issue.objects.count()
+        0
+        >>> issue.save()
+        >>> Issue.objects.count()
+        1
+
+        ```
+    """
 
     # TODO #55: issue_code should be unique? Currently unique (but not tested with BNA)
-    issue_code = models.CharField(max_length=600, default=None)
+    issue_code = models.CharField(
+        max_length=NEWSPAPER_ISSUE_ITEM_CODE_MAX_LENGTH, default=None
+    )
     issue_date = models.DateField()
-    input_sub_path = models.CharField(max_length=255, default=None)
+    input_sub_path = models.CharField(max_length=MAX_PATH_LENGTH, default=None)
 
     newspaper = models.ForeignKey(
         Newspaper,
@@ -144,7 +260,7 @@ class Issue(NewspapersModel):
         return (
             f"https://www.britishnewspaperarchive.co.uk/viewer/BL/"
             f"{self.newspaper.publication_code}/"
-            f"{str(self.issue_date).replace('-', '')}/001/0001"
+            f"{str(self.issue_date).replace(CODE_SEPERATOR_CHAR, '')}/001/0001"
         )
 
     class Meta:
@@ -158,16 +274,150 @@ class Issue(NewspapersModel):
 
 
 class Item(NewspapersModel):
-    """Printed element in a Newspaper issue including metadata."""
+    """Printed element in a Newspaper issue including metadata.
+
+    Attributes:
+        MAX_TITLE_CHAR_COUNT:
+            Maximum length for `Item` title field. The default set by
+            `settings.MAX_NEWSPAPER_TITLE_CHAR_COUNT`, which can be
+            customised in `.env`. This can also be `None`, in which
+            case there is no maximum enforced beyond `postgres`
+            [spec](https://www.postgresql.org/docs/current/datatype-character.html).
+
+            !!! note
+
+                This is not stored in SQL, only within the class.
+
+        item_code:
+            A unique code for each `Item` of the form:
+            ```
+            {newspaper.publication_code}-{issue.issue_code}-{item.item_code}
+            ```
+
+            For example:
+                - the 37th `Item` in
+                - `Issue` on 7 July 1904 from
+                - _New Tredegar_ (`publication_code` `0003548`)
+
+            will have an `item_code`:
+                ```
+                0003548-19040707-art0037`
+                ```
+
+            !!! note
+
+                The `art` prefix on the last portion of the `item_code` may vary
+                by newspaper collection
+
+        title:
+            Item title. If `truncation` is applied and the original title
+            is longer than `MAX_NEWSPAPER_TITLE_CHAR_COUNT`, this is the
+            title up to the truncation point, followed by
+            [`lwmdb.utils.DEFFAULT_TRUNCATION_CHARS`][lwmdb.utils.DEFAULT_TRUNCATION_CHARS]
+
+        title_word_count:
+            Number of words in the title, prior to any truncation, assuming
+            English sentence structure.
+
+        title_char_count:
+            Number of characters in the title prior to any truncation.
+
+        title_truncated:
+            Whether the `title` field has been truncated. If `None`,
+            then the title length has not had truncation process applied.
+
+        item_type:
+            What time of item. By default all capps. Known types
+            include ARTICLE and ADVERT.
+            Todo: This needs fleshing out.
+
+        word_count:
+            Word count of `FullText` body text
+            (assuming English sentence structure).
+
+        word_char_count:
+            The number of characters in the `FullText` body text.
+
+        ocr_quality_sd:
+            Standard deviation of Optical Character Recognition quality scores.
+
+        ocr_quality_mean:
+            Mean of Optical Character Recognition quality scores.
+
+        input_filename:
+            Filename of `FullText`.
+
+        issue:
+            Related `Newspaper` `Issue` record.
+
+        data_provider:
+            Related record of newspaper data provider in `DataProvider.
+
+        digitisation:
+            Related record of means collection was digitised in `Digitisation`.
+
+        ingest:
+            Related tool used for database ingest, including version in `Ingest`.
+
+        full_text:
+            Related record of `item` plain text in `FullText`.
+
+    Example:
+        ```pycon
+        >>> getfixture("db")
+        >>> lwm_data_provider = getfixture('lwm_data_provider')
+        Installed 5 object(s) from 1 fixture(s)
+        >>> new_tredegar = Newspaper(
+        ...     publication_code="0003548",
+        ...     title=("New Tredegar, "
+        ...            "Bargoed & Caerphilly Journal"),
+        ...     location="Bedwellty, Gwent, Wales",)
+        >>> issue = Issue(issue_code="0003548-19040707",
+        ...     issue_date="1904-7-7",
+        ...     input_sub_path='0003548/1904/0707',
+        ...     newspaper=new_tredegar,)
+        >>> item = Item(
+        ...     item_code="0003548-19040707-art0037",
+        ...     title='MEETING AT CAERPHILLY.',
+        ...     item_type="ARTICLE",
+        ...     ocr_quality_mean=0.8526,
+        ...     ocr_quality_sd=0.2192,
+        ...     input_filename='0003548_19040707_art0037.txt',
+        ...     issue=issue,
+        ...     word_count=1261,
+        ...     data_provider=lwm_data_provider)
+        >>> item
+        0003548-19040707-art0037
+        >>> str(item)
+        'MEETING AT CAERPHILLY.'
+        >>> item.word_count
+        1261
+        >>> item.title_word_count
+        >>> item.title_char_count
+        >>> item.title_truncated
+        >>> new_tredegar.save()
+        >>> issue.save()
+        >>> item.save()  # This calls `item._sync_title_counts()`
+        >>> item.title_word_count
+        3
+        >>> item.title_char_count
+        22
+        >>> item.title_truncated
+        False
+
+        ```
+    """
 
     # TODO #55: item_code should be unique? Currently, not unique, however so needs fixing in alto2txt2fixture
-    MAX_TITLE_CHAR_COUNT: Final[int] = 100
+    MAX_TITLE_CHAR_COUNT: int | None = settings.MAX_NEWSPAPER_TITLE_CHAR_COUNT
 
-    item_code = models.CharField(max_length=600, default=None)
+    item_code = models.CharField(
+        max_length=NEWSPAPER_ISSUE_ITEM_CODE_MAX_LENGTH, default=None
+    )
     title = models.TextField(max_length=MAX_TITLE_CHAR_COUNT, default=None)
     title_word_count = models.IntegerField(null=True)
     title_char_count = models.IntegerField(null=True)
-    title_truncated = models.BooleanField(default=False)
+    title_truncated = models.BooleanField(default=None, null=True, blank=True)
     item_type = models.CharField(max_length=600, default=None, blank=True, null=True)
     word_count = models.IntegerField(null=True, db_index=True)
     word_char_count = models.IntegerField(null=True)
@@ -206,7 +456,6 @@ class Item(NewspapersModel):
         related_name="items",
         related_query_name="item",
     )
-    fulltext = models.OneToOneField(Fulltext, null=True, on_delete=models.SET_NULL)
 
     class Meta:
         indexes = [
@@ -217,7 +466,7 @@ class Item(NewspapersModel):
             )
         ]
 
-    def save(self, sync_title_counts: bool = False, *args, **kwargs):
+    def save(self, sync_title_counts: bool = True, *args, **kwargs):
         # for consistency, we save all item_type in uppercase
         self.item_type = str(self.item_type).upper()
         self._sync_title_counts(force=sync_title_counts)
@@ -233,21 +482,27 @@ class Item(NewspapersModel):
         title_text_char_count: int = len(self.title)
         if not self.title_char_count or force:
             logger.debug(
-                f"Setting `title_char_count` for {self.item_code} to {title_text_char_count}"
+                f"Setting 'title_char_count' for '{self.item_code}' "
+                f"to {title_text_char_count}"
             )
             self.title_char_count = title_text_char_count
         else:
             if self.title_char_count != title_text_char_count:
-                if self.title_char_count < self.MAX_TITLE_CHAR_COUNT:
+                if (
+                    self.MAX_TITLE_CHAR_COUNT
+                    and self.title_char_count < self.MAX_TITLE_CHAR_COUNT
+                ):
                     raise self.TitleLengthError(
-                        f"{self.title_char_count} characters does not equal {title_text_char_count}: the length of title of {self.item_code}"
+                        f"{self.title_char_count} characters does not "
+                        f"equal {title_text_char_count}: the length of "
+                        f"title of '{self.item_code}'"
                     )
 
     def _sync_title_word_count(self, force: bool = False) -> None:
         title_text_word_count: int = word_count(self.title)
         if not self.title_word_count or force:
             logger.debug(
-                f"Setting `title_word_count` for {self.item_code} to {title_text_word_count}"
+                f"Setting 'title_word_count' for '{self.item_code}' to {title_text_word_count}"
             )
             self.title_word_count = title_text_word_count
         else:
@@ -257,15 +512,21 @@ class Item(NewspapersModel):
                 )
 
     def _sync_title_counts(self, force: bool = False) -> None:
-        """Run `_sync` methods, then trim title if long."""
+        """Run '_sync' methods, then trim title if long."""
         self._sync_title_char_count(force=force)
         self._sync_title_word_count(force=force)
-        if self.title_char_count and self.title_char_count > self.MAX_TITLE_CHAR_COUNT:
+        if (
+            self.MAX_TITLE_CHAR_COUNT
+            and self.title_char_count
+            and self.title_char_count > self.MAX_TITLE_CHAR_COUNT
+        ):
             logger.debug(
-                f"Trimming title of {self.item_code} to {self.MAX_TITLE_CHAR_COUNT} chars."
+                f"Trimming title of '{self.item_code}' to {self.MAX_TITLE_CHAR_COUNT} chars."
             )
             self.title = self.title[: self.MAX_TITLE_CHAR_COUNT]
             self.title_truncated = True
+        else:
+            self.title_truncated = False
 
     HOME_DIR = Path.home()
     DOWNLOAD_DIR = HOME_DIR / "metadata-db/"
@@ -285,9 +546,9 @@ class Item(NewspapersModel):
     def download_dir(self):
         """Path to the download directory for full text data.
 
-        The DOWNLOAD_DIR class attribute contains the directory under
+        The `DOWNLOAD_DIR` attribute contains the directory under
         which full text data will be stored. Users can change it by
-        typing: Item.DOWNLOAD_DIR = "/path/to/wherever/"
+        setting `Item.DOWNLOAD_DIR = "/path/to/wherever/"`
         """
         return Path(self.DOWNLOAD_DIR)
 
@@ -316,9 +577,23 @@ class Item(NewspapersModel):
         """Return a path relative to the full text file for this Item.
 
         This is generated from the zip archive (once downloaded and
-        extracted) from the DOWNLOAD_DIR and the filename.
+        extracted) from the `DOWNLOAD_DIR` and the filename.
         """
         return Path(self.issue.input_sub_path) / self.input_filename
+
+    @property
+    def full_text_canonical(self) -> Union["FullText", None]:
+        """If a related `FullText` is marked `canonical` return, else None."""
+        query = self.full_texts.filter(canonical=True).distinct()
+        if len(query) == 1:
+            return query[0]
+        elif len(query) > 1:
+            raise FullText.DuplicateFullTextError(
+                f"{len(query)} related 'FullText' entries "
+                f"marked 'canonical', sould be maximum 1 for {self}. "
+            )
+        else:
+            return None
 
     # Commenting this out as it will fail with the dev on #56 (see branch kallewesterling/issue56).
     # As this will likely not be the first go-to for fulltext access, we can keep it as a method:
@@ -380,23 +655,23 @@ class Item(NewspapersModel):
                     os.remove(download_file_path)
                     print(f"Removing empty download: {download_file_path}")
 
-    def extract_fulltext_file(self):
+    def extract_full_text_file(self):
         """Extract Item's full text file from a zip archive to DOWNLOAD_DIR."""
         archive = self.text_archive_dir / self.zip_file
         with ZipFile(archive, "r") as zip_ref:
             zip_ref.extract(str(self.text_path), path=self.text_extracted_dir)
 
-    def read_fulltext_file(self) -> list[str]:
+    def read_full_text_file(self) -> list[str]:
         """Read the full text for this Item from a file."""
         with open(self.text_extracted_dir / self.text_path) as f:
             lines = f.readlines()
         return lines
 
-    def extract_fulltext(self) -> list[str]:
+    def extract_full_text(self) -> list[str]:
         """Extract the full text of this newspaper item."""
         # If the item full text has already been extracted, read it.
         if os.path.exists(self.text_extracted_dir / self.text_path):
-            return self.read_fulltext_file()
+            return self.read_full_text_file()
 
         if self.FULLTEXT_METHOD == "download":
             # If not already available locally, download the full text archive.
@@ -409,7 +684,7 @@ class Item(NewspapersModel):
                 )
 
             # Extract the text for this item.
-            self.extract_fulltext_file()
+            self.extract_full_text_file()
 
         elif self.FULLTEXT_METHOD == "blobfuse":
             raise NotImplementedError("Blobfuse access is not yet implemented.")
@@ -418,13 +693,181 @@ class Item(NewspapersModel):
 
         else:
             raise RuntimeError(
-                "A valid fulltext access method must be selected: options are 'download' or 'blobfuse'."
+                "A valid full_text access method must be selected: options are 'download' or 'blobfuse'."
             )
 
         # If the item full text still hasn't been extracted, report failure.
         if not os.path.exists(self.text_extracted_dir / self.text_path):
             raise RuntimeError(
-                f"Failed to extract fulltext for {self.item_code}; path does not exist: {self.text_extracted_dir / self.text_path}"
+                f"Failed to extract full_text for {self.item_code}; path does not exist: {self.text_extracted_dir / self.text_path}"
             )
 
-        return self.read_fulltext_file()
+        return self.read_full_text_file()
+
+
+class FullText(NewspapersModel):
+    """Optical Charater Recognition newspaper `Item` body text.
+
+    Attributes:
+        text: Plain text of `Item`, potentially quite large newspaper
+            articles. May have unusual or unreadable sequences of
+            characters due to issues with Optical Character Recognition
+            quality.
+        text_path: Path to `plaintext` source file (if used). If
+            `self.compressed_path` is set, then `text_path` is to relevant
+            `txt` file when `self.text_compressed_path` is uncompressed
+        text_compressed_path: Path to zip file  (if used).
+        text_fixute_path: If `self` is loaded via a `fixture` (likely
+            generated by `alto2txt2fixture` in `json` format), the path
+            to that fixture file.
+        info: Further information about the text, eg. configuration for new
+            OCR method.
+        errors: `str` records of any logged errors generating this `FullText`.
+        created_at: Date and time the record is created. This can also be
+            provided by a fixture, for example via `alto2txt2fixture`
+        updated_at: Date and time the record is last updated. This can also
+            be provided by a fixture, example via `alto2txt2fixture`.
+            This can help keep track of the timing of any changes
+            after, for example, an import from an `alto2txt2fixture`
+            `json` fixture file.
+
+    Example:
+        ```pycon
+        >>> getfixture("db")
+        >>> item_full_text = FullText(
+        ...     item_code='0003548-19040707-art0037',
+        ...     text_fixture_path='fulltext/fixtures/plaintext_fixture-38884.json',
+        ...     text_compressed_path='0003548_plaintext.zip',
+        ...     text_path='0003548/1904/0707/0003548_19040707_art0037.txt',
+        ... )
+        >>> item_full_text.save()
+        >>> item_full_text.canonical
+        False
+        >>> item_full_text.item is None
+        True
+        >>> new_tredegar_item: Item = getfixture(
+        ...     "new_tredegar_last_issue_first_item")
+        Installed 5 object(s) from 1 fixture(s)
+        >>> item_full_text.set_related_item(set_canonical=True)
+        0003548-19040707-art0037
+        >>> (set(new_tredegar_item.full_texts.all()) ==
+        ...  set((item_full_text,)))
+        True
+        >>> item_full_text.canonical
+        True
+
+        ```
+    """
+
+    text = models.TextField()
+    item = models.ForeignKey(
+        Item,
+        on_delete=models.SET_NULL,
+        verbose_name="Full Text",
+        blank=True,
+        null=True,
+        related_name="full_texts",
+        related_query_name="full_text",
+    )
+    item_code = models.CharField(
+        max_length=NEWSPAPER_ISSUE_ITEM_CODE_MAX_LENGTH, blank=True, null=True
+    )
+    text_path = models.CharField(max_length=MAX_PATH_LENGTH, blank=True, null=True)
+    text_compressed_path = models.CharField(
+        max_length=MAX_PATH_LENGTH, blank=True, null=True
+    )
+    text_fixture_path = models.CharField(
+        max_length=MAX_PATH_LENGTH, blank=True, null=True
+    )
+    errors = models.TextField(blank=True, null=True)
+    info = models.TextField(blank=True, null=True)
+    canonical = models.BooleanField(default=False)
+
+    STR_PREFIX: str = "FullText: "
+
+    class Meta:
+        verbose_name: str = "full text"
+        verbose_name_plural: str = "full texts"
+
+    def __str__(self) -> str:
+        """Return self.item str if available, else truncated start of text."""
+        if self.item:
+            return self.STR_PREFIX + str(self.item)
+        else:
+            return self.STR_PREFIX + truncate_str(
+                self.text, max_length=MAX_PRINT_SELF_STR_LENGTH
+            )
+
+    @property
+    def file_name(self) -> str:
+        """If `self.text_path`, infer file name, else return ''."""
+        return Path(self.text_path).name if self.text_path else ""
+
+    def set_canonical(self):
+        if not self.canonical and self.item and self.item.full_texts.count() == 1:
+            self.canonical = True
+            self.save()
+
+    def set_related_item(
+        self,
+        set_canonical: bool = False,
+        use_filename_endswith: bool = False,
+        skip_exceptions: bool = False,
+    ) -> Item | None:
+        """Check and set related `Item` instance by `item_code` or `text_path`.
+
+        Following the conventions that `Item.item_code` and `Item.input_filename`
+        should match `text_code` and `text_path` fields exported by
+        `alto2txt2fixture`, this function queries `Newspaper.Item` records for
+        matches, and if successful sets that relation and returns that `Item`
+        instance.
+
+        Args:
+            set_canonical:
+                Run `self.set_canonical` if related `Item` found.
+            use_filename_endswith:
+                If `self.item_code` is not set, search for related `Items`
+                    with a similar `file_name` that ends with `self.file_name`.
+            skip_exceptions: Log `errors` instead of Raise assertions.
+        """
+        item_obj_or_qs: Item | QuerySet
+        if self.text_path:
+            if self.item_code:
+                item_obj_or_qs = get_unique_record(
+                    Item.objects.all(),
+                    skip_exceptions=skip_exceptions,
+                    item_code=self.item_code,
+                )
+                if isinstance(item_obj_or_qs, Item):
+                    self.item = item_obj_or_qs
+            elif use_filename_endswith:
+                item_obj_or_qs = get_unique_record(
+                    Item.objects.all(),
+                    skip_exceptions=skip_exceptions,
+                    input_filename__endswith=self.file_name,
+                )
+                if isinstance(item_obj_or_qs, Item):
+                    self.item = item_obj_or_qs
+                    self.item_code = self.item.item_code
+                elif len(item_obj_or_qs) > 1:
+                    raise self.DuplicateFullTextError(
+                        f"{len(item_obj_or_qs)} newspaper Items should have exactly 1 "
+                        f"FullText from 'text_path' {self.text_path} "
+                    )
+            else:
+                logger.warning(f"No matching 'Newspaper.Item' found for {self}")
+                return None
+            self.save()
+            if set_canonical:
+                self.set_canonical()
+            return self.item
+        return None
+
+    class DuplicateFullTextError(Exception):
+        ...
+
+    class DuplicateCanonicalError(Exception):
+        ...
+
+    class NoMatchingItemCode(Exception):
+        ...

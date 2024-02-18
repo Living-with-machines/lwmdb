@@ -7,6 +7,7 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+import mimetypes
 import os
 from pathlib import Path
 from typing import Final
@@ -14,6 +15,14 @@ from typing import Final
 from dotenv import dotenv_values
 
 config = dotenv_values(".envs/local")
+
+DEFAULT_MAX_NEWSPAPER_TITLE_CHAR_COUNT: Final[int] = 100
+
+MAX_NEWSPAPER_TITLE_CHAR_COUNT: int | None = (
+    int(config["MAX_NEWSPAPER_TITLE_CHAR_COUNT"])
+    if "MAX_ITEM_TITLE_LENGTH" in config and config["MAX_NEWSPAPER_TITLE_CHAR_COUNT"]
+    else DEFAULT_MAX_NEWSPAPER_TITLE_CHAR_COUNT
+)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,7 +41,11 @@ DEBUG = True
 
 # SECURITY WARNING: customise these when run in production
 
-ALLOWED_HOSTS = ["0.0.0.0", "127.0.0.1", "localhost", "20.68.197.14", "193.60.220.253"]
+ALLOWED_HOSTS = [
+    "0.0.0.0",
+    "127.0.0.1",
+    "localhost",
+]
 
 # Add VIRTUAL_HOST from .envs/local if available
 # See Deploy section of documentation for details
@@ -46,7 +59,6 @@ INSTALLED_APPS = [
     "mitchells",
     "gazetteer",
     "census",
-    "fulltext",
     "lwmdb",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -56,6 +68,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.gis",
     "django_extensions",
+    "admin_cursor_paginator",
 ]
 
 MIDDLEWARE = [
@@ -162,6 +175,11 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
 
+# Enable SVG
+
+mimetypes.add_type("image/svg+xml", ".svg", True)
+mimetypes.add_type("image/svg+xml", ".svgz", True)
+
 # MEDIA
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#media-root
@@ -222,6 +240,10 @@ DEBUG_TOOLBAR_CONFIG = {
 INTERNAL_IPS = ["127.0.0.1", "10.0.2.2"]
 
 use_docker_key: Final[str] = "USE_DOCKER"
+
+ADMIN_SITE_TITLE: Final[str] = "lwmdb: Living with Machines DataBase"
+ADMIN_SITE_HEADER: Final[str] = "lwmdb administration"
+ADMIN_INDEX_TITLE: Final[str] = "lwmdb admin"
 
 
 def is_docker():

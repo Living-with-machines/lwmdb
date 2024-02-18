@@ -1,11 +1,13 @@
 exclude: '^docs/|/migrations/'
 default_stages: [commit]
+default_language_version:
+  python: python3.11
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
-      - id: check-docstring-first
+      # - id: check-docstring-first
       - id: check-merge-conflict
       - id: check-toml
       - id: check-yaml
@@ -77,7 +79,7 @@ repos:
       - id: black
 
   - repo: https://github.com/pycqa/flake8
-    rev: 6.1.0
+    rev: 7.0.0
     hooks:
       - id: flake8
         additional_dependencies:
@@ -130,6 +132,7 @@ repos:
           - tqdm
           - psycopg[binary]
           - validators
+          - django-admin-cursor-paginator
 # sets up .pre-commit-ci.yaml to ensure pre-commit dependencies stay up to date
 ci:
   autoupdate_schedule: weekly

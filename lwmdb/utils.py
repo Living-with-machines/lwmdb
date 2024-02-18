@@ -1,14 +1,57 @@
+"""Utilities and a selection of project wide default settings.
+
+Attributes:
+    VALID_TRUE_STRS: `tuple` of `str` values that are treated as `True`.
+    VALID_FALSE_STRS: `tuple` of `str` values that are treated as `False`.
+    MAX_PATH_LENGTH: Maximum default length for file paths.
+    DEFAULT_MAX_KEY_ITERATIONS: Maximum default iterations to generate a random key.
+    DEFAULT_FIXTURE_PATH: Default folder name for model database fixtures.
+    JSON_FORMAT_EXTENSION: Standard extension for `JSON` format files.
+    DEFAULT_MAX_LOG_STR_LENGTH: Maximum default length for log `str` values.
+    DEFAULT_CALLABLE_CHUNK_SIZE: Maximum default number of calls in `sql` chunks.
+    DEFAULT_CALLABLE_CHUNK_METHOD_NAME: Name of default method to call on `model` classes.
+    DIGITS_REGEX: Regular expression to match digit characters (e.g. '0', '1' etc.)
+    DEFAULT_LOCAL_ENV_PATH: Path of default `.env` `local` configuration file.
+    DEFAULT_PRODUCTION_ENV_PATH: Path of default `.env` `production` configuration file.
+    DEFAULT_MIN_KEY_LENGTH: Minimum default key length.
+    DEFAULT_MAX_KEY_LENGTH: Maximum default key length.
+    DEFAULT_KEY_CHARS: Default characters that can be included in a generated key.
+    DEFAULT_KEY_MINIMUM_DIGITS: Minimum number of digits (numbers) in generated key.
+    DEFAULT_MAX_FLOWER_USER_NAME_LENGTH: Maximum generated `flower` service user name
+        character length.
+    DEFAULT_MIN_FLOWER_USER_NAME_LENGTH: Minimum generated `flower` service user name
+        character length.
+    NEWSPAPER_MODEL_NAME: Name from `newspaper.models.Newspaper`
+        (here to avoid a circular import).
+    ITEM_MODEL_NAME: Name from `newspaper.models.Item`
+        (here to avoid a circular import).
+    DEFAULT_APP_DATA_FOLDER: Name of default `data` folder.
+    DEFAULT_APP_FIXTURE_FOLDER: Name of default fixture path in each app.
+
+    StrOrField: `Type` of `str` or `django.models.Field`.
+    StrOrFieldTuple: `Type` of `tuples` of `StrOrField` (arbitrary length).
+    StrOrFieldIter: `Type` of iterable collections of `StrOrField`.
+
+    EXCLUDE_DUPE_FIELDS_DEFAULT: Model filed names to default exclude from
+        duplication checking.
+    EXCLUDE_SIMILAR_TO_QS_FIELDS_DEFAULT: Model attributes/fields to exclude
+        by default comarisons of model instance similarity checking.
+"""
+
 import json
 import re
+import secrets
 from collections import defaultdict
-from collections.abc import Callable, Sequence
-from dataclasses import dataclass
+from collections.abc import Callable, Generator, Iterable, Sequence
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from glob import glob
 from logging import ERROR, INFO, WARNING, getLogger
 from os import PathLike
 from pathlib import Path
+from random import randint
 from shutil import copyfileobj
+from string import ascii_letters, digits
 from tempfile import NamedTemporaryFile
 from types import ModuleType
 from typing import Any, Final, TypedDict
@@ -16,9 +59,14 @@ from urllib.error import URLError
 from urllib.request import urlopen
 
 from django.apps import apps
+from django.core.checks.security.base import (
+    _check_secret_key,  # type: ignore[attr-defined]
+)
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
-from django.db.models import Model, QuerySet
+from django.db.models import Count, Field, Model, QuerySet
+from django.db.models.base import ModelBase
+from dotenv import dotenv_values, set_key
 from pandas import DataFrame, Series
 from tqdm import tqdm
 from validators.url import url as validate_url
@@ -28,6 +76,11 @@ logger = getLogger(__name__)
 VALID_TRUE_STRS: Final[tuple[str, ...]] = ("y", "yes", "t", "true", "on", "1")
 VALID_FALSE_STRS: Final[tuple[str, ...]] = ("n", "no", "f", "false", "off", "0")
 
+# WARNING: MAX_PATH_LENGTH is used in database model configuration and
+# should NOT be altered once a database is created
+MAX_PATH_LENGTH: Final[int] = 1000
+
+DEFAULT_MAX_KEY_ITERATIONS: Final[int] = 10000
 DEFAULT_FIXTURE_PATH: Final[str] = "fixtures"
 JSON_FORMAT_EXTENSION: Final[str] = ".json"
 
@@ -36,8 +89,18 @@ DEFAULT_CALLABLE_CHUNK_SIZE: Final[int] = 20000
 DEFAULT_CALLABLE_CHUNK_METHOD_NAME: Final[str] = "save"
 
 DEFAULT_TRUNCATION_CHARS: Final[str] = "..."
+"""Default characters to trail a truncated string."""
 
 DIGITS_REGEX: Final[str] = r"(\d+)"
+
+DEFAULT_LOCAL_ENV_PATH: Final[PathLike] = Path(".envs/local")
+DEFAULT_PRODUCTION_ENV_PATH: Final[PathLike] = Path(".envs/production")
+DEFAULT_MIN_KEY_LENGTH: Final[int] = 50
+DEFAULT_MAX_KEY_LENGTH: Final[int] = 4096
+DEFAULT_KEY_CHARS: Final[str] = ascii_letters + digits
+DEFAULT_KEY_MINIMUM_DIGITS: Final[int] = 4
+DEFAULT_MAX_FLOWER_USER_NAME_LENGTH: Final[int] = 40
+DEFAULT_MIN_FLOWER_USER_NAME_LENGTH: Final[int] = 20
 
 # Note: importing these can cause a circular import, hence defining locally
 NEWSPAPER_MODEL_NAME: Final[str] = "Newspaper"
@@ -45,6 +108,185 @@ ITEM_MODEL_NAME: Final[str] = "Item"
 
 DEFAULT_APP_DATA_FOLDER: Final[Path] = Path("data")
 DEFAULT_APP_FIXTURE_FOLDER: Final[Path] = Path(DEFAULT_FIXTURE_PATH)
+
+StrOrField = str | Field
+StrOrFieldTuple = tuple[StrOrField, ...]
+StrOrFieldIter = Iterable[StrOrField]
+
+EXCLUDE_DUPE_FIELDS_DEFAULT: Final[tuple[StrOrField, ...]] = ("id",)
+EXCLUDE_SIMILAR_TO_QS_FIELDS_DEFAULT: Final[tuple[StrOrField, ...]] = ("id__count",)
+
+
+def gen_key(
+    min_length: int = DEFAULT_MIN_KEY_LENGTH,
+    max_length: int = DEFAULT_MAX_KEY_LENGTH,
+    valid_chars: Sequence[str] = DEFAULT_KEY_CHARS,
+    checker: Callable[[str], bool] | None = _check_secret_key,
+    min_digits: int = DEFAULT_KEY_MINIMUM_DIGITS,
+    max_iterations: int = DEFAULT_MAX_KEY_ITERATIONS,
+) -> str:
+    """Generate an encryption key within passed specification.
+
+    Args:
+        min_length: Minimum `key` length in chararcters.
+        max_length: Maximum `key` length in chararcters.
+        valid_chars: Characters allowed for key generation.
+        checker: A callable to test generated key.
+        min_digits: Minimum number of digit characters in generated key.
+        max_iterations: Maximum number of iterations generating key.
+
+    Returns:
+        A random `str` adhering to passed constraints.
+
+    Example:
+        ```pycon
+        >>> key: str = gen_key(min_length=1, max_length=10) # doctest: +SKIP
+        >>> len(key) < 11  # doctest: +SKIP
+        True
+        >>> len(key) > 0   # doctest: +SKIP
+        True
+        >>> sum(c.isupper() for c in key) > 1  # doctest: +SKIP
+        True
+        >>> (sum(c.isdigit() for c in key) >=  # doctest: +SKIP
+        ...  DEFAULT_KEY_MINIMUM_DIGITS)
+        True
+
+        ```
+    """
+    assert 0 < min_length < max_length
+    key_len: int = randint(min_length, max_length)
+    key: str
+    for i in range(max_iterations):
+        key = "".join(secrets.choice(valid_chars) for j in range(key_len))
+        if (
+            any(c.islower() for c in key)
+            and any(c.isupper() for c in key)
+            and sum(c.isdigit() for c in key) >= min_digits
+        ):
+            if checker and checker(key):
+                return key
+            else:
+                return key
+    raise ValueError(f"No valid key found after {max_iterations} iterations")
+
+
+@dataclass
+class ProductionENVGenConfig:
+    """Configuration for generating a `.env` for production.
+
+    Attributes:
+        SECRET_KEY_KWARGS:
+            Parameter to pass to `self.key_gen_func`.
+        POSTGRES_PASSWORD_KWARGS:
+            Parameters to pass to `self.key_gen_func`.
+        CELERY_FLOWER_USER_KWARGS:
+            Parameter to pass to `self.key_gen_func`.
+        CELERY_FLOWER_PASSWORD_KWARGS:
+            Parameter to pass to `self.key_gen_func`.
+        key_gen_func: Callable = gen_key
+            Function to call to generate keys.
+        CHECK_ATTR_ENDS_WITH: Final[str] = '_KWARGS'
+            `str` to check attributes end with to
+            indicate they are ENV fields.
+    """
+
+    SECRET_KEY_KWARGS: dict[str, Any] = field(default_factory=dict)
+    POSTGRES_PASSWORD_KWARGS: dict[str, Any] = field(default_factory=dict)
+    CELERY_FLOWER_USER_KWARGS: dict[str, Any] = field(
+        default_factory=lambda: {
+            "min_length": DEFAULT_MIN_FLOWER_USER_NAME_LENGTH,
+            "max_length": DEFAULT_MAX_FLOWER_USER_NAME_LENGTH,
+        }
+    )
+    CELERY_FLOWER_PASSWORD_KWARGS: dict[str, Any] = field(default_factory=dict)
+    key_gen_func: Callable = gen_key
+    CHECK_ATTR_ENDS_WITH: Final[str] = "_KWARGS"
+
+    def gen_config(self) -> dict[str, str]:
+        """Generate dict of `KEY: VALUE` from set `KWARGS` attributes.
+
+        Example:
+            ```pycon
+            >>> config_manager = getfixture("production_config_manager")
+            >>> config: dict[str, str] = config_manager.gen_config()
+            >>> config.keys()
+            dict_keys(['SECRET_KEY', 'POSTGRES_PASSWORD', 'CELERY_FLOWER_USER',
+                       'CELERY_FLOWER_PASSWORD'])
+            >>> (DEFAULT_MIN_FLOWER_USER_NAME_LENGTH
+            ...  <= len(config['CELERY_FLOWER_USER'])
+            ...  <= DEFAULT_MAX_FLOWER_USER_NAME_LENGTH)
+            True
+
+            ```
+        """
+        key_vals: dict[str, str] = {}
+        for field_name, field_value in asdict(self).items():
+            if field_name.endswith(self.CHECK_ATTR_ENDS_WITH):
+                key_var_name: str = field_name.removesuffix(self.CHECK_ATTR_ENDS_WITH)
+                key_vals[key_var_name] = self.key_gen_func(**field_value)
+        return key_vals
+
+    def write_env(
+        self,
+        new_env_path: Path = DEFAULT_PRODUCTION_ENV_PATH,
+        template_env_path: Path = DEFAULT_LOCAL_ENV_PATH,
+        overwrite_new_env_path: bool = False,
+    ) -> Path:
+        """Read `in_path` `ENV` config and write new config to `out_path`.
+
+        Params:
+            new_env_path:
+                `Path` to write new `ENV` file to.
+
+            template_env_path:
+                `Path` to read initial values from.
+
+            overwrite_new_env_path:
+                Whether to overwite `new_env_path` if it already exists.
+
+        Example:
+            ```pycon
+            >>> config_manager = getfixture("production_config_manager")
+            >>> new_config_path: Path = config_manager.write_env()
+            >>> assert new_config_path == DEFAULT_PRODUCTION_ENV_PATH
+            >>> new_config_from_file: dict = dotenv_values(
+            ...     DEFAULT_PRODUCTION_ENV_PATH)
+            >>> local_config_from_file: dict = dotenv_values(
+            ...     DEFAULT_LOCAL_ENV_PATH)
+            >>> local_config_from_file == new_config_from_file
+            False
+            >>> local_config_from_file.keys() == new_config_from_file.keys()
+            True
+            >>> tuple(new_config_from_file.keys())
+            ('POSTGRES_HOST', 'POSTGRES_PORT', 'POSTGRES_DB',
+             'POSTGRES_USER', 'POSTGRES_PASSWORD', 'SECRET_KEY',
+             'USE_DOCKER', 'IPYTHONDIR', 'REDIS_URL', 'CELERY_FLOWER_USER',
+             'CELERY_FLOWER_PASSWORD', 'VIRTUAL_HOST')
+
+            ```
+        """
+        if new_env_path.exists():
+            if new_env_path.is_dir():
+                raise FileExistsError(
+                    f"'{new_env_path}' is a folder and cannot " f"be overwritten."
+                )
+            elif new_env_path.is_file():
+                if overwrite_new_env_path:
+                    logger.warning(f"Forced re-write of '{new_env_path}'")
+                else:
+                    raise FileExistsError(
+                        f"'{new_env_path}' already exists. Set "
+                        "'overwrite_new_env_path = True' to replace."
+                    )
+        new_env_path.parent.mkdir(exist_ok=True)
+        new_env_path.touch()
+        final_conf_dict: dict[str, Any] = {
+            **dotenv_values(template_env_path),
+            **self.gen_config(),
+        }
+        for key, value in final_conf_dict.items():
+            set_key(new_env_path, key, value)
+        return new_env_path
 
 
 class JSONFixtureType(TypedDict):
@@ -68,7 +310,7 @@ def str_to_bool(
         which is due to depricate, hence equivalent below.
 
     Args:
-        var: `str` to convert into a `bool`
+        val: `str` to convert into a `bool`
         true_strs: a `Sequence` of `str` values treated as `True`
         false_strs: a `Sequence` of `str` values treated as `False`
 
@@ -77,7 +319,7 @@ def str_to_bool(
 
     Raises:
         ValueError: if `val`, lowercased, is not a `str` in the `true_strs`
-        or `false_strs`.
+            or `false_strs`.
 
     Example:
         ```pycon
@@ -186,8 +428,7 @@ def natural_keys(
     Args:
         text: `str` instance to process as a key
         split_regex: a regular expression to split keys, default extracts digits
-        func:
-            function to call on the results of `split_regex`, the results are
+        func: function to call on the results of `split_regex`, the results are
             can be used with `sorted` for ordering.
 
     Example:
@@ -204,33 +445,39 @@ def natural_keys(
     return [func(c) for c in re.split(split_regex, text)]
 
 
-def filter_starts_with(
-    fixture_paths: Sequence[str],
+def filter_paths_start_with(
+    fixture_paths: Sequence[PathLike],
     starts_with_str: str = NEWSPAPER_MODEL_NAME,
     key_func: Callable = natural_keys,
 ) -> list[str]:
     """Filter and sort `fixture_paths` that begin with `starts_with_str`.
 
+    Args:
+        fixture_paths: a `Sequence` of `str` paths to search.
+        starts_with_str: `str` to filter by the start of each `PathLike`
+            in `fixture_paths`.
+        key_func: function to call to for sorting.
+
     Example:
         ```pycon
         >>> paths = ['path/Newspaper-11.json', 'path/Issue-11.json', 'path/News-1.json']
-        >>> filter_starts_with(fixture_paths=paths, starts_with_str="News")
+        >>> filter_paths_start_with(fixture_paths=paths, starts_with_str="News")
         ['path/News-1.json', 'path/Newspaper-11.json']
 
         ```
     """
     return sorted(
         (
-            f
+            str(f)
             for f in fixture_paths
-            if f.startswith(f"{Path(f).parent}/{starts_with_str}")
+            if str(f).startswith(f"{Path(f).parent}/{starts_with_str}")
         ),
         key=key_func,
     )
 
 
-def filter_exclude_starts_with(
-    fixture_paths: Sequence[str],
+def filter_exclude_paths_start_with(
+    fixture_paths: Sequence[PathLike],
     starts_str1: str = ITEM_MODEL_NAME,
     starts_str2: str = NEWSPAPER_MODEL_NAME,
     key_func: Callable = natural_keys,
@@ -239,7 +486,7 @@ def filter_exclude_starts_with(
 
     Example:
         ```pycon
-        >>> filter_exclude_starts_with(['path/Newspaper-11.json', 'path/Issue-11.json',
+        >>> filter_exclude_paths_start_with(['path/Newspaper-11.json', 'path/Issue-11.json',
         ...                             'path/Item-1.json', 'cat'])
         ['cat', 'path/Issue-11.json']
 
@@ -247,17 +494,17 @@ def filter_exclude_starts_with(
     """
     return sorted(
         (
-            f
+            str(f)
             for f in fixture_paths
-            if not f.startswith(f"{Path(f).parent}/{starts_str1}")
-            and not f.startswith(f"{Path(f).parent}/{starts_str2}")
+            if not str(f).startswith(f"{Path(f).parent}/{starts_str1}")
+            and not str(f).startswith(f"{Path(f).parent}/{starts_str2}")
         ),
         key=key_func,
     )
 
 
 def sort_all_fixture_paths(
-    unsorted_fixture_paths: Sequence[str], key_func: Callable = natural_keys
+    unsorted_fixture_paths: Sequence[PathLike], key_func: Callable = natural_keys
 ) -> list[str]:
     """Sort fixture paths for `Newspaper.models` with order compatibility.
 
@@ -266,8 +513,8 @@ def sort_all_fixture_paths(
     for `fixtures` including `newspapers` tables.
 
     Args:
-        unsorted_fixture_paths: `Sequence` of `str` `fixture` paths to sort
-        key_fun: function to call to order `unsorted_fixture_paths`
+        unsorted_fixture_paths: `Sequence` of `PathLike` `fixture` paths to sort
+        key_func: function to call to order `unsorted_fixture_paths`
 
     Returns:
         `list` of sorted paths `str` via `key_func`
@@ -283,14 +530,14 @@ def sort_all_fixture_paths(
 
         ```
     """
-    newspaper_fixture_paths: list[str] = filter_starts_with(
+    newspaper_fixture_paths: list[str] = filter_paths_start_with(
         unsorted_fixture_paths, NEWSPAPER_MODEL_NAME, key_func
     )
-    non_newspaper_non_item_fixture_paths: list[str] = filter_exclude_starts_with(
+    non_newspaper_non_item_fixture_paths: list[str] = filter_exclude_paths_start_with(
         fixture_paths=unsorted_fixture_paths,
         key_func=key_func,
     )
-    item_fixtures: list[str] = filter_starts_with(
+    item_fixtures: list[str] = filter_paths_start_with(
         unsorted_fixture_paths, ITEM_MODEL_NAME, key_func
     )
     return (
@@ -313,12 +560,16 @@ def get_fixture_paths(
 
     Example:
         ```pycon
-        >>> sorted(get_fixture_paths('lwmdb/tests/'))  # doctest: +NORMALIZE_WHITESPACE
-        ['lwmdb/tests/initial-test-dataprovider.json',
-         'lwmdb/tests/update-test-dataprovider.json']
+        >>> from os import chdir
+        >>> old_fixture_path = getfixture("old_data_provider_fixture_path")
+        >>> updated_fixture_path = getfixture("updated_data_provider_fixture_path")
+        >>> chdir(old_fixture_path.parents[1])
+        >>> sorted(get_fixture_paths(old_fixture_path.parent.name))
+        ['lwmdb.../initial-test-dataprovider.json',
+         'lwmdb.../update-test-dataprovider.json']
         >>> (
-        ...     get_fixture_paths('lwmdb/tests/') ==
-        ...     get_fixture_paths(Path('lwmdb') / 'tests')
+        ...     get_fixture_paths(old_fixture_path.parent.name) ==
+        ...     get_fixture_paths(Path(old_fixture_path.parent.name))
         ... )
         True
 
@@ -333,8 +584,8 @@ def log_and_django_terminal(
     level: int = INFO,
     django_command_instance: BaseCommand | None = None,
     style: Callable | None = None,
-    *arg,
-    **kwargs,
+    *args: Any,
+    **kwargs: Any,
 ) -> None:
     """Log and add Django formatted print to terminal if available.
 
@@ -342,13 +593,12 @@ def log_and_django_terminal(
         See: https://code.djangoproject.com/ticket/21429
 
     Args:
-        messsage: `str` to log and potential print to terminal
+        message: `str` to log and potential print to terminal
         terminal_print: whether to print  to terminal as well
         level: what `logger` level to create
-        django_command_instance:
-            `BaseCommand` or subclass instance to manage `terminal interaction`
-        style:
-            function to call on `message` prior to sending to
+        django_command_instance: `BaseCommand` or subclass instance
+            to manage `terminal interaction`
+        style: function to call on `message` prior to sending to
             `django_command_instance` if provided. No effect
             without `django_command_instance`
         args: any positional arguments to send to `logger.log` call
@@ -357,7 +607,7 @@ def log_and_django_terminal(
     Returns:
         None
     """
-    logger.log(level, message, *arg, **kwargs)
+    logger.log(level, message, *args, **kwargs)
     if terminal_print:
         print(message)
     if django_command_instance:
@@ -379,7 +629,7 @@ def callable_on_chunks(
     """Apply `method_name` to `qs`, filter by `start_index` and `end_index`.
 
     Args:
-        qs: `django` `QerySet` instance to apply `method_name` total
+        qs: `django` `QuerySet` instance to apply `method_name` total
         method_name: `Callable` `method` of `qs` `class` to apply to `qs`
         start_index: `int` of `qs` start point to apply `method_name` from
         end_index: `int` of `qs` end point to apply `method_name` to
@@ -582,13 +832,16 @@ def app_data_path(app_name: str, data_path: PathLike = DEFAULT_APP_DATA_FOLDER) 
 
     Example:
         ```pycon
+        >>> from os import chdir
+        >>> root_dir: Path = getfixture("root_dir")
+        >>> chdir(root_dir)
         >>> app_data_path('mitchells')
         PosixPath('mitchells/data')
 
         ```
     """
     path = Path(app_name) / Path(data_path)
-    path.mkdir(exist_ok=True)
+    path.mkdir(exist_ok=True, parents=True)
     return path
 
 
@@ -605,7 +858,16 @@ def path_or_str_suffix(
     force: bool = False,
     split_str: str = ".",
 ) -> str:
-    """Return suffix of `str_or_path`, else ''.
+    """Return suffix of `str_or_path`, else `''`.
+
+    Args:
+        str_or_path: `str` or `PathLike` instance to extract `suffix` from.
+        max_extension_len: Maximum `extension` allowed for `suffix` to extract.
+        force: `bool` for overrised `max_extension_len` constraint.
+        split_str: `str` to split `str_or_path` by, usually `.` for file path.
+
+    Returns:
+        `str` extracted from the end of `str_or_path`.
 
     Example:
         ```pycon
@@ -813,7 +1075,7 @@ def bulk_fixture_update(
         >>> getfixture("db")
         >>> getfixture("old_data_provider")
         Installed 4 object(s) from 1 fixture(s)
-        >>> updated_fixture_path = getfixture("updated_data_provider_path")
+        >>> updated_fixture_path = getfixture("updated_data_provider_fixture_path")
         >>> from newspapers.models import DataProvider
         >>> for provider in DataProvider.objects.all():
         ...     print(provider)
@@ -853,9 +1115,9 @@ def bulk_fixture_update(
                 pk=record_dict["pk"]
             ).first()
             if model_instance:
-                for field, value in record_dict["fields"].items():
-                    setattr(model_instance, field, value)
-                    records_to_update[model_type]["fields"].add(field)
+                for db_field, value in record_dict["fields"].items():
+                    setattr(model_instance, db_field, value)
+                    records_to_update[model_type]["fields"].add(db_field)
                 records_to_update[model_type]["instances"].append(model_instance)
             else:
                 records_to_create.append(record_dict)
@@ -875,3 +1137,554 @@ def bulk_fixture_update(
             json.dump(records_to_create, fp=new_fixtures_tempfile)
             new_fixtures_tempfile.flush()
             call_command("loaddata", new_fixtures_tempfile.name)
+
+
+def check_model_field(model: Model, db_field: StrOrField) -> Field:
+    """Check `fields` is correct for `self`.
+
+    Example:
+        ```pycon
+        >>> from newspapers.models import Newspaper
+        >>> check_model_field(Newspaper, 'title')
+        <django.db.models.fields.CharField: title>
+        >>> check_model_field(Newspaper, Newspaper._meta.get_field('title'))
+        <django.db.models.fields.CharField: title>
+
+        ```
+
+    check_model_field(Newspaper, 'name')
+    <BLANKLINE>
+    ...FieldDoesNotExist: Newspaper has no field named 'name'...
+    """
+    if isinstance(db_field, str):
+        return model._meta.get_field(db_field)
+    else:
+        assert hasattr(model, db_field.name)
+        return db_field
+
+
+def foreign_key_fields(model: Model) -> Generator[Field, None, None]:
+    """Yield all `model` `ForeignKey` `Fields`.
+
+    Args:
+        model: `Model` to retrive `ForeignKey` fields from.
+
+    Yields:
+        Each `ForeignKey` from `Model`.
+
+    Example:
+        ```pycon
+        >>> from newspapers.models import Issue
+        >>> tuple(foreign_key_fields(Issue))
+        (<ManyToOneRel: newspapers.item>,
+         <django.db.models.fields.related.ForeignKey: newspaper>)
+
+        ```
+    """
+    for db_field in model._meta.get_fields():
+        if db_field.is_relation:
+            yield db_field
+
+
+def convert_similar_qs_to_records(
+    similar_records_qs: QuerySet,
+    exclude_fields: StrOrFieldTuple = EXCLUDE_SIMILAR_TO_QS_FIELDS_DEFAULT,
+) -> QuerySet:
+    """Match full records to `similar_records_qs`.
+
+    Args:
+        similar_records_qs:
+            `QuerySet` in `Count` structure.
+
+        exclude_fields:
+            `Tuple` of `Field` or `str` of `Field` name to exclude. These
+            are primarily for excluding added `annotation` elements
+            from functions like `similar_records`.
+
+    Returns:
+        `QuerySet` of full records that match the `similar_records_qs`.
+
+    Example:
+        ```pycon
+        >>> getfixture("db")
+        >>> check_qs: QuerySet = getfixture("newspaper_dupes_qs")
+        >>> qs = similar_records(check_qs, check_fields=('publication_code',))
+        >>> qs
+        <DataFrameQuerySet [{'publication_code': '0003548', 'id__count': 2}]>
+        >>> convert_similar_qs_to_records(qs)
+        <DataFrameQuerySet [0003548, 0003548]>
+
+        ```
+    """
+    all_records: QuerySet = similar_records_qs.model.objects.all()
+    converted_records_qs: QuerySet = similar_records_qs.model.objects.none()
+    for similar_counts in similar_records_qs:
+        similar_counts_for_query: QuerySet = similar_counts
+        for key in exclude_fields:
+            if isinstance(key, Field):
+                key = key.name
+            similar_counts_for_query.pop(key, None)
+        converted_records_qs = (
+            all_records.filter(**similar_counts_for_query) | converted_records_qs
+        )
+    return converted_records_qs
+
+
+def qs_to_full_record_qs(qs: QuerySet) -> QuerySet:
+    """Ensure a `QuerySet` of full model attributes from `filtered_qs`."""
+    return qs.model.objects.filter(pk__in=set(qs.values_list("pk", flat=True)))
+
+
+def qs_difference(qs: QuerySet, qs_subset: QuerySet) -> QuerySet:
+    """Generate a `QuerySet` of full models from `filtered_qs`."""
+    residual_qs: QuerySet = qs.difference(qs_subset.distinct())
+    return qs_to_full_record_qs(residual_qs)
+
+
+def filter_by_null_fk(
+    qs: QuerySet, null_relations: tuple[str, ...] = (), is_null: bool = True
+) -> QuerySet:
+    """Return `tuple` of `QuerySets`: (no `ForeignKeys`, >=1 `ForeignKey`).
+
+    Args:
+        qs: `QuerySet` to filter from.
+        null_relations: `tuple` of `Field` names to filter via `__isnull`.
+        is_null: Whether to filter for `__isnull` = True or False
+
+    Returns:
+        A `QuerySet` filtered by `null_relations` fields == `is_null` parameter.
+
+    Example:
+        ```pycon
+        >>> getfixture("db")
+        >>> caplog = getfixture("caplog")
+        >>> dupe_qs: QuerySet = getfixture("newspaper_dupes_qs")
+        >>> to_delete: QuerySet = filter_by_null_fk(
+        ...     dupe_qs, null_relations=('issue',))
+        >>> to_delete
+        <DataFrameQuerySet [0003548, 0002648]>
+        >>> to_delete.values_list('pk', flat=True)
+        <DataFrameQuerySet [..., ...]>
+        >>> to_delete.values('issue')  # returned records  don't have `issues`
+        <DataFrameQuerySet [{'issue': None}, {'issue': None}]>
+
+        ```
+    """
+    fk_fields: dict[Field] = tuple(foreign_key_fields(qs.model))
+    matched_qs: QuerySet = qs.all()
+    if null_relations:
+        qs.order_by(*null_relations)
+    filter_query_dict: dict[str, Any]
+    for fk_field in fk_fields:
+        if fk_field.name in null_relations:
+            filter_query_dict = {fk_field.name + "__isnull": is_null}
+            logger.debug(f"Filtering by {filter_query_dict}")
+            matched_qs = matched_qs.filter(**filter_query_dict)
+    return qs_to_full_record_qs(matched_qs)
+
+
+def get_unique_record(
+    qs: QuerySet, skip_exceptions: bool = False, **kwargs: Any
+) -> QuerySet | Model:
+    """Query `qs` for a unique record via `kwargs`.
+
+    Args:
+        qs: `QuerySet` to filter from.
+        skip_exceptions: `log` errors and return potential duplicates if True,
+            else raise exceptions.
+        **kwargs: `kwargs` passed to `QuerySet` `filter`.
+
+    Returns:
+        `Model` from `qs` if success, `QuerySet` if more than one
+        instance matches, `None` if no instances match.
+
+    Raises:
+        ValueError: No `kwargs` passed to query `qs`.
+        Model.MultipleObjectsReturned: More than one record matches `kwargs` query.
+        Model.DoesNotExist: No records match `kwargs` query.
+
+    Example:
+        ```pycon
+        >>> getfixture("db")
+        >>> dupe_qs: QuerySet = getfixture("newspaper_dupes_qs")
+        >>> get_unique_record(dupe_qs, issue__isnull=False)
+        0003548
+        >>> get_unique_record(dupe_qs, skip_exceptions=True,
+        ...                   issue__isnull=True)
+        <...QuerySet [000...48, 000...48]>
+        >>> get_unique_record(dupe_qs, skip_exceptions=True,
+        ...                   title='Not a title')
+        <...QuerySet []>
+
+        ```
+    """
+    if not kwargs:
+        raise ValueError(f"No query for {qs} passed, add via `kwargs`.")
+    related_records: QuerySet = qs.filter(**kwargs)
+    if len(related_records) == 1:
+        return related_records.first()
+    elif len(related_records.distinct()) > 1:
+        log_str: str = (
+            f"{qs} has more than 1 ({len(related_records)}) "
+            f"records for query: {kwargs}"
+        )
+        if skip_exceptions:
+            logger.error(log_str)
+            return related_records
+        else:
+            raise qs.model.MultipleObjectsReturned(log_str)
+    else:
+        assert len(related_records) == 0
+        log_str: str = f"{qs} has no matching " f"records for query: {kwargs}"
+        if skip_exceptions:
+            logger.error(log_str)
+            return related_records
+        else:
+            raise qs.model.DoesNotExist(log_str)
+
+
+@dataclass
+class DupeRecords:
+    """Configuration of potential duplication records for deletion.
+
+    Attributes:
+        all_dupe_records:
+            Initial `QuerySet` to check duplicates in.
+
+        records_to_delete:
+            `QuerySet` of records to delete. Should be a subset of `all_dupe_records`.
+
+        records_to_keep:
+            `QuerySet` of records to keep (not delete). Should be a subset of
+            `all_dupe_records`.
+
+    Example:
+        ```pycon
+        >>> getfixture("db")
+        >>> caplog = getfixture("caplog")
+        >>> dupe_qs: QuerySet = getfixture("newspaper_dupes_qs")
+        >>> dupe_config: DupeRecords = DupeRecords(
+        ...     all_dupe_records=dupe_qs,)
+        >>> dupe_config
+        <DupeRecords(model=<class 'newspapers.models.Newspaper'>, len=3,
+                valid=False)>
+        >>> dupe_config: DupeRecords = DupeRecords(
+        ...     all_dupe_records=dupe_qs,
+        ...     dupe_method_kwargs={'null_relations': ('issue',)},)
+        >>> dupe_config
+        <DupeRecords(model=<class 'newspapers.models.Newspaper'>, len=3,
+                valid=True)>
+        >>> dupe_config.records_to_delete
+        <DataFrameQuerySet [0003548, 0002648]>
+        >>> dupe_config.records_to_delete.values_list('pk', flat=True)
+        <DataFrameQuerySet [..., ...]>
+        >>> dupe_config.records_to_keep  # Same `publication_code` in __str__ as a record above
+        <DataFrameQuerySet [0003548]>
+        >>> dupe_config.records_to_keep.values_list('pk', flat=True)  # But different `pk`
+        <DataFrameQuerySet [...]>
+        >>> dupe_config.records_to_keep.values('issue')  # The record to keep has an related `issue`
+        <DataFrameQuerySet [{'issue': ...}]>
+        >>> dupe_config.records_to_delete.values('issue')  # Neither record to delete have related `issues`
+        <DataFrameQuerySet [{'issue': None}, {'issue': None}]>
+
+        ```
+    """
+
+    all_dupe_records: QuerySet | ModelBase | None = None
+    records_to_delete: QuerySet | None = None
+    records_to_keep: QuerySet | None = None
+    dupe_method: Callable[[QuerySet], QuerySet] = filter_by_null_fk
+    dupe_method_kwargs: dict[str, Any] = field(default_factory=dict)
+
+    DELETED_RECORDS_ATTR: Final[str] = "records_last_deleted"
+
+    def __post_init__(self) -> None:
+        """Apply `self.set_records_to_keep_and_delete`."""
+        self.set_records_to_keep_and_delete()
+
+    def __len__(self) -> int:
+        """Return `len` of `self.all_dupe_records`."""
+        return len(self.all_dupe_records) if self.all_dupe_records else 0
+
+    def __repr__(self) -> str:
+        """Return config as `str`."""
+        return (
+            f"<DupeRecords(model={self.model}, "
+            f"len={len(self)}, valid={self.valid_config})>"
+        )
+
+    @property
+    def valid_config(self) -> bool:
+        """Check `all_dupe_records` match `records_to_delete`/`keep`.
+
+        Example:
+            ```pycon
+            >>> getfixture("db")
+            >>> dupe_config = getfixture('newspaper_dupe_config')
+            >>> dupe_config.valid_config
+            True
+            >>> dupe_config.records_to_delete = None
+            >>> dupe_config.valid_config
+            False
+
+            ```
+        """
+        if self.records_to_delete and self.records_to_keep:
+            return set(self.all_dupe_records) == set(
+                self.records_to_delete.union(self.records_to_keep)
+            )
+        else:
+            return False
+
+    @property
+    def to_delete_count(self) -> int:
+        """Return count of records to delete."""
+        if self.records_to_delete:
+            return len(self.records_to_delete)
+        else:
+            return 0
+
+    @property
+    def to_keep_count(self) -> int:
+        """Return count of records to keep."""
+        if self.records_to_keep:
+            return len(self.records_to_keep)
+        else:
+            return 0
+
+    @property
+    def model(self) -> Model | None:
+        """Return model of `self.all_dupe_records`."""
+        if self.all_dupe_records:
+            return self.all_dupe_records.model
+        else:
+            return None
+
+    def set_records_to_keep_and_delete(self) -> None:
+        """Apply `dupe_method` for `self.to_delete`/`keep` if both None."""
+        if not self.records_to_delete and not self.records_to_keep:
+            self.records_to_delete = self.dupe_method(
+                self.all_dupe_records, **self.dupe_method_kwargs
+            )
+            self.records_to_keep = qs_difference(
+                self.all_dupe_records, self.records_to_delete
+            )
+        else:
+            logger.info(
+                "`self.records_to_delete` and/or "
+                "`self.records_to_keep` are not None. "
+                f"Set to None to generate for {self}"
+            )
+
+    def delete_records(
+        self,
+        dry_run: bool = True,
+        check_queries: bool = True,
+        force_repeat_delete: bool = True,
+    ) -> tuple[int, dict] | QuerySet | None:
+        """Delete records if `dry_run` is `False` and `check_queries` pass.
+
+        Args:
+            dry_run:
+                Return the `records_to_delete` `QuerySet` if True, else delete
+                all in `records_to_delete`.
+
+            check_queries:
+                Whether to run checks (currently `self.valid_config`) before
+                proceeding with `dry_run` or `delete`.
+
+            force_repeat_delete:
+                Whether to force another delete event after a recorded delete
+                event completed.
+
+        Example:
+            ```pycon
+            >>> getfixture("db")
+            >>> dupe_config = getfixture('newspaper_dupe_config')
+            >>> caplog = getfixture('caplog')
+            >>> dupe_config.delete_records()
+            <DataFrameQuerySet [0003548, 0002648]>
+            >>> dupe_config.to_delete_count
+            2
+            >>> dupe_config.delete_records(dry_run=False)
+            (2, {'newspapers.Newspaper': 2})
+            >>> dupe_config.records_last_deleted
+            (2, {'newspapers.Newspaper': 2})
+
+            ```
+        """
+        if not self.records_to_delete:
+            logger.info(
+                f"{self} cannot delete: 'self.records_to_delete' is "
+                f"{self.records_to_delete}"
+            )
+        if check_queries:
+            try:
+                assert self.valid_config
+            except AssertionError:
+                raise ValueError(
+                    f"{self} has inconsistent counts for 'records_to_delete' "
+                    f"and/or 'records_to_keep' attributes"
+                )
+        else:
+            logger.warning(f"Applying `.delete()` without `.check_queries` to {self}")
+        if not dry_run:
+            if hasattr(self, self.DELETED_RECORDS_ATTR):
+                prev_deleted_records = getattr(self, self.DELETED_RECORDS_ATTR)
+                logger.info(
+                    f"Records already deleted for {self}:\n" f"{prev_deleted_records}"
+                )
+                if force_repeat_delete:
+                    logger.info(f"Removing 'self.deleted_records' for new delete")
+                    del prev_deleted_records
+            logger.info(f"Deleting {self.to_delete_count} via {self}")
+            assert self.records_to_delete
+            setattr(self, self.DELETED_RECORDS_ATTR, self.records_to_delete.delete())
+            return getattr(self, self.DELETED_RECORDS_ATTR)
+        else:
+            return self.records_to_delete
+
+
+def get_qs_or_model(
+    qs_or_model: QuerySet | Model | ModelBase,
+) -> tuple[Model, QuerySet]:
+    """Return `QuerySet` from either type.
+
+    Param:
+        qs_or_model:
+            Either a `Model` or a `QuerySet`.
+
+    Returns:
+        If passed a `QuerySet`, the same `QuerySet`.
+            If passed a `Model`, a `QuerySet` of all `Model` records.
+
+    Example:
+        ```pycon
+        >>> getfixture("db")
+        >>> check_qs: QuerySet = getfixture("newspaper_dupes_qs")
+        >>> from newspapers.models import Newspaper
+        >>> qs_1 = get_qs_or_model(Newspaper)
+        >>> qs_2 = get_qs_or_model(Newspaper.objects.all())
+        >>> set(qs_1) == set(qs_2)
+        True
+        >>> qs_1
+        <DataFrameQuerySet [0003548, 0003548, 0002648]>
+
+        ```
+    """
+    if isinstance(qs_or_model, ModelBase | Model):
+        return qs_or_model.objects.all()
+    else:
+        return qs_or_model
+
+
+def similar_records(
+    qs_or_model: QuerySet | Model | ModelBase,
+    check_fields: tuple[str | Field, ...] = (),
+    exclude_fields: tuple[str | Field, ...] = EXCLUDE_DUPE_FIELDS_DEFAULT,
+) -> QuerySet:
+    """Check for duplicate records in `model` and delete if not `dry_run`.
+
+    Args:
+        qs_or_model:
+            `QuerySet` or `Model` to check for duplicate records. If of
+            type `Model` or `ModelBase`, return all of records from that `Model`.
+        check_fields: Fields in `Model` to check; default checks all.
+        exclude_fields:
+            Fields in `Model` to skip for comparision.
+            Default `id` fields *must* be unique, as they are usually the
+            primary key.
+
+    Example:
+        ```pycon
+        >>> getfixture("db")
+        >>> check_qs: QuerySet = getfixture("newspaper_dupes_qs")
+        >>> from newspapers.models import Newspaper
+        >>> similar_records(check_qs, check_fields=('publication_code',))
+        <DataFrameQuerySet [{'publication_code': '0003548', 'id__count': 2}]>
+        >>> similar_records(Newspaper.objects.all())
+        <DataFrameQuerySet []>
+        >>> similar_records(Newspaper.objects.all(),
+        ...                 check_fields=('publication_code',))
+        <DataFrameQuerySet [{'publication_code': '0003548', 'id__count': 2}]>
+
+        ```
+    """
+    qs: QuerySet = get_qs_or_model(qs_or_model=qs_or_model)
+    if exclude_fields:
+        check_fields = tuple(set(check_fields) - set(exclude_fields))
+    return (
+        qs.values(*check_fields)
+        .annotate(Count("id"))
+        .order_by()
+        .filter(id__count__gt=1)
+    )
+
+
+def dupes_to_check(
+    qs_or_model: QuerySet | Model,
+    dupe_fields: tuple[str | Field, ...] = (),
+    exclude_fields: tuple[str | Field, ...] = EXCLUDE_SIMILAR_TO_QS_FIELDS_DEFAULT,
+    dupe_method: Callable[[QuerySet], QuerySet] = filter_by_null_fk,
+    dupe_method_kwargs: dict[str, Any] = {},
+) -> DupeRecords | QuerySet:
+    """Check for similar records and return a `DupeRecords` for deletion.
+
+    Args:
+        qs_or_model:
+            `QuerySet` to filter from, or `Model` to filter all records from.
+        dupe_fields:
+            `Field` list to query as duplications.
+        exclude_fields:
+            `Fields` to exclude from comparison. Defaults to `pk` which must be
+            unique.
+
+    Returns:
+        A `DupeRecords` instance with `.all_dupe_records`,
+            `.records_to_delete` and `.records_to_keep` attributes set. This object
+            can then facilitate deleting duplicate records. If no dupes found, the
+            empty filtered `QuerySet` is returned.
+
+    Example:
+        ```pycon
+        >>> getfixture("db")
+        >>> dupe_qs: QuerySet = getfixture("newspaper_dupes_qs")
+        >>> caplog = getfixture("caplog")
+        >>> caplog.set_level(INFO)
+        >>> dupes_config: DupeRecords = dupes_to_check(dupe_qs,
+        ...     dupe_fields=('publication_code',),
+        ...     dupe_method_kwargs={'null_relations': ('issue',)},
+        ... )
+        >>> dupes_config
+        <DupeRecords(model=<class 'newspapers.models.Newspaper'>,
+                          len=2, valid=True)>
+        >>> dupes_config.delete_records()
+        <DataFrameQuerySet [0003548]>
+        >>> dupes_config.delete_records(dry_run=False)
+        (1, {'newspapers.Newspaper': 1})
+        >>> dupes_config.records_last_deleted
+        (1, {'newspapers.Newspaper': 1})
+        >>> from newspapers.models import DataProvider
+        >>> dupes_to_check(DataProvider)
+        <DataFrameQuerySet []>
+        >>> assert "No dupes found with 'dupe_fields':" in caplog.text
+
+        ```
+    """
+    qs: QuerySet = get_qs_or_model(qs_or_model=qs_or_model)
+    similars_qs: QuerySet = similar_records(
+        qs_or_model=qs, check_fields=dupe_fields, exclude_fields=exclude_fields
+    )
+    if not similars_qs:
+        logger.info(
+            f"No dupes found with 'dupe_fields':\n{dupe_fields}\n"
+            f"'exclude_fields':\n{exclude_fields}\nin 'qs':\n{qs}"
+        )
+        return similars_qs
+    else:
+        dupe_records: QuerySet = convert_similar_qs_to_records(similars_qs)
+        return DupeRecords(
+            all_dupe_records=dupe_records,
+            dupe_method=dupe_method,
+            dupe_method_kwargs=dupe_method_kwargs,
+        )

@@ -1,4 +1,4 @@
-# Living With Machines Database: `lmwdb`
+# Living With Machines Database: `lwmdb`
 
 <!-- prettier-ignore-start -->
 [![DOI](https://zenodo.org/badge/460939495.svg)](https://zenodo.org/badge/latestdoi/460939495)
