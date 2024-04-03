@@ -1,0 +1,3430 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../troubleshooting/">
+      
+      
+        <link rel="next" href="../code_of_conduct/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.6">
+    
+    
+      
+        <title>Development - lwmdb: Living with Machines Database</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.35e1ed30.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.356b1318.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_markdown_exec_ansi.css">
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../css/code_select.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#contributing" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="lwmdb: Living with Machines Database" class="md-header__button md-logo" aria-label="lwmdb: Living with Machines Database" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            lwmdb: Living with Machines Database
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Development
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_3" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9h-1.9M20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69m-9.15 3.96h2.3L12 9l-1.15 3.65Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_3">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/living-with-machines/lwmdb/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="lwmdb: Living with Machines Database" class="md-nav__button md-logo" aria-label="lwmdb: Living with Machines Database" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    lwmdb: Living with Machines Database
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/living-with-machines/lwmdb/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Install
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../jupyter_notebook/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Jupyter
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Advanced
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Advanced
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fulltext/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Fulltext
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../raw_import/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Import
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../deploy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../management/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Management
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../schema/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Schema
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../troubleshooting/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Troubleshooting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Contributing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Contributing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Development
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Development
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    Documentation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#local-docker-test-runs" class="md-nav__link">
+    Local docker test runs
+  </a>
+  
+    <nav class="md-nav" aria-label="Local docker test runs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#local-environment" class="md-nav__link">
+    Local environment
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#running-tests" class="md-nav__link">
+    Running tests
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-all-expected-failed-tests" class="md-nav__link">
+    Adding all expected failed tests
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#terminal-interaction" class="md-nav__link">
+    Terminal Interaction
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#development" class="md-nav__link">
+    Development
+  </a>
+  
+    <nav class="md-nav" aria-label="Development">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#commits" class="md-nav__link">
+    Commits
+  </a>
+  
+    <nav class="md-nav" aria-label="Commits">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pre-commit" class="md-nav__link">
+    Pre-commit
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#commit-messages" class="md-nav__link">
+    Commit messages
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#app" class="md-nav__link">
+    App
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tests" class="md-nav__link">
+    Tests
+  </a>
+  
+    <nav class="md-nav" aria-label="Tests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#doctests" class="md-nav__link">
+    Doctests
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pytest-tests" class="md-nav__link">
+    Pytest Tests
+  </a>
+  
+    <nav class="md-nav" aria-label="Pytest Tests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pytest-configuration" class="md-nav__link">
+    Pytest Configuration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-tests" class="md-nav__link">
+    Example Tests
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crediting-contributions" class="md-nav__link">
+    Crediting Contributions
+  </a>
+  
+    <nav class="md-nav" aria-label="Crediting Contributions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#all-contributors" class="md-nav__link">
+    All Contributors
+  </a>
+  
+    <nav class="md-nav" aria-label="All Contributors">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adding-credit-including-types-via-github-comments" class="md-nav__link">
+    Adding credit, including types, via GitHub comments
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#citationcff" class="md-nav__link">
+    CITATION.CFF
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    Troubleshooting
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#unexpected-lwmdbstaticcssprojectcss-changes" class="md-nav__link">
+    Unexpected lwmdb/static/css/project.css changes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../code_of_conduct/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code of Conduct
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/living-with-machines/lwmdb/issues" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Issues
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Reference
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_1" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/census/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    census
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8_1" id="__nav_8_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_1">
+            <span class="md-nav__icon md-icon"></span>
+            census
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/census/admin/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    admin
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/census/apps/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    apps
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_1_3" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/census/management/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    management
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8_1_3" id="__nav_8_1_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_1_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_1_3">
+            <span class="md-nav__icon md-icon"></span>
+            management
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_1_3_1" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/census/management/commands/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    commands
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8_1_3_1" id="__nav_8_1_3_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_8_1_3_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_1_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            commands
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/census/management/commands/census/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    census
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/census/migrations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    migrations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/census/models/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    models
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/census/views/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    views
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_2" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/config/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    config
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8_2" id="__nav_8_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_2">
+            <span class="md-nav__icon md-icon"></span>
+            config
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/config/asgi/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    asgi
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/config/production/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    production
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/config/settings/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    settings
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/config/test_settings/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    test_settings
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/config/urls/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    urls
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/config/wsgi/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    wsgi
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/conftest/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    conftest
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/django_initialiser/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    django_initialiser
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_5" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/fulltext/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    fulltext
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8_5" id="__nav_8_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_5">
+            <span class="md-nav__icon md-icon"></span>
+            fulltext
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/fulltext/admin/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    admin
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/fulltext/apps/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    apps
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/fulltext/migrations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    migrations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/fulltext/models/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    models
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/fulltext/views/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    views
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_6" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/gazetteer/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    gazetteer
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8_6" id="__nav_8_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_6">
+            <span class="md-nav__icon md-icon"></span>
+            gazetteer
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/gazetteer/admin/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    admin
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/gazetteer/apps/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    apps
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_6_3" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/gazetteer/management/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    management
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8_6_3" id="__nav_8_6_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_6_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_6_3">
+            <span class="md-nav__icon md-icon"></span>
+            management
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_6_3_1" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/gazetteer/management/commands/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    commands
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8_6_3_1" id="__nav_8_6_3_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_8_6_3_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_6_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            commands
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/gazetteer/management/commands/gazetteer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    gazetteer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/gazetteer/migrations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    migrations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/gazetteer/models/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    models
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/gazetteer/views/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    views
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_7" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/lwmdb/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    lwmdb
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8_7" id="__nav_8_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_7">
+            <span class="md-nav__icon md-icon"></span>
+            lwmdb
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_7_1" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/lwmdb/contrib/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    contrib
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8_7_1" id="__nav_8_7_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_7_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_7_1">
+            <span class="md-nav__icon md-icon"></span>
+            contrib
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_7_1_1" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/lwmdb/contrib/sites/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    sites
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8_7_1_1" id="__nav_8_7_1_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_8_7_1_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_7_1_1">
+            <span class="md-nav__icon md-icon"></span>
+            sites
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/lwmdb/contrib/sites/migrations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    migrations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_7_2" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/lwmdb/management/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    management
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8_7_2" id="__nav_8_7_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_7_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_7_2">
+            <span class="md-nav__icon md-icon"></span>
+            management
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_7_2_1" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/lwmdb/management/commands/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    commands
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8_7_2_1" id="__nav_8_7_2_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_8_7_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_7_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            commands
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/lwmdb/management/commands/connect/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    connect
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/lwmdb/management/commands/createfixtures/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    createfixtures
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/lwmdb/management/commands/fixtures/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    fixtures
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/lwmdb/management/commands/load_json_fixtures/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    load_json_fixtures
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/lwmdb/management/commands/loadfixtures/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    loadfixtures
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/lwmdb/management/commands/makeitemfixtures/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    makeitemfixtures
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/lwmdb/tests/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    tests
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/lwmdb/utils/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    utils
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_8" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/mitchells/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    mitchells
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8_8" id="__nav_8_8_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_8">
+            <span class="md-nav__icon md-icon"></span>
+            mitchells
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/mitchells/admin/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    admin
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/mitchells/apps/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    apps
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/mitchells/import_fixtures/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    import_fixtures
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/mitchells/migrations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    migrations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/mitchells/models/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    models
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/mitchells/views/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    views
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_9" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/newspapers/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    newspapers
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8_9" id="__nav_8_9_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_9">
+            <span class="md-nav__icon md-icon"></span>
+            newspapers
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/newspapers/admin/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    admin
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/newspapers/apps/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    apps
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_9_3" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/newspapers/management/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    management
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8_9_3" id="__nav_8_9_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_8_9_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_9_3">
+            <span class="md-nav__icon md-icon"></span>
+            management
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_9_3_1" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../reference/newspapers/management/commands/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    commands
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8_9_3_1" id="__nav_8_9_3_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_8_9_3_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_9_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            commands
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/newspapers/management/commands/items/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    items
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/newspapers/management/commands/newspapers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    newspapers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/newspapers/migrations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    migrations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/newspapers/models/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    models
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/newspapers/views/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    views
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    Documentation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#local-docker-test-runs" class="md-nav__link">
+    Local docker test runs
+  </a>
+  
+    <nav class="md-nav" aria-label="Local docker test runs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#local-environment" class="md-nav__link">
+    Local environment
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#running-tests" class="md-nav__link">
+    Running tests
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adding-all-expected-failed-tests" class="md-nav__link">
+    Adding all expected failed tests
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#terminal-interaction" class="md-nav__link">
+    Terminal Interaction
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#development" class="md-nav__link">
+    Development
+  </a>
+  
+    <nav class="md-nav" aria-label="Development">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#commits" class="md-nav__link">
+    Commits
+  </a>
+  
+    <nav class="md-nav" aria-label="Commits">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pre-commit" class="md-nav__link">
+    Pre-commit
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#commit-messages" class="md-nav__link">
+    Commit messages
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#app" class="md-nav__link">
+    App
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tests" class="md-nav__link">
+    Tests
+  </a>
+  
+    <nav class="md-nav" aria-label="Tests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#doctests" class="md-nav__link">
+    Doctests
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pytest-tests" class="md-nav__link">
+    Pytest Tests
+  </a>
+  
+    <nav class="md-nav" aria-label="Pytest Tests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pytest-configuration" class="md-nav__link">
+    Pytest Configuration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-tests" class="md-nav__link">
+    Example Tests
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crediting-contributions" class="md-nav__link">
+    Crediting Contributions
+  </a>
+  
+    <nav class="md-nav" aria-label="Crediting Contributions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#all-contributors" class="md-nav__link">
+    All Contributors
+  </a>
+  
+    <nav class="md-nav" aria-label="All Contributors">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adding-credit-including-types-via-github-comments" class="md-nav__link">
+    Adding credit, including types, via GitHub comments
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#citationcff" class="md-nav__link">
+    CITATION.CFF
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    Troubleshooting
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#unexpected-lwmdbstaticcssprojectcss-changes" class="md-nav__link">
+    Unexpected lwmdb/static/css/project.css changes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="contributing">Contributing</h1>
+<p>Please see our <a href="../code_of_conduct/">Code of Conduct</a> for policies on contributing. We also broadly follow the <a href="https://the-turing-way.netlify.app/community-handbook/coc.html">Turing Way Code of Conduct</a> to encourage a pleasant experience contributing and collaborating on this project.</p>
+<h2 id="documentation">Documentation</h2>
+<p>If you would only like to contribute to documentation, the easiest way to deploy and see changes rendered with each edit is to run <em>outside</em> docker:</p>
+<div class="language-console highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">$ </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/living-with-machines/lwmdb
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>lwmdb
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">$ </span>poetry<span class="w"> </span>install<span class="w"> </span>--with<span class="w"> </span>dev<span class="w"> </span>--with<span class="w"> </span>docs
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="gp">$ </span>poetry<span class="w"> </span>run<span class="w"> </span>mkdocs<span class="w"> </span>serve<span class="w"> </span>--dev-addr<span class="o">=</span><span class="m">0</span>.0.0.0:8080
+</span></code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code>--with dev</code> and <code>--with docs</code> options are currently included by default, but they may be set as optional in the future.</p>
+</div>
+<p>Documentation should also be available on <code>https://localhost:9000</code> when running </p>
+<div class="language-console highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="go">docker compose -f local.yml up</span>
+</span></code></pre></div>
+<p>but it does <em>not</em> auto update as local changes are made. Port <code>8080</code> is specified in the example above to avoid conflict with a local <code>docker compose</code> run (which defaults to <code>0.0.0.0:9000</code>).</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The <a href="advanced/schema.md"><code>schema</code></a> currently raises an error. See ticket <a href="https://github.com/Living-with-machines/lwmdb/issues/115"><code>#115</code></a> for updates.</p>
+</div>
+<h2 id="local-docker-test-runs">Local <code>docker</code> test runs</h2>
+<h3 id="local-environment">Local environment</h3>
+<p>Tests are built and run via <a href="https://docs.pytest.org/"><code>pytest</code></a> and <code>docker</code> using <a href="https://pytest-django.readthedocs.io/en/latest/"><code>pytest-django</code></a>. To run tests ensure a local <code>docker</code> install, a local <code>git</code> checkout of <code>lwmdb</code> and a build (see <a href="../install/">install instructions</a> for details).</p>
+<p>Running locally with <code>local.yml</code> in a terminal deploys the site and this documentation:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">user</label><label for="__tabbed_1_2">sudo</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-console highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="go">docker compose -f local.yml up</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-console highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="go">sudo docker compose -f local.yml up</span>
+</span></code></pre></div>
+</div>
+</div>
+</div>
+<ul>
+<li>Site at <code>localhost:3000</code></li>
+<li>Docs at <code>localhost:9000</code></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If there are issues starting the server, shutting it down and then starting up again may help </p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">user</label><label for="__tabbed_2_2">sudo</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-console highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="go">docker compose -f local.yml down</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-console highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="go">sudo docker compose -f local.yml down</span>
+</span></code></pre></div>
+</div>
+</div>
+</div>
+</div>
+<h3 id="running-tests">Running tests</h3>
+<p>To run tests, open another terminal to run <code>pytest</code> within the <code>django</code> <code>docker</code> <code>container</code> while <code>docker</code> is running. </p>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">user</label><label for="__tabbed_3_2">sudo</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-console highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="go">docker compose -f local.yml exec django pytest</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-console highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="go">sudo docker compose -f local.yml exec django pytest</span>
+</span></code></pre></div>
+</div>
+</div>
+</div>
+<p>These will print out a summary of test results like:</p>
+<div class="language-pytest highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>Test session starts (platform: linux, Python 3.11.3, pytest 7.3.1, pytest-sugar 0.9.7)
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>django: settings: config.test_settings (from ini)
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>rootdir: /app
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>configfile: pyproject.toml
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>plugins: pyfakefs-5.2.2, anyio-3.6.2, sugar-0.9.7, cov-4.0.0, django-4.5.2
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>collected 33 items / 1 deselected / 32 selected
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a> gazetteer/tests.py ✓                                          3% ▍
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a> lwmdb/tests/test_commands.py xx                               9% ▉
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a> mitchells/tests.py x✓                                       100% ██████████
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a> newspapers/tests.py ✓✓✓✓✓                                    28% ██▊
+</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a> lwmdb/utils.py ✓✓✓✓✓✓✓✓✓                                     56% █████▋
+</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a> lwmdb/tests/test_utils.py ✓✓✓✓✓✓✓✓✓✓✓✓✓                      97% █████████▊
+</span><span id="__span-8-14"><a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a>------------ coverage: platform linux, python 3.11.3-final-0 ---------------
+</span><span id="__span-8-15"><a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a>Name                                                     Stmts   Miss  Cover
+</span><span id="__span-8-16"><a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a>----------------------------------------------------------------------------
+</span><span id="__span-8-17"><a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a>lwmdb/management/commands/connect.py                        10      3    70%
+</span><span id="__span-8-18"><a id="__codelineno-8-18" name="__codelineno-8-18" href="#__codelineno-8-18"></a>lwmdb/management/commands/createfixtures.py                 42     30    29%
+</span><span id="__span-8-19"><a id="__codelineno-8-19" name="__codelineno-8-19" href="#__codelineno-8-19"></a>lwmdb/management/commands/fixtures.py                      126     78    38%
+</span><span id="__span-8-20"><a id="__codelineno-8-20" name="__codelineno-8-20" href="#__codelineno-8-20"></a>lwmdb/management/commands/load_json_fixtures.py             20     11    45%
+</span><span id="__span-8-21"><a id="__codelineno-8-21" name="__codelineno-8-21" href="#__codelineno-8-21"></a>lwmdb/management/commands/loadfixtures.py                   27      8    70%
+</span><span id="__span-8-22"><a id="__codelineno-8-22" name="__codelineno-8-22" href="#__codelineno-8-22"></a>lwmdb/management/commands/makeitemfixtures.py               78     62    21%
+</span><span id="__span-8-23"><a id="__codelineno-8-23" name="__codelineno-8-23" href="#__codelineno-8-23"></a>lwmdb/tests/test_commands.py                                15      2    87%
+</span><span id="__span-8-24"><a id="__codelineno-8-24" name="__codelineno-8-24" href="#__codelineno-8-24"></a>lwmdb/tests/test_utils.py                                   25      7    72%
+</span><span id="__span-8-25"><a id="__codelineno-8-25" name="__codelineno-8-25" href="#__codelineno-8-25"></a>lwmdb/utils.py                                             120     48    60%
+</span><span id="__span-8-26"><a id="__codelineno-8-26" name="__codelineno-8-26" href="#__codelineno-8-26"></a>----------------------------------------------------------------------------
+</span><span id="__span-8-27"><a id="__codelineno-8-27" name="__codelineno-8-27" href="#__codelineno-8-27"></a>TOTAL                                                      508    284    44%
+</span><span id="__span-8-28"><a id="__codelineno-8-28" name="__codelineno-8-28" href="#__codelineno-8-28"></a>
+</span><span id="__span-8-29"><a id="__codelineno-8-29" name="__codelineno-8-29" href="#__codelineno-8-29"></a>8 files skipped due to complete coverage.
+</span><span id="__span-8-30"><a id="__codelineno-8-30" name="__codelineno-8-30" href="#__codelineno-8-30"></a>
+</span><span id="__span-8-31"><a id="__codelineno-8-31" name="__codelineno-8-31" href="#__codelineno-8-31"></a>============================ slowest 3 durations ===========================
+</span><span id="__span-8-32"><a id="__codelineno-8-32" name="__codelineno-8-32" href="#__codelineno-8-32"></a>3.85s setup    gazetteer/tests.py::TestGeoSpatial::test_create_place_and_distance
+</span><span id="__span-8-33"><a id="__codelineno-8-33" name="__codelineno-8-33" href="#__codelineno-8-33"></a>1.06s call     lwmdb/tests/test_commands.py::test_mitchells
+</span><span id="__span-8-34"><a id="__codelineno-8-34" name="__codelineno-8-34" href="#__codelineno-8-34"></a>0.14s call     lwmdb/utils.py::lwmdb.utils.download_file
+</span><span id="__span-8-35"><a id="__codelineno-8-35" name="__codelineno-8-35" href="#__codelineno-8-35"></a>
+</span><span id="__span-8-36"><a id="__codelineno-8-36" name="__codelineno-8-36" href="#__codelineno-8-36"></a>Results (6.74s):
+</span><span id="__span-8-37"><a id="__codelineno-8-37" name="__codelineno-8-37" href="#__codelineno-8-37"></a>      29 passed
+</span><span id="__span-8-38"><a id="__codelineno-8-38" name="__codelineno-8-38" href="#__codelineno-8-38"></a>       3 xfailed
+</span><span id="__span-8-39"><a id="__codelineno-8-39" name="__codelineno-8-39" href="#__codelineno-8-39"></a>       1 deselected
+</span></code></pre></div>
+<h3 id="adding-all-expected-failed-tests">Adding all expected failed tests</h3>
+<p>In the previous example, 29 tests passed, 3 failed <em>as expected</em> (hence <code>xfailed</code>) and 1 test was skipped (<code>deselected</code>). To see the deatils of what tests failed, adding the <code>--runxfail</code> option will add reports like the following:  </p>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">user</label><label for="__tabbed_4_2">sudo</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-console highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="go">docker compose -f local.yml exec django pytest --runxfail</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-console highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="go">sudo docker compose -f local.yml exec django pytest --runxfail</span>
+</span></code></pre></div>
+</div>
+</div>
+</div>
+<div class="language-pytest highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>...
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>    def __getattr__(self, name: str):
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>        &quot;&quot;&quot;
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>        After regular attribute access, try looking up the name
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>        This allows simpler access to columns for interactive use.
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>        &quot;&quot;&quot;
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>        # Note: obj.x will always call obj.__getattribute__(&#39;x&#39;) prior to
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>        # calling obj.__getattr__(&#39;x&#39;).
+</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>        if (
+</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>            name not in self._internal_names_set
+</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a>            and name not in self._metadata
+</span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a>            and name not in self._accessors
+</span><span id="__span-11-13"><a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a>            and self._info_axis._can_hold_identifiers_and_holds_name(name)
+</span><span id="__span-11-14"><a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a>        ):
+</span><span id="__span-11-15"><a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a>            return self[name]
+</span><span id="__span-11-16"><a id="__codelineno-11-16" name="__codelineno-11-16" href="#__codelineno-11-16"></a>&gt;       return object.__getattribute__(self, name)
+</span><span id="__span-11-17"><a id="__codelineno-11-17" name="__codelineno-11-17" href="#__codelineno-11-17"></a>E       AttributeError: &#39;Series&#39; object has no attribute &#39;NLP&#39;
+</span><span id="__span-11-18"><a id="__codelineno-11-18" name="__codelineno-11-18" href="#__codelineno-11-18"></a>
+</span><span id="__span-11-19"><a id="__codelineno-11-19" name="__codelineno-11-19" href="#__codelineno-11-19"></a>/usr/local/lib/python3.11/site-packages/pandas/core/generic.py:5989: AttributeError
+</span><span id="__span-11-20"><a id="__codelineno-11-20" name="__codelineno-11-20" href="#__codelineno-11-20"></a>-------------------------- Captured stdout call ----------------------------
+</span><span id="__span-11-21"><a id="__codelineno-11-21" name="__codelineno-11-21" href="#__codelineno-11-21"></a>Warning: Model mitchells.Issue is missing a fixture file and will not load.
+</span><span id="__span-11-22"><a id="__codelineno-11-22" name="__codelineno-11-22" href="#__codelineno-11-22"></a>Warning: Model mitchells.Entry is missing a fixture file and will not load.
+</span><span id="__span-11-23"><a id="__codelineno-11-23" name="__codelineno-11-23" href="#__codelineno-11-23"></a>Warning: Model mitchells.PoliticalLeaning is missing a fixture file and will not load.
+</span><span id="__span-11-24"><a id="__codelineno-11-24" name="__codelineno-11-24" href="#__codelineno-11-24"></a>Warning: Model mitchells.Price is missing a fixture file and will not load.
+</span><span id="__span-11-25"><a id="__codelineno-11-25" name="__codelineno-11-25" href="#__codelineno-11-25"></a>Warning: Model mitchells.EntryPoliticalLeanings is missing a fixture file and will not load.
+</span><span id="__span-11-26"><a id="__codelineno-11-26" name="__codelineno-11-26" href="#__codelineno-11-26"></a>Warning: Model mitchells.EntryPrices is missing a fixture file and will not load.
+</span><span id="__span-11-27"><a id="__codelineno-11-27" name="__codelineno-11-27" href="#__codelineno-11-27"></a>
+</span><span id="__span-11-28"><a id="__codelineno-11-28" name="__codelineno-11-28" href="#__codelineno-11-28"></a> lwmdb/tests/test_commands.py ⨯                           6% ▋
+</span><span id="__span-11-29"><a id="__codelineno-11-29" name="__codelineno-11-29" href="#__codelineno-11-29"></a>...
+</span></code></pre></div>
+<p>and summaries at the end of the report</p>
+<div class="language-pytest highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>...
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>============================ slowest 3 durations ===========================
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>3.87s setup    gazetteer/tests.py::TestGeoSpatial::test_create_place_and_distance
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>1.07s call     lwmdb/tests/test_commands.py::test_mitchells
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>0.15s call     lwmdb/utils.py::lwmdb.utils.download_file
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class=" -Color -Color-Bold -Color-Bold-Cyan">========================== short test summary info =========================</span>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class=" -Color -Color-Red">FAILED</span> lwmdb/tests/test_commands.py::<span class=" -Color -Color-Bold">test_mitchells</span> - AttributeError: &#39;Series&#39; object
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>has no attribute &#39;NLP&#39;
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class=" -Color -Color-Red">FAILED</span> lwmdb/tests/test_commands.py::<span class=" -Color -Color-Bold">test_gazzetteer</span> - SystemExit: App(s) not allowed: [&#39;gazzetteer&#39;]
+</span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a><span class=" -Color -Color-Red">FAILED</span> mitchells/tests.py::<span class=" -Color -Color-Bold">MitchelsFixture::test_load_fixtures</span> - assert 0 &gt; 0
+</span><span id="__span-12-11"><a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a>
+</span><span id="__span-12-12"><a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a>Results (6.90s):
+</span><span id="__span-12-13"><a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a>      29 passed
+</span><span id="__span-12-14"><a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a>       3 failed
+</span><span id="__span-12-15"><a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a>         - lwmdb/tests/test_commands.py:9 test_mitchells
+</span><span id="__span-12-16"><a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a>         - lwmdb/tests/test_commands.py:19 test_gazzetteer
+</span><span id="__span-12-17"><a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a>         - mitchells/tests.py:18 MitchelsFixture.test_load_fixtures
+</span><span id="__span-12-18"><a id="__codelineno-12-18" name="__codelineno-12-18" href="#__codelineno-12-18"></a>       1 deselected
+</span></code></pre></div>
+<h3 id="terminal-interaction">Terminal Interaction</h3>
+<p>Adding the <code>--pdb</code> option generates an <code>ipython</code> shell at the point a test fails:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="5:2"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1">user</label><label for="__tabbed_5_2">sudo</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-console highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="go">docker compose -f local.yml exec django pytest --runxfail --pdb</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-console highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="go">sudo docker compose -f local.yml exec django pytest --runxfail --pdb</span>
+</span></code></pre></div>
+</div>
+</div>
+</div>
+<div class="language-pytest highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>    def __getattr__(self, name: str):
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>        &quot;&quot;&quot;
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>        After regular attribute access, try looking up the name
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>        This allows simpler access to columns for interactive use.
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>        &quot;&quot;&quot;
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>        # Note: obj.x will always call obj.__getattribute__(&#39;x&#39;) prior to
+</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a>        # calling obj.__getattr__(&#39;x&#39;).
+</span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a>        if (
+</span><span id="__span-15-9"><a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a>            name not in self._internal_names_set
+</span><span id="__span-15-10"><a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a>            and name not in self._metadata
+</span><span id="__span-15-11"><a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a>            and name not in self._accessors
+</span><span id="__span-15-12"><a id="__codelineno-15-12" name="__codelineno-15-12" href="#__codelineno-15-12"></a>            and self._info_axis._can_hold_identifiers_and_holds_name(name)
+</span><span id="__span-15-13"><a id="__codelineno-15-13" name="__codelineno-15-13" href="#__codelineno-15-13"></a>        ):
+</span><span id="__span-15-14"><a id="__codelineno-15-14" name="__codelineno-15-14" href="#__codelineno-15-14"></a>            return self[name]
+</span><span id="__span-15-15"><a id="__codelineno-15-15" name="__codelineno-15-15" href="#__codelineno-15-15"></a>&gt;       return object.__getattribute__(self, name)
+</span><span id="__span-15-16"><a id="__codelineno-15-16" name="__codelineno-15-16" href="#__codelineno-15-16"></a>E       AttributeError: &#39;Series&#39; object has no attribute &#39;NLP&#39;
+</span><span id="__span-15-17"><a id="__codelineno-15-17" name="__codelineno-15-17" href="#__codelineno-15-17"></a>
+</span><span id="__span-15-18"><a id="__codelineno-15-18" name="__codelineno-15-18" href="#__codelineno-15-18"></a>/usr/local/lib/python3.11/site-packages/pandas/core/generic.py:5989: AttributeError
+</span><span id="__span-15-19"><a id="__codelineno-15-19" name="__codelineno-15-19" href="#__codelineno-15-19"></a>&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; entering PDB &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;
+</span><span id="__span-15-20"><a id="__codelineno-15-20" name="__codelineno-15-20" href="#__codelineno-15-20"></a>
+</span><span id="__span-15-21"><a id="__codelineno-15-21" name="__codelineno-15-21" href="#__codelineno-15-21"></a>&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; PDB post_mortem (IO-capturing turned off) &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;
+</span><span id="__span-15-22"><a id="__codelineno-15-22" name="__codelineno-15-22" href="#__codelineno-15-22"></a>&gt; /usr/local/lib/python3.11/site-packages/pandas/core/generic.py(5989)__getattr__()
+</span><span id="__span-15-23"><a id="__codelineno-15-23" name="__codelineno-15-23" href="#__codelineno-15-23"></a>   5987         ):
+</span><span id="__span-15-24"><a id="__codelineno-15-24" name="__codelineno-15-24" href="#__codelineno-15-24"></a>   5988             return self[name]
+</span><span id="__span-15-25"><a id="__codelineno-15-25" name="__codelineno-15-25" href="#__codelineno-15-25"></a>-&gt; 5989         return object.__getattribute__(self, name)
+</span><span id="__span-15-26"><a id="__codelineno-15-26" name="__codelineno-15-26" href="#__codelineno-15-26"></a>   5990
+</span><span id="__span-15-27"><a id="__codelineno-15-27" name="__codelineno-15-27" href="#__codelineno-15-27"></a>   5991     def __setattr__(self, name: str, value) -&gt; None:
+</span><span id="__span-15-28"><a id="__codelineno-15-28" name="__codelineno-15-28" href="#__codelineno-15-28"></a>
+</span><span id="__span-15-29"><a id="__codelineno-15-29" name="__codelineno-15-29" href="#__codelineno-15-29"></a>ipdb&gt;
+</span></code></pre></div>
+<h2 id="development">Development</h2>
+<h3 id="commits">Commits</h3>
+<h4 id="pre-commit">Pre-commit</h4>
+<p>The <code>.pre-commit-config.yaml</code> file manages configurations to ensure quality of each <code>git</code> commit. Ensure this works by installing <a href="https://pre-commit.com/#install"><code>pre-commit</code></a> before making any <code>git</code> commits.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>pre-commit</code> is included in the <code>pyproject.toml</code> <code>dev</code> dependencies group, so it&rsquo;s possible to run all <code>git</code> commands within a local <code>poetry</code> install of <code>lwmdb</code> without installing <code>pre-commit</code> globally.   </p>
+</div>
+<p>This will automatically download and install dependencies specified in <code>.pre-commit-config.yaml</code> and then run all those checks for any <code>git</code> commit.</p>
+<p>You can run all of these checks outside a commit with</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="6:2"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><input id="__tabbed_6_2" name="__tabbed_6" type="radio" /><div class="tabbed-labels"><label for="__tabbed_6_1">shell</label><label for="__tabbed_6_2">poetry</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-console highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="go">pre-commit run --all-files</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-console highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="go">poetry run pre-commit run --all-files</span>
+</span></code></pre></div>
+</div>
+</div>
+</div>
+<h4 id="commit-messages">Commit messages</h4>
+<p>For git commit messages we try to follow the <a href="https://www.conventionalcommits.org/en/v1.0.0/"><code>conventional commits</code></a> spec, where commits are prefixed by categories:</p>
+<ul>
+<li><code>fix</code>: something fixed</li>
+<li><code>feat</code>: a new feature</li>
+<li><code>doc</code>: documentation</li>
+<li><code>refactor</code>: a significant rearangement code structure</li>
+<li><code>test</code>: adding tests</li>
+<li><code>ci</code>: continuous integrations</li>
+<li><code>chore</code>: something relatively small like updating a dependency</li>
+</ul>
+<h3 id="app">App</h3>
+<p>Once <code>docker compose</code> is up, any local modifications should automatically be loaded in the local <code>django</code> <code>docker</code> <code>container</code> and immediately applied. This suits reloading web app changes (including <code>css</code> etc.) and writing and running tests. No additional <code>docker build</code> commands <em>should</em> be required unless very significant modifcations, such as shifting between <code>git</code> <code>branches</code>.</p>
+<h3 id="tests">Tests</h3>
+<h4 id="doctests">Doctests</h4>
+<p>Including <code>docstrings</code> with example tests is an efficient way to add tests, document usage and help ensure documentation is consistent with code changes.</p>
+<h4 id="pytest-tests">Pytest Tests</h4>
+<p>We use <a href="https://docs.pytest.org/"><code>pytest</code></a> for tests, and their documentation is quite comprehensive. The <a href="https://pytest-django.readthedocs.io/en/latest/"><code>django-pytest</code></a> module is crucial to the test functionality as well.</p>
+<h5 id="pytest-configuration">Pytest Configuration</h5>
+<p>The config for running tests is shared between <code>pyproject.toml</code> and <code>lwmdb/tests/conftest.py</code>.</p>
+<p>The <code>pyproject.toml</code> section below provides automatic test configuration whenever <code>pytest</code> is run. An example config at the time of this writing:</p>
+<div class="language-toml highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="k">[tool.pytest.ini_options]</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="n">DJANGO_SETTINGS_MODULE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;config.test_settings&quot;</span>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="n">python_files</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s">&quot;tests.py&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;test_*.py&quot;</span><span class="p">]</span>
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="n">addopts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;&quot;</span>
+</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="s">--cov=lwmdb</span>
+</span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a><span class="s">--cov-report=term:skip-covered</span>
+</span><span id="__span-18-7"><a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a><span class="s">--pdbcls=IPython.terminal.debugger:TerminalPdb</span>
+</span><span id="__span-18-8"><a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a><span class="s">--doctest-modules</span>
+</span><span id="__span-18-9"><a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a><span class="s">--ignore=compose</span>
+</span><span id="__span-18-10"><a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a><span class="s">--ignore=jupyterhub_config.py</span>
+</span><span id="__span-18-11"><a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a><span class="s">--ignore=notebooks</span>
+</span><span id="__span-18-12"><a id="__codelineno-18-12" name="__codelineno-18-12" href="#__codelineno-18-12"></a><span class="s">--ignore=docs</span>
+</span><span id="__span-18-13"><a id="__codelineno-18-13" name="__codelineno-18-13" href="#__codelineno-18-13"></a><span class="s">--ignore=lwmdb/contrib/sites</span>
+</span><span id="__span-18-14"><a id="__codelineno-18-14" name="__codelineno-18-14" href="#__codelineno-18-14"></a><span class="s">-m &quot;</span><span class="n">not</span><span class="w"> </span><span class="n">slow</span><span class="s">&quot;</span>
+</span><span id="__span-18-15"><a id="__codelineno-18-15" name="__codelineno-18-15" href="#__codelineno-18-15"></a><span class="s">--durations=3</span>
+</span><span id="__span-18-16"><a id="__codelineno-18-16" name="__codelineno-18-16" href="#__codelineno-18-16"></a><span class="s">&quot;&quot;&quot;</span>
+</span><span id="__span-18-17"><a id="__codelineno-18-17" name="__codelineno-18-17" href="#__codelineno-18-17"></a><span class="n">markers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+</span><span id="__span-18-18"><a id="__codelineno-18-18" name="__codelineno-18-18" href="#__codelineno-18-18"></a><span class="w">  </span><span class="s">&quot;slow: marks tests as slow (deselect with &#39;-m \&quot;not slow\&quot;&#39;)&quot;</span>
+</span><span id="__span-18-19"><a id="__codelineno-18-19" name="__codelineno-18-19" href="#__codelineno-18-19"></a><span class="p">]</span>
+</span></code></pre></div>
+<ul>
+<li><code>--cov=lwmdb</code> specifies the path to test (in this case the name of this project)</li>
+<li><code>--cov-report=term:skip-covered</code> excludes files with full coverage from the coverage report</li>
+<li><code>--pydbcls=Ipython.terminal.debugger:TerminalPdb</code> enables the <code>ipython</code> terminal for <a href="https://ipython.readthedocs.io/en/stable/api/generated/IPython.core.debugger.html">debugging </a></li>
+<li><code>--doctest-modules</code> indicates <code>doctests</code> are included in test running</li>
+<li><code>--ignore</code> excludes folders from testing (eg: <code>--ignore=compose</code> skips the <code>compose</code> folder)</li>
+<li><code>-m "not slow"</code> skips tests <a href="https://docs.pytest.org/en/latest/how-to/mark.html">marked</a> with <code>@pytest.mark.slow</code></li>
+<li><code>--duration=3</code> lists the duration of the 3 slowest running tests</li>
+</ul>
+<h5 id="example-tests">Example Tests</h5>
+<p>Within each <code>django</code> <code>app</code> in the project there is either a <code>tests.py</code> file or a <code>tests</code> folder, where any file name beginning with <code>test_</code> is included (like <code>test_commands.py</code>).</p>
+<p>An example test from <code>mitchells/tests.py</code>:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="k">def</span> <span class="nf">test_download_local_mitchells_excel</span><span class="p">(</span><span class="n">caplog</span><span class="p">,</span> <span class="n">mitchells_data_path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Test downloading `MITCHELLS_EXCEL_URL` fixture.</span>
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="sd">    Note:</span>
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="sd">        `assert LOG in caplog.messages` is designed to work whether the file is</span>
+</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a><span class="sd">        downloaded or not to ease caching and testing</span>
+</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-19-8"><a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a>    <span class="n">caplog</span><span class="o">.</span><span class="n">set_level</span><span class="p">(</span><span class="n">INFO</span><span class="p">)</span>
+</span><span id="__span-19-9"><a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a>    <span class="n">success</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">download_file</span><span class="p">(</span><span class="n">mitchells_data_path</span><span class="p">,</span> <span class="n">MITCHELLS_EXCEL_URL</span><span class="p">)</span>
+</span><span id="__span-19-10"><a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a>    <span class="k">assert</span> <span class="n">success</span>
+</span><span id="__span-19-11"><a id="__codelineno-19-11" name="__codelineno-19-11" href="#__codelineno-19-11"></a>    <span class="n">LOG</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">MITCHELLS_EXCEL_URL</span><span class="si">}</span><span class="s2"> file available from </span><span class="si">{</span><span class="n">mitchells_data_path</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="__span-19-12"><a id="__codelineno-19-12" name="__codelineno-19-12" href="#__codelineno-19-12"></a>    <span class="k">assert</span> <span class="n">LOG</span> <span class="ow">in</span> <span class="n">caplog</span><span class="o">.</span><span class="n">messages</span>
+</span></code></pre></div>
+<!-- Here the `remote_data` `mark` indicates that this test will fail without a working internet connection (in this case dowloading a remote file). Assuming that is available, the -->
+<p><code>mitchells_data_path</code> <a href="https://docs.pytest.org/en/stable/explanation/fixtures.html"><code>fixture</code></a> is defined in <code>conftest.py</code> and returns a <code>Path</code> for the folder where raw <code>mitchells</code> data is stored prior to processing into <code>json</code>.</p>
+<p><code>Fixtures</code> in <code>pytest</code> work by automatically populating any functions names beginning with <code>test_</code> with whatever is returned from registered <code>fixture</code> functions. Here the <code>mitchells_data_path</code> <code>Path</code> object is passed to the <code>download_file</code> function and saved to <code>MITCHELLS_LOCAL_LINK_EXCEL_URL</code>. <code>download_file</code> returns a <code>bool</code> to indicate if the dowload was successful, hence then testing if the value returned is <code>True</code> via the line:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="k">assert</span> <span class="n">success</span>
+</span></code></pre></div>
+<p>The lines involving <code>caplog</code> aid testing <code>logging</code>. The <a href="https://docs.python.org/3/library/logging.html#logging-levels">logging level</a> is to <code>INFO</code> to capture levels lower than the default <code>WARNING</code> level.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="n">caplog</span><span class="o">.</span><span class="n">set_level</span><span class="p">(</span><span class="n">INFO</span><span class="p">)</span>
+</span></code></pre></div>
+<p>This then means the logging is captured and can be tested on the final line </p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="k">assert</span> <span class="n">caplog</span><span class="o">.</span><span class="n">messages</span> <span class="o">==</span> <span class="p">[</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">MITCHELLS_LOCAL_LINK_EXCEL_PATH</span><span class="si">}</span><span class="s1"> file available from </span><span class="si">{</span><span class="n">mitchells_data_path</span><span class="si">}</span><span class="s1">&#39;</span>
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a><span class="p">]</span>
+</span></code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To ease using <code>python</code> logging and <code>django</code> logging features we use our <a href="../reference/lwmdb/utils/#lwmdb.utils.log_and_django_terminal"><code>log_and_django_terminal</code></a> wrapper to ease managing logs that might also need to be printed at the terminal alongside commands.</p>
+</div>
+<h2 id="crediting-contributions">Crediting Contributions</h2>
+<p>We use <a href="https://allcontributors.org">All Contributors</a> in our semi-automated file citation file <a href="https://github.com/Living-with-machines/lwmdb/blob/main/.all-contributorsrc"><code>.all-contributorsrc</code></a> and <a href="https://citation-file-format.github.io/">Citation File Format</a> via <a href="https://github.com/Living-with-machines/lwmdb/blob/main/CITATION.cff"><code>CITATION.cff</code></a> to help manage attributing contributions to both this code base and datasets we release for use with <code>lwmdb</code>. We endeavour to harmonise contributions from collaborators across <a href="https://livingwithmachines.ac.uk/">Living with Machines</a> whose copious, interdisciplinary collaboration led to <code>lwmdb</code>.</p>
+<h3 id="all-contributors">All Contributors</h3>
+<p>All Contributors is a service for managing credit for contributions to a <code>git</code> repository. <code>.all-contributorsrc</code> is a <code>json</code> file in the root directory of the <code>alnm</code> repository. It also specifies design for what&rsquo;s rendered in <code>README.md</code> and intro <a href="/#contributors">contributors</a> section of this documentation. </p>
+<p>The <code>json</code> structure follows the All Contributors <a href="https://allcontributors.org/docs/en/specification"><code>specification</code></a>. Below is an example of this format</p>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="p">{</span>
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="w">  </span><span class="nt">&quot;files&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a><span class="w">    </span><span class="s2">&quot;README.md&quot;</span>
+</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a><span class="w">  </span><span class="p">],</span>
+</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a><span class="w">  </span><span class="nt">&quot;imageSize&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span>
+</span><span id="__span-23-6"><a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a><span class="w">  </span><span class="nt">&quot;commit&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+</span><span id="__span-23-7"><a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a><span class="w">  </span><span class="nt">&quot;commitType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;docs&quot;</span><span class="p">,</span>
+</span><span id="__span-23-8"><a id="__codelineno-23-8" name="__codelineno-23-8" href="#__codelineno-23-8"></a><span class="w">  </span><span class="nt">&quot;commitConvention&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;angular&quot;</span><span class="p">,</span>
+</span><span id="__span-23-9"><a id="__codelineno-23-9" name="__codelineno-23-9" href="#__codelineno-23-9"></a><span class="w">  </span><span class="nt">&quot;contributors&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span id="__span-23-10"><a id="__codelineno-23-10" name="__codelineno-23-10" href="#__codelineno-23-10"></a><span class="w">    </span><span class="p">{</span>
+</span><span id="__span-23-11"><a id="__codelineno-23-11" name="__codelineno-23-11" href="#__codelineno-23-11"></a><span class="w">      </span><span class="nt">&quot;login&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;github-user-name&quot;</span><span class="p">,</span>
+</span><span id="__span-23-12"><a id="__codelineno-23-12" name="__codelineno-23-12" href="#__codelineno-23-12"></a><span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Person Name&quot;</span><span class="p">,</span>
+</span><span id="__span-23-13"><a id="__codelineno-23-13" name="__codelineno-23-13" href="#__codelineno-23-13"></a><span class="w">      </span><span class="nt">&quot;avatar_url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://avatars.githubusercontent.com/u/1234567?v=4&quot;</span><span class="p">,</span>
+</span><span id="__span-23-14"><a id="__codelineno-23-14" name="__codelineno-23-14" href="#__codelineno-23-14"></a><span class="w">      </span><span class="nt">&quot;profile&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://www.a-website.org&quot;</span><span class="p">,</span>
+</span><span id="__span-23-15"><a id="__codelineno-23-15" name="__codelineno-23-15" href="#__codelineno-23-15"></a><span class="w">      </span><span class="nt">&quot;contributions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span id="__span-23-16"><a id="__codelineno-23-16" name="__codelineno-23-16" href="#__codelineno-23-16"></a><span class="w">        </span><span class="s2">&quot;code&quot;</span><span class="p">,</span>
+</span><span id="__span-23-17"><a id="__codelineno-23-17" name="__codelineno-23-17" href="#__codelineno-23-17"></a><span class="w">        </span><span class="s2">&quot;ideas&quot;</span><span class="p">,</span>
+</span><span id="__span-23-18"><a id="__codelineno-23-18" name="__codelineno-23-18" href="#__codelineno-23-18"></a><span class="w">        </span><span class="s2">&quot;doc&quot;</span>
+</span><span id="__span-23-19"><a id="__codelineno-23-19" name="__codelineno-23-19" href="#__codelineno-23-19"></a><span class="w">      </span><span class="p">]</span>
+</span><span id="__span-23-20"><a id="__codelineno-23-20" name="__codelineno-23-20" href="#__codelineno-23-20"></a><span class="w">    </span><span class="p">},</span>
+</span><span id="__span-23-21"><a id="__codelineno-23-21" name="__codelineno-23-21" href="#__codelineno-23-21"></a><span class="w">    </span><span class="p">{</span>
+</span><span id="__span-23-22"><a id="__codelineno-23-22" name="__codelineno-23-22" href="#__codelineno-23-22"></a><span class="w">      </span><span class="nt">&quot;login&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;another-github-user-name&quot;</span><span class="p">,</span>
+</span><span id="__span-23-23"><a id="__codelineno-23-23" name="__codelineno-23-23" href="#__codelineno-23-23"></a><span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Another Name&quot;</span><span class="p">,</span>
+</span><span id="__span-23-24"><a id="__codelineno-23-24" name="__codelineno-23-24" href="#__codelineno-23-24"></a><span class="w">      </span><span class="nt">&quot;avatar_url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://avatars.githubusercontent.com/u/7654321?v=4&quot;</span><span class="p">,</span>
+</span><span id="__span-23-25"><a id="__codelineno-23-25" name="__codelineno-23-25" href="#__codelineno-23-25"></a><span class="w">      </span><span class="nt">&quot;contributions&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span id="__span-23-26"><a id="__codelineno-23-26" name="__codelineno-23-26" href="#__codelineno-23-26"></a><span class="w">        </span><span class="s2">&quot;code&quot;</span><span class="p">,</span>
+</span><span id="__span-23-27"><a id="__codelineno-23-27" name="__codelineno-23-27" href="#__codelineno-23-27"></a><span class="w">        </span><span class="s2">&quot;ideas&quot;</span><span class="p">,</span>
+</span><span id="__span-23-28"><a id="__codelineno-23-28" name="__codelineno-23-28" href="#__codelineno-23-28"></a><span class="w">        </span><span class="s2">&quot;doc&quot;</span><span class="p">,</span>
+</span><span id="__span-23-29"><a id="__codelineno-23-29" name="__codelineno-23-29" href="#__codelineno-23-29"></a><span class="w">        </span><span class="s2">&quot;maintenance&quot;</span>
+</span><span id="__span-23-30"><a id="__codelineno-23-30" name="__codelineno-23-30" href="#__codelineno-23-30"></a><span class="w">      </span><span class="p">]</span>
+</span><span id="__span-23-31"><a id="__codelineno-23-31" name="__codelineno-23-31" href="#__codelineno-23-31"></a><span class="w">    </span><span class="p">},</span>
+</span><span id="__span-23-32"><a id="__codelineno-23-32" name="__codelineno-23-32" href="#__codelineno-23-32"></a><span class="w">  </span><span class="p">],</span>
+</span><span id="__span-23-33"><a id="__codelineno-23-33" name="__codelineno-23-33" href="#__codelineno-23-33"></a><span class="w">  </span><span class="nt">&quot;contributorsPerLine&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">7</span><span class="p">,</span>
+</span><span id="__span-23-34"><a id="__codelineno-23-34" name="__codelineno-23-34" href="#__codelineno-23-34"></a><span class="w">  </span><span class="nt">&quot;skipCi&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+</span><span id="__span-23-35"><a id="__codelineno-23-35" name="__codelineno-23-35" href="#__codelineno-23-35"></a><span class="w">  </span><span class="nt">&quot;repoType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;github&quot;</span><span class="p">,</span>
+</span><span id="__span-23-36"><a id="__codelineno-23-36" name="__codelineno-23-36" href="#__codelineno-23-36"></a><span class="w">  </span><span class="nt">&quot;repoHost&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://github.com&quot;</span><span class="p">,</span>
+</span><span id="__span-23-37"><a id="__codelineno-23-37" name="__codelineno-23-37" href="#__codelineno-23-37"></a><span class="w">  </span><span class="nt">&quot;projectName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;lwmdb&quot;</span><span class="p">,</span>
+</span><span id="__span-23-38"><a id="__codelineno-23-38" name="__codelineno-23-38" href="#__codelineno-23-38"></a><span class="w">  </span><span class="nt">&quot;projectOwner&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Living-with-machines&quot;</span>
+</span><span id="__span-23-39"><a id="__codelineno-23-39" name="__codelineno-23-39" href="#__codelineno-23-39"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>The <code>contribution</code> component per user indicates type of contributionat present we consider these: </p>
+<ul>
+<li><code>code</code></li>
+<li><code>ideas</code></li>
+<li><code>mentoring</code></li>
+<li><code>maintenance</code></li>
+<li><code>doc</code></li>
+</ul>
+<p>At present we aren&rsquo;t crediting other types of contribution but may expand in the future. For more other contribtuion types provided by <code>allcontributors</code> by default, see the <a href="https://allcontributors.org/docs/en/emoji-key#table"><code>emoji-key</code> table</a>. </p>
+<h4 id="adding-credit-including-types-via-github-comments">Adding credit, including types, via GitHub comments</h4>
+<p>For All Contributors <code>git</code> accounts with at least <a href="https://docs.github.com/en/organizations/managing-peoples-access-to-your-organization-with-roles/managing-moderators-in-your-organization"><code>moderator</code></a> status with our <code>GitHub</code> <a href="https://github.com/living-with-machines/lwmdb/">repository</a> should have permission to modify credit by posting in the following form on an <code>lwmdb</code> <code>github</code> ticket:</p>
+<div class="language-markdown highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="ni">@all</span>-contributors
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>please add <span class="ni">@github</span>-user for code, ideas, planning.
+</span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a>please add <span class="ni">@github</span>-other-user for code, ideas, planning.
+</span></code></pre></div>
+<p>This should cause the <a href="https://github.com/all-contributors/app"><code>all-contributors bot</code></a> to indicated success:</p>
+<div class="language-markdown highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="ni">@ModUserWhoPosted</span>
+</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>
+</span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>I&#39;ve put up a pull request to add <span class="ni">@github</span>-user! 🎉
+</span><span id="__span-25-4"><a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a>I&#39;ve put up a pull request to add <span class="ni">@github</span>-other-user! 🎉
+</span></code></pre></div>
+<p>or report errors:</p>
+<div class="language-markdown highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>This project&#39;s configuration file has malformed JSON: .all-contributorsrc. Error:: Unexpected token : in JSON at position 2060
+</span></code></pre></div>
+<h3 id="citationcff">CITATION.CFF</h3>
+<p>We also maintain a <a href="cff-version"><code>Citation File Format (CFF)</code></a> file for citeable, academic credit for contributions via our <a href="10.5281/zenodo.8208203"><code>zenodo</code></a> registration. This helps automate the process of releasing academically citeable <a href="https://en.wikipedia.org/wiki/Digital_object_identifier">Digital Object Identifyer (DOI)</a> for releases of <code>lwmdb</code>.</p>
+<p><code>CFF</code> supports <a href="https://en.wikipedia.org/wiki/ORCID">Open Researcher and Contributor IDs (<code>orcid</code>)</a>, which eases automating academic credit for evolving contribtuions to academic work, even as individuals change academic positions. 
+For reference a simplified example based on <code>cff-version 1.2.0</code>:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="nt">cff-version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.2.0</span>
+</span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Living With Machines Database</span>
+</span><span id="__span-27-3"><a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a><span class="nt">message</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">&gt;-</span>
+</span><span id="__span-27-4"><a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a><span class="w">  </span><span class="no">If you use this software, please cite it using the</span>
+</span><span id="__span-27-5"><a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a><span class="w">  </span><span class="no">metadata from this file.</span>
+</span><span id="__span-27-6"><a id="__codelineno-27-6" name="__codelineno-27-6" href="#__codelineno-27-6"></a><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">software</span>
+</span><span id="__span-27-7"><a id="__codelineno-27-7" name="__codelineno-27-7" href="#__codelineno-27-7"></a><span class="nt">authors</span><span class="p">:</span>
+</span><span id="__span-27-8"><a id="__codelineno-27-8" name="__codelineno-27-8" href="#__codelineno-27-8"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">given-names</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Person</span>
+</span><span id="__span-27-9"><a id="__codelineno-27-9" name="__codelineno-27-9" href="#__codelineno-27-9"></a><span class="w">    </span><span class="nt">family-names</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Name</span>
+</span><span id="__span-27-10"><a id="__codelineno-27-10" name="__codelineno-27-10" href="#__codelineno-27-10"></a><span class="w">    </span><span class="nt">orcid</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;https://orcid.org/0000-0000-0000-0000&#39;</span>
+</span><span id="__span-27-11"><a id="__codelineno-27-11" name="__codelineno-27-11" href="#__codelineno-27-11"></a><span class="w">    </span><span class="nt">affiliation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A UNI</span>
+</span><span id="__span-27-12"><a id="__codelineno-27-12" name="__codelineno-27-12" href="#__codelineno-27-12"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">given-names</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Another</span>
+</span><span id="__span-27-13"><a id="__codelineno-27-13" name="__codelineno-27-13" href="#__codelineno-27-13"></a><span class="w">    </span><span class="nt">family-names</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Name</span>
+</span><span id="__span-27-14"><a id="__codelineno-27-14" name="__codelineno-27-14" href="#__codelineno-27-14"></a><span class="w">    </span><span class="nt">orcid</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;https://orcid.org/0000-0000-0000-0001&#39;</span>
+</span><span id="__span-27-15"><a id="__codelineno-27-15" name="__codelineno-27-15" href="#__codelineno-27-15"></a><span class="w">    </span><span class="nt">affiliation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">UNI A</span>
+</span><span id="__span-27-16"><a id="__codelineno-27-16" name="__codelineno-27-16" href="#__codelineno-27-16"></a><span class="nt">identifiers</span><span class="p">:</span>
+</span><span id="__span-27-17"><a id="__codelineno-27-17" name="__codelineno-27-17" href="#__codelineno-27-17"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">doi</span>
+</span><span id="__span-27-18"><a id="__codelineno-27-18" name="__codelineno-27-18" href="#__codelineno-27-18"></a><span class="w">    </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.5281/zenodo.8208204</span>
+</span><span id="__span-27-19"><a id="__codelineno-27-19" name="__codelineno-27-19" href="#__codelineno-27-19"></a><span class="nt">repository-code</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;https://github.com/Living-with-machines/lwmdb&#39;</span>
+</span><span id="__span-27-20"><a id="__codelineno-27-20" name="__codelineno-27-20" href="#__codelineno-27-20"></a><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;https://livingwithmachines.ac.uk/&#39;</span>
+</span><span id="__span-27-21"><a id="__codelineno-27-21" name="__codelineno-27-21" href="#__codelineno-27-21"></a><span class="nt">license</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MIT</span>
+</span></code></pre></div>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="unexpected-lwmdbstaticcssprojectcss-changes">Unexpected <code>lwmdb/static/css/project.css</code> changes</h3>
+<p>At present (see issue <a href="https://github.com/Living-with-machines/lwmdb/issues/110">#110</a> for updates) running <code>docker compose</code> is likely to truncate the last line of <code>/lwmdb/static/css/project.css</code> which, can then appear as a local change in a <code>git</code> checkout:</p>
+<div class="language-git-console highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="gp">$ </span>git<span class="w"> </span>status
+</span><span id="__span-28-2"><a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a><span class="go">Changes not staged for commit:</span>
+</span><span id="__span-28-3"><a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a><span class="go">  (use &quot;git add &lt;file&gt;...&quot; to update what will be committed)</span>
+</span><span id="__span-28-4"><a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a><span class="go">  (use &quot;git restore &lt;file&gt;...&quot; to discard changes in working directory)</span>
+</span><span id="__span-28-5"><a id="__codelineno-28-5" name="__codelineno-28-5" href="#__codelineno-28-5"></a><span class="go">        modified:   lwmdb/static/css/project.css</span>
+</span></code></pre></div>
+<p>This should be automatically fixed via <a href="#pre-commit"><code>pre-commit</code></a>, and if necessary you can run <code>pre-commit</code> directly to clean that issue outside of a <code>git</code> commit. Given how frequently this may occur, it is safest to simply leave that until commiting a change.</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="7:2"><input checked="checked" id="__tabbed_7_1" name="__tabbed_7" type="radio" /><input id="__tabbed_7_2" name="__tabbed_7" type="radio" /><div class="tabbed-labels"><label for="__tabbed_7_1">shell</label><label for="__tabbed_7_2">poetry</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-console highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="go">pre-commit run --all-files</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-console highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a><span class="go">poetry run pre-commit run --all-files</span>
+</span></code></pre></div>
+</div>
+</div>
+</div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["content.code.copy", "content.tabs.link"], "search": "../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.aecac24b.min.js"></script>
+      
+    
+  </body>
+</html>
