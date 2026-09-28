@@ -278,8 +278,7 @@ class Item(NewspapersModel):
 
     SAS_ENV_VARIABLE = "FULLTEXT_SAS_TOKEN"
 
-    class TitleLengthError(Exception):
-        ...
+    class TitleLengthError(Exception): ...
 
     @property
     def download_dir(self):
