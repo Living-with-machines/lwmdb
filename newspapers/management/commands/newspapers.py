@@ -49,7 +49,7 @@ class Command(Fixture):
         return True
 
     def get_zipfiles(self, data_provider):
-        zipfiles = [x for x in Path(MOUNTPOINTS[data_provider]).glob("*.zip")]
+        zipfiles = [*Path(MOUNTPOINTS[data_provider]).glob("*.zip")]
         zipfiles.sort(key=lambda x: x.stat().st_size)
 
         if REVERSE:
@@ -68,8 +68,8 @@ class Command(Fixture):
         else:
             nlp = newspaper_zip.name.split("_")[0]
 
-        m = len([x for x in nlp[3:]]) - 2
-        valid_path_numbers = [x for x in nlp[3:]][:m]
+        m = len([*nlp[3:]]) - 2
+        valid_path_numbers = [*nlp[3:]][:m]
         cache_path = Path(
             f"./{newspaper_cache}/{data_provider}/" + "/".join(valid_path_numbers)
         )
@@ -218,7 +218,7 @@ class Command(Fixture):
     def ingest_cache(self):
         """Function for ingesting cache files for Newspaper and Issue items."""
         get_newspaper_files = lambda data_provider: [
-            x for x in Path(f"./{newspaper_cache}/{data_provider}/").glob("**/*.json")
+            *Path(f"./{newspaper_cache}/{data_provider}/").glob("**/*.json")
         ]
 
         get_issue_files = lambda data_provider: [
