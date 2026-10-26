@@ -51,9 +51,13 @@ class Command(BaseCommand):
         )
 
         # Block if non-allowed apps passed
-        exit(
-            f"App(s) not allowed: {[x for x in apps if not x in ALLOWED_APPS]}",
-        ) if [x for x in apps if not x in ALLOWED_APPS] else None
+        (
+            exit(
+                f"App(s) not allowed: {[x for x in apps if not x in ALLOWED_APPS]}",
+            )
+            if [x for x in apps if not x in ALLOWED_APPS]
+            else None
+        )
 
         for app in apps:
             if app == "gazetteer":
