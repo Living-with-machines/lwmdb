@@ -217,9 +217,9 @@ class MitchellsFixture(Fixture):
         # Create mitchells_publication_for_linking (for newspapers)
         mitchells_publication_for_linking = mitchells_entries.copy()
         mitchells_publication_for_linking = mitchells_publication_for_linking[["NLP"]]
-        mitchells_publication_for_linking[
-            "entry"
-        ] = mitchells_publication_for_linking.index
+        mitchells_publication_for_linking["entry"] = (
+            mitchells_publication_for_linking.index
+        )
 
         mitchells_publication_for_linking.to_csv(
             AUTO_FILE_LOCATIONS["mitchells_publication_for_linking"]
@@ -238,9 +238,8 @@ class MitchellsFixture(Fixture):
         ]:
             resulting_df, field1, field2, resulting_column = x
             values = {
-                x
-                for x in list({x for x in mitchells_entries[field1].dropna()})
-                + list({x for x in mitchells_entries[field2].dropna()})
+                *list({*mitchells_entries[field1].dropna()})
+                + list({*mitchells_entries[field2].dropna()})
             }
             dfs[resulting_df] = pd.DataFrame(
                 values,
