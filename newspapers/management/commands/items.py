@@ -23,7 +23,7 @@ class Command(NewspapersFixture):
         super(NewspapersFixture, self).__init__()
 
     def get_zipfiles(self, data_provider):
-        zipfiles = [x for x in Path(MOUNTPOINTS[data_provider]).glob("*.zip")]
+        zipfiles = [*Path(MOUNTPOINTS[data_provider]).glob("*.zip")]
         zipfiles.sort(key=lambda x: x.stat().st_size)
         if REVERSE:
             zipfiles.reverse()
@@ -41,8 +41,8 @@ class Command(NewspapersFixture):
         else:
             nlp = newspaper_zip.name.split("_")[0]
 
-        m = len([x for x in nlp[3:]]) - 2
-        valid_path_numbers = [x for x in nlp[3:]][:m]
+        m = len([*nlp[3:]]) - 2
+        valid_path_numbers = [*nlp[3:]][:m]
         cache_path = Path(
             f"./{item_cache}/{data_provider}/" + "/".join(valid_path_numbers)
         )

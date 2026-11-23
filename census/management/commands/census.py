@@ -24,7 +24,7 @@ class Command(Fixture):
         super(Fixture, self).__init__()
 
     def build_fixture(self):
-        CSV_FILES = [x for x in self.csv_fixture_path.glob("*.csv")]
+        CSV_FILES = [*self.csv_fixture_path.glob("*.csv")]
 
         df = pd.DataFrame()
         now = timezone.now()
