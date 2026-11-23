@@ -662,8 +662,7 @@ def path_or_str_suffix(
         return suffix
 
 
-class DataSourceDownloadError(Exception):
-    ...
+class DataSourceDownloadError(Exception): ...
 
 
 @dataclass
